@@ -94,7 +94,7 @@ public class Main extends Application {
 
                 case "O":
                 case "o":
-                    alphabeticalOrder();
+                    alphabeticalOrder(users);
                     break;
 
                 case "q":
@@ -131,10 +131,6 @@ public class Main extends Application {
         Scene scene = new Scene(layout);
         alertBoxWindow.setScene(scene);
         alertBoxWindow.showAndWait();
-    }
-
-    private void alphabeticalOrder() {
-
     }
 
     private void loadProgramFile() {
@@ -221,11 +217,11 @@ public class Main extends Application {
 
                             confirmUser.setOnAction(event1 -> {
                                 //print the current action in console
-                                System.out.println(userName.getText() + " has booked Seat #" + seat.getId());
+                                System.out.println(userName.getText() + " has booked Seat #" + seat.getId() + "\n");
                                 //hashMap data
                                 users.put(Integer.valueOf(seat.getId()), userName.getText());
                                 //popup alertBox
-                                alertBoxWindow("Alert!", "You have successfully booked Seat #" + seat.getId() + "\n");
+                                alertBoxWindow("Alert!", "You have successfully booked Seat #" + seat.getId());
                                 //change color of the booked seat
                                 seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
                             });
@@ -246,7 +242,7 @@ public class Main extends Application {
     }
 
     private void displayEmptySeats(HashMap<Integer, String> users) {
-        System.out.println("\n-----------------");
+        System.out.println("\n-------------------");
         System.out.println("DISPLAY EMPTY SEATS");
         System.out.println("-------------------");
 
@@ -312,7 +308,7 @@ public class Main extends Application {
 
         System.out.print("Which seat do you need to find (Prompt Username) : ");
         String userName = sc.next();
-        for (HashMap.Entry <Integer, String> entry : users.entrySet()) {
+        for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
             if (userName.equals(entry.getValue())) {
                 System.out.println(userName + " already booked seat #" + entry.getKey());
                 alertBoxWindow("Alert", userName + " already booked seat #" + entry.getKey());
@@ -321,8 +317,8 @@ public class Main extends Application {
             }
         }
     }
-    
-    public void deleteCustomer (HashMap < Integer, String > users) {
+
+    public void deleteCustomer(HashMap<Integer, String> users) {
         System.out.println("\n-------------");
         System.out.println("DELETE A SEAT");
         System.out.println("-------------\n");
@@ -336,5 +332,30 @@ public class Main extends Application {
         } else {
             System.out.println("No seat has been booked for this seat number");
         }
+    }
+
+    private void alphabeticalOrder(HashMap<Integer, String> users) {
+/*        System.out.println("\n-------------------------------------------------");
+        System.out.println("VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME");
+        System.out.println("-------------------------------------------------\n");
+
+        // Converting HashMap keys into ArrayList
+        List<String> userNameList = new ArrayList<String>(users.values());
+        System.out.println("==> Size of Key list: " + userNameList.size());
+
+        for (int i = userNameList.size() - 1; i > 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (userNameList.get(j + 1) == null) {
+                    continue;
+                }
+                if (userNameList.get(j) == null || userNameList.get(j + 1).compareTo(userNameList.get(j)) < 0) {
+                    String temp = userNameList.get(j + 1);
+                    userNameList.get(j + 1) = userNameList.get(j);
+                    userNameList.set(j) = temp;
+                }
+            }
+        }
+        System.out.println(Arrays.toString(userNameList));*/
+
     }
 }
