@@ -1,13 +1,13 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.beans.binding.ObjectExpression;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -28,19 +28,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage window) throws Exception {
+
         // Create a HashMap object called users to store userName and seatNumber
         HashMap<Integer, String> users = new HashMap<Integer, String>();
+
         int seatNumber = 0;
-        Object value = null;
 
         String userOption;
 
-        System.out.println("\n***************************");
-        System.out.println("DENUWARA MANIKE TRAIN SEATS BOOKING PROGRAM");
-        System.out.println("***************************\n");
+        System.out.println("\n***************************************************");
+        System.out.println("*** DENUWARA MANIKE TRAIN SEATS BOOKING PROGRAM ***");
+        System.out.println("***************************************************\n");
 
         do {
-            System.out.println("-------------------------------------------------------------");
             System.out.println("Choose a option, which mentioned below\n");
             System.out.println("Prompt \"A\" to add a customer to a seat");
             System.out.println("Prompt \"V\" to display all seats");
@@ -54,7 +54,6 @@ public class Main extends Application {
 
             System.out.print("\nPrompt your option : ");
             userOption = sc.next();
-            System.out.println("-------------------------------------------------------------");
 
             switch (userOption) {
                 case "A":
@@ -142,9 +141,11 @@ public class Main extends Application {
     }
 
     private void addCustomer(HashMap<Integer, String> users) {
-        System.out.println("\n------------------------");
+        System.out.println("-------------------------------------------------------------");
+
+        System.out.println("\n************************");
         System.out.println("ADD A CUSTOMER TO A SEAT");
-        System.out.println("------------------------\n");
+        System.out.println("************************\n");
 
         Stage window = new Stage();
         window.setTitle("Train Seat Booking Program");
@@ -156,32 +157,19 @@ public class Main extends Application {
 
         Scene scene1 = new Scene(flowPane, 445, 500);
 
-        //close button
-        Button closeBtn = new Button();
-        closeBtn.setText("Close");
-        closeBtn.setOnAction(e -> window.close());
-
         for (int i = 1; i <= SEATING_CAPACITY; i++) {
             Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(String.valueOf(i));
             flowPane.getChildren().add(seat);
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
 
-/*            seat.addEventHandler(MouseEvent.MOUSE_EXITED,
-                    new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent e) {
-                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                        }
-                    });
+            seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            });
 
-            seat.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                    new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent e) {
-                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                        }
-                    });*/
+            seat.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+            });
 
             if (users.containsKey(i)) {
                 seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
@@ -198,6 +186,7 @@ public class Main extends Application {
                             grid.setMinSize(300, 300);
                             grid.setVgap(5);
                             grid.setHgap(5);
+                            grid.setAlignment(Pos.CENTER);
 
                             Text username = new Text("Enter your name : ");
                             grid.add(username, 0, 0);
@@ -211,7 +200,6 @@ public class Main extends Application {
                             Button closeButton1 = new Button("Close");
                             grid.add(closeButton1, 0, 3);
                             closeButton1.setOnAction(e -> {
-                                window.close();
                                 window2.close();
                             });
 
@@ -237,14 +225,27 @@ public class Main extends Application {
                 });
             }
         }
+
+        //close button
+        Button closeBtn = new Button();
+        closeBtn.setText("Close");
+
+        closeBtn.setAlignment(Pos.BOTTOM_RIGHT);
+        flowPane.getChildren().add(closeBtn);
+        closeBtn.setOnAction(e -> window.close());
+
         window.setScene(scene1);
         window.showAndWait();
+
+        System.out.println("-------------------------------------------------------------");
     }
 
     private void displayEmptySeats(HashMap<Integer, String> users) {
-        System.out.println("\n-------------------");
+        System.out.println("-------------------------------------------------------------");
+
+        System.out.println("\n*******************");
         System.out.println("DISPLAY EMPTY SEATS");
-        System.out.println("-------------------");
+        System.out.println("*******************\n");
 
         Stage window = new Stage();
         window.setTitle("Train Seat Booking Program");
@@ -269,12 +270,16 @@ public class Main extends Application {
         }
         window.setScene(scene);
         window.showAndWait();
+
+        System.out.println("-------------------------------------------------------------");
     }
 
     private void displayAllSeats(HashMap<Integer, String> users) {
-        System.out.println("\n-----------------");
+        System.out.println("-------------------------------------------------------------");
+
+        System.out.println("\n*****************");
         System.out.println("DISPLAY ALL SEATS");
-        System.out.println("-----------------");
+        System.out.println("*****************\n");
 
         Stage window = new Stage();
         window.setTitle("Train Seat Booking Program");
@@ -299,12 +304,16 @@ public class Main extends Application {
         }
         window.setScene(scene);
         window.showAndWait();
+
+        System.out.println("-------------------------------------------------------------");
     }
 
     private void findSeat(HashMap<Integer, String> users, int seatNumber) {
-        System.out.println("\n--------------");
+        System.out.println("-------------------------------------------------------------");
+
+        System.out.println("\n**************");
         System.out.println("FIND USER SEAT");
-        System.out.println("--------------\n");
+        System.out.println("**************\n");
 
         System.out.print("Which seat do you need to find (Prompt Username) : ");
         String userName = sc.next();
@@ -316,12 +325,15 @@ public class Main extends Application {
                 System.out.println("No seat has been booked under " + userName);
             }
         }
+        System.out.println("-------------------------------------------------------------");
     }
 
     public void deleteCustomer(HashMap<Integer, String> users) {
-        System.out.println("\n-------------");
+        System.out.println("-------------------------------------------------------------");
+
+        System.out.println("\n*************");
         System.out.println("DELETE A SEAT");
-        System.out.println("-------------\n");
+        System.out.println("*************\n");
 
         System.out.print("Which seat do you want to delete (Seat #) : ");
         int removedSeat = sc.nextInt();
@@ -332,30 +344,41 @@ public class Main extends Application {
         } else {
             System.out.println("No seat has been booked for this seat number");
         }
+
+        System.out.println("-------------------------------------------------------------");
     }
 
     private void alphabeticalOrder(HashMap<Integer, String> users) {
-/*        System.out.println("\n-------------------------------------------------");
+        System.out.println("-------------------------------------------------------------");
+
+        System.out.println("\n*************************************************");
         System.out.println("VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME");
-        System.out.println("-------------------------------------------------\n");
+        System.out.println("*************************************************\n");
 
         // Converting HashMap keys into ArrayList
         List<String> userNameList = new ArrayList<String>(users.values());
-        System.out.println("==> Size of Key list: " + userNameList.size());
 
-        for (int i = userNameList.size() - 1; i > 0; i--) {
-            for (int j = 0; j < i; j++) {
-                if (userNameList.get(j + 1) == null) {
-                    continue;
-                }
-                if (userNameList.get(j) == null || userNameList.get(j + 1).compareTo(userNameList.get(j)) < 0) {
-                    String temp = userNameList.get(j + 1);
-                    userNameList.get(j + 1) = userNameList.get(j);
-                    userNameList.set(j) = temp;
+        String temp;
+        int i, j;
+        for (i = 0; i < userNameList.size(); i++) {
+            for (j = i + 1; j < userNameList.size(); j++) {
+                if (userNameList.get(i).compareTo(userNameList.get(j)) > 0) {
+                    temp = userNameList.get(i);
+                    userNameList.set(i, userNameList.get(j));
+                    userNameList.set(j, temp);
                 }
             }
+            System.out.println(userNameList.get(i) + "-" + getKeyFromValue(users, userNameList.get(i)));
         }
-        System.out.println(Arrays.toString(userNameList));*/
+        System.out.println("-------------------------------------------------------------");
+    }
 
+    private static Object getKeyFromValue(HashMap<Integer, String> users, Object value) {
+        for (Object o : users.keySet()) {
+            if (users.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
     }
 }
