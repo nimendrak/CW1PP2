@@ -138,35 +138,7 @@ public class Main extends Application {
 
     }
 
-    private void addCustomer(HashMap<Integer, String> users) {
-        System.out.println("-------------------------------------------------------------");
-
-        System.out.println("\n************************");
-        System.out.println("ADD A CUSTOMER TO A SEAT");
-        System.out.println("************************\n");
-
-        Stage window = new Stage();
-        window.setTitle("Train Seat Booking Program");
-
-        FlowPane flowPane = new FlowPane();
-        flowPane.setHgap(10);
-        flowPane.setVgap(10);
-        flowPane.setPadding(new Insets(30));
-
-        Scene scene1 = new Scene(flowPane, 525, 485);
-
-        Label header = new Label("Select a Seat");
-        header.setAlignment(Pos.CENTER);
-        header.setPadding(new Insets(0, 200, 25, 200));
-
-        flowPane.getChildren().add(header);
-
-        for (int i = 1; i <= SEATING_CAPACITY; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(String.valueOf(i));
-            flowPane.getChildren().add(seat);
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-
+    private void seatAction (Button seat, HashMap<Integer, String> users, int i) {
             seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
                 seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             });
@@ -228,7 +200,78 @@ public class Main extends Application {
                     }
                 });
             }
+    }
+
+    private void addCustomer(HashMap<Integer, String> users) {
+        System.out.println("-------------------------------------------------------------");
+
+        System.out.println("\n************************");
+        System.out.println("ADD A CUSTOMER TO A SEAT");
+        System.out.println("************************\n");
+
+        Stage window = new Stage();
+        window.setTitle("Train Seat Booking Program");
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(10);
+        flowPane.setVgap(10);
+        flowPane.setPadding(new Insets(30));
+
+        Scene scene = new Scene(flowPane, 445, 600);
+
+        Label header = new Label("Select a Seat");
+        header.setAlignment(Pos.CENTER);
+        header.setPadding(new Insets(0, 200, 25, 150));
+
+        flowPane.getChildren().add(header);
+
+        VBox leftSeatsRowOne = new VBox();
+        VBox leftSeatsRowTwo = new VBox();
+        VBox RightSeatsRowOne = new VBox();
+        VBox RightSeatsRowTwo = new VBox();
+
+        for (int i = 1; i <= 11; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            leftSeatsRowOne.getChildren().add(seat);
+            leftSeatsRowOne.setSpacing(5);
+
+            seatAction(seat, users, i);
         }
+
+        for (int i = 12; i <= 21; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            leftSeatsRowTwo.getChildren().add(seat);
+            leftSeatsRowTwo.setSpacing(5);
+
+            seatAction(seat, users, i);
+        }
+
+        for (int i = 22; i <= 31; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            RightSeatsRowOne.getChildren().add(seat);
+            RightSeatsRowOne.setSpacing(5);
+            RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
+
+            seatAction(seat, users, i);
+        }
+
+        for (int i = 32; i <= SEATING_CAPACITY; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            RightSeatsRowTwo.getChildren().add(seat);
+            RightSeatsRowTwo.setSpacing(5);
+
+            seatAction(seat, users, i);
+        }
+
+        flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
         Button emptySpace = new Button();
         emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
@@ -236,7 +279,7 @@ public class Main extends Application {
 
         Button emptySpace1 = new Button();
         emptySpace1.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace1.setMinSize(200, 10);
+        emptySpace1.setMinSize(150, 10);
 
         //close button
         Button closeBtn = new Button();
@@ -245,7 +288,7 @@ public class Main extends Application {
 
         flowPane.getChildren().addAll(emptySpace, emptySpace1, closeBtn);
 
-        window.setScene(scene1);
+        window.setScene(scene);
         window.showAndWait();
 
         System.out.println("\n-------------------------------------------------------------");
