@@ -15,6 +15,13 @@ import javafx.stage.Stage;
 
 import java.util.*;
 
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Set;
+
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+
 public class Main extends Application {
 
     static final int SEATING_CAPACITY = 42;
@@ -203,6 +210,10 @@ public class Main extends Application {
     }
 
     private void addCustomer(HashMap<Integer, String> users) {
+        MongoClient mongoClient = new MongoClient();
+        MongoClient mongoClient = new MongoClient("LocalHost");
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+
         System.out.println("-------------------------------------------------------------");
 
         System.out.println("\n************************");
