@@ -1,5 +1,10 @@
 package sample;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,9 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
-/*import com.mongodb.DB;
-import com.mongodb.MongoClient;*/
 
 public class Main extends Application {
 
@@ -113,6 +115,12 @@ public class Main extends Application {
                     System.out.println("---------------------------------\n");
             }
         } while (!userOption.equals("q"));
+
+        //create a mongodb
+        MongoClient mongoClient = MongoClients.create();
+        MongoCollection mongoCollection;
+        MongoDatabase mongoDatabase = mongoClient.getDatabase("TrainSeatsBookingsProgram");
+        mongoCollection = mongoDatabase.getCollection("Seats");
     }
 
     //type one alert box act as a confirmation box for the quit the current stage
@@ -123,7 +131,7 @@ public class Main extends Application {
         alertBoxWindow.initModality(Modality.APPLICATION_MODAL);
         alertBoxWindow.setTitle("Alert!");
         alertBoxWindow.setMinWidth(300);
-        alertBoxWindow.setMinHeight(200);
+        alertBoxWindow.setMinHeight(150);
 
         VBox layout = new VBox(10);
         GridPane gridPane = new GridPane();
@@ -164,7 +172,7 @@ public class Main extends Application {
         alertBoxWindow.initModality(Modality.APPLICATION_MODAL);
         alertBoxWindow.setTitle(title);
         alertBoxWindow.setMinWidth(300);
-        alertBoxWindow.setMinHeight(200);
+        alertBoxWindow.setMinHeight(150);
 
         Label label = new Label();
         label.setText(message);
@@ -216,9 +224,8 @@ public class Main extends Application {
                         Text userNameTxt = new Text("Enter your name : ");
                         TextField userNameTxtField = new TextField();
 
-                        Button confirmUser = new Button(" Confirm\n Seat #" + seat.getId());
+                        Button confirmUser = new Button("Confirm");
                         confirmUser.setDisable(true);
-                        confirmUser.setMinSize(80, 50);
 
                         vBox.getChildren().addAll(userNameTxt, userNameTxtField, confirmUser);
                         vBox.setPadding(new Insets(20));
@@ -242,12 +249,12 @@ public class Main extends Application {
                             confirmationBox.close();
                         });
 
-                        Scene confirmationBoxScene = new Scene(vBox, 300, 200);
+                        Scene confirmationBoxScene = new Scene(vBox, 300, 150);
                         confirmationBox.setScene(confirmationBoxScene);
                         confirmationBox.showAndWait();
 
                     } catch (Exception ignored) {
-                        //ignoring the runtime error which occurs by JavaFX
+                        //ignoring the runtime error which occurs by JavaFX which I dont know exactly
                     }
                 }
             });
@@ -255,9 +262,6 @@ public class Main extends Application {
     }
 
     private void addCustomer(HashMap<Integer, String> users) {
-/*        MongoClient mongoClient = new MongoClient();
-        MongoClient mongoClient = new MongoClient("LocalHost");
-        MongoClient mongoClient = new MongoClient("localhost", 27017);*/
 
         System.out.println("-------------------------------------------------------------");
 
@@ -450,7 +454,7 @@ public class Main extends Application {
 
         Button colorOneButton = new Button();
         colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        colorOneButton.setMinSize(35, 10);
+        colorOneButton.setMinSize(33, 10);
 
         Label colorOneLabel = new Label("Available Seats");
 
@@ -558,13 +562,13 @@ public class Main extends Application {
 
         Button colorOneButton = new Button();
         colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        colorOneButton.setMinSize(35, 10);
+        colorOneButton.setMinSize(33, 10);
 
         Label colorOneLabel = new Label("Available Seats");
 
         Button colorTwoButton = new Button();
         colorTwoButton.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-        colorTwoButton.setMinSize(35, 10);
+        colorTwoButton.setMinSize(33, 10);
 
         Label colorTwoLabel = new Label("Booked Seats");
 
@@ -583,34 +587,62 @@ public class Main extends Application {
         System.out.println("FIND USER SEAT");
         System.out.println("**************\n");
 
-        System.out.print("Which seat do you need to find (Prompt Username) : ");
-        String userName = sc.next();
-        for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
-            if (userName.equals(entry.getValue())) {
-                System.out.println(userName + " already booked seat #" + entry.getKey());
-            } else {
-                System.out.println("No seat has been booked under " + userName);
+        // Converting HashMap keys into ArrayList
+        List<Integer> userSeatList = new ArrayList<Integer>(users.keySet());
+
+        // Converting HashMap values into ArrayList
+        List<String> userNameList = new ArrayList<String>(users.values());
+
+        if (users.isEmpty()) {
+            System.out.println("No seats have been booked yet!");
+        } else {
+            System.out.print("Which seat do you need to find (Prompt Username) : ");
+            String userName = sc.next();
+            for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
+                if (userName.equals(entry.getValue())) {
+                    System.out.println(userName + " already booked seat #" + entry.getKey());
+                } else {
+                    System.out.println("No seat has been booked under " + userName);
+                }
             }
+            System.out.println("\n-------------------------------------------------------------");
         }
-        System.out.println("\n-------------------------------------------------------------");
     }
 
     public void deleteCustomer(HashMap<Integer, String> users, Scanner sc) {
         System.out.println("-------------------------------------------------------------");
+        int removedSeatNumber;
+        String removedSeatName;
 
         System.out.println("\n*************");
         System.out.println("DELETE A SEAT");
         System.out.println("*************\n");
 
-        System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
-        int removedSeat = sc.nextInt();
-
-        if (users.containsKey(removedSeat)) {
-            users.remove(removedSeat);
-            System.out.println("Seat #" + removedSeat + " is successfully deleted!");
-            alertBoxWindowTypeTwo("Alert", "Seat #" + removedSeat + " is successfully deleted!\n");
+        if (users.isEmpty()) {
+            System.out.println("No seats have been booked yet!");
         } else {
-            System.out.println("No seat has been booked under this seat number\n");
+            System.out.print("What is the name that you prompted to book you seat (Prompt Username) : ");
+            removedSeatName = sc.next();
+
+            System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
+            while (!sc.hasNextInt()) {
+                System.out.println("Prompt Integers!!");
+                System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
+                sc.next();
+            }
+            removedSeatNumber = sc.nextInt();
+
+            if (users.containsKey(removedSeatNumber) && (users.containsValue(removedSeatName))) {
+                users.remove(removedSeatNumber);
+                System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
+                alertBoxWindowTypeTwo("Alert", "Seat #" + removedSeatNumber + " is successfully deleted!\n");
+            } else {
+                if (!users.containsKey(removedSeatNumber)) {
+                    System.out.println("\n" + removedSeatName + " did't book any seats under this seat #" + removedSeatNumber);
+                } else if (!users.containsValue(removedSeatName)) {
+                    System.out.println("\nNo seat has been booked under this name " + removedSeatName);
+                }
+            }
         }
 
         System.out.println("\n-------------------------------------------------------------");
