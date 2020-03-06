@@ -8,24 +8,26 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.*;
-
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Scanner;
 
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
+/*import com.mongodb.DB;
+import com.mongodb.MongoClient;*/
 
 public class Main extends Application {
 
     static final int SEATING_CAPACITY = 42;
-    Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
         launch(args);
@@ -37,7 +39,7 @@ public class Main extends Application {
         // Create a HashMap object called users to store userName and seatNumber
         HashMap<Integer, String> users = new HashMap<Integer, String>();
 
-        int seatNumber = 0;
+        Scanner sc = new Scanner(System.in);
 
         String userOption;
 
@@ -78,12 +80,12 @@ public class Main extends Application {
 
                 case "D":
                 case "d":
-                    deleteCustomer(users);
+                    deleteCustomer(users, sc);
                     break;
 
                 case "F":
                 case "f":
-                    findSeat(users, seatNumber);
+                    findSeat(users, sc);
                     break;
 
                 case "S":
@@ -113,7 +115,49 @@ public class Main extends Application {
         } while (!userOption.equals("q"));
     }
 
-    private void alertBoxWindow(String title, String message) {
+    //type one alert box act as a confirmation box for the quit the current stage
+    private void alertBoxWindowTypeOne(Stage window) {
+        Stage alertBoxWindow = new Stage();
+
+        //Block events to other windows
+        alertBoxWindow.initModality(Modality.APPLICATION_MODAL);
+        alertBoxWindow.setTitle("Alert!");
+        alertBoxWindow.setMinWidth(300);
+        alertBoxWindow.setMinHeight(200);
+
+        VBox layout = new VBox(10);
+        GridPane gridPane = new GridPane();
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+        alertBoxWindow.setScene(scene);
+
+        Button okBtn = new Button("OK");
+        Button cancelBtn = new Button("Cancel");
+
+        Label label = new Label("Do you want to exist?");
+
+        okBtn.setOnAction(event -> {
+            alertBoxWindow.close();
+            window.close();
+        });
+
+        cancelBtn.setOnAction(event -> alertBoxWindow.hide());
+
+        layout.getChildren().add(label);
+        layout.getChildren().add(gridPane);
+
+        gridPane.add(okBtn, 0, 0);
+        gridPane.add(cancelBtn, 1, 0);
+
+        gridPane.setPadding(new Insets(0, 0, 0, 83));
+        gridPane.setHgap(10);
+
+        alertBoxWindow.showAndWait();
+    }
+
+    //type two alert box popup a new window and show messages according to the the parameters
+    private void alertBoxWindowTypeTwo(String title, String message) {
         Stage alertBoxWindow = new Stage();
 
         //Block events to other windows
@@ -145,74 +189,75 @@ public class Main extends Application {
 
     }
 
-    private void seatAction (Button seat, HashMap<Integer, String> users, int i) {
-            seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            });
+    private void seatAction(Button seat, HashMap<Integer, String> users, int i) {
+        seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+        });
 
-            seat.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            });
+        seat.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+        });
 
-            if (users.containsKey(i)) {
-                seat.setStyle(null);
-                seat.setDisable(true);
-            } else {
-                seat.setOnAction(event -> {
-                    if (!users.containsKey(seat.getId())) {
-                        try {
-                            Stage confirmationBox = new Stage();
+        if (users.containsKey(i)) {
+            seat.setStyle(null);
+            seat.setDisable(true);
+        } else {
+            seat.setOnAction(event -> {
+                if (!users.containsKey(seat.getId())) {
+                    try {
+                        Stage confirmationBox = new Stage();
+                        confirmationBox.initModality(Modality.APPLICATION_MODAL);
 
-                            confirmationBox.setTitle("Confirmation");
+                        confirmationBox.setTitle("Confirmation");
 
-                            VBox vBox = new VBox();
-                            vBox.setAlignment(Pos.CENTER);
+                        VBox vBox = new VBox();
+                        vBox.setAlignment(Pos.CENTER);
 
-                            Text userNameTxt = new Text("Enter your name : ");
-                            TextField userNameTxtField = new TextField();
+                        Text userNameTxt = new Text("Enter your name : ");
+                        TextField userNameTxtField = new TextField();
 
-                            Button confirmUser = new Button(" Confirm\n Seat #" + seat.getId());
-                            confirmUser.setDisable(true);
-                            confirmUser.setMinSize(80, 50);
+                        Button confirmUser = new Button(" Confirm\n Seat #" + seat.getId());
+                        confirmUser.setDisable(true);
+                        confirmUser.setMinSize(80, 50);
 
-                            vBox.getChildren().addAll(userNameTxt, userNameTxtField, confirmUser);
-                            vBox.setPadding(new Insets(20));
-                            vBox.setSpacing(10);
+                        vBox.getChildren().addAll(userNameTxt, userNameTxtField, confirmUser);
+                        vBox.setPadding(new Insets(20));
+                        vBox.setSpacing(10);
 
-                            //user must enter at least one character to confirm his/her booking
-                            userNameTxtField.setOnKeyTyped(event1 -> {
-                                confirmUser.setDisable(false);
-                            });
+                        //user must enter at least one character as the name to confirm his/her booking
+                        userNameTxtField.setOnKeyTyped(event1 -> {
+                            confirmUser.setDisable(false);
+                        });
 
-                            confirmUser.setOnAction(event2 -> {
-                                //print the current action in console
-                                System.out.println(userNameTxtField.getText() + " has booked Seat #" + seat.getId());
-                                //hashMap data
-                                users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
-                                //popup alertBox
-                                alertBoxWindow("Alert!", "You have successfully booked Seat #" + seat.getId());
-                                //change color of the booked seat
-                                seat.setStyle(null);
-                                seat.setDisable(true);
-                                confirmationBox.close();
-                            });
+                        confirmUser.setOnAction(event2 -> {
+                            //print the current action in console
+                            System.out.println(userNameTxtField.getText() + " has booked Seat #" + seat.getId());
+                            //hashMap data
+                            users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
+                            //popup alertBox
+                            alertBoxWindowTypeTwo("Alert!", "You have successfully booked Seat #" + seat.getId());
+                            //change color of the booked seat
+                            seat.setStyle(null);
+                            seat.setDisable(true);
+                            confirmationBox.close();
+                        });
 
-                            Scene confirmationBoxScene = new Scene(vBox, 300, 200);
-                            confirmationBox.setScene(confirmationBoxScene);
-                            confirmationBox.showAndWait();
+                        Scene confirmationBoxScene = new Scene(vBox, 300, 200);
+                        confirmationBox.setScene(confirmationBoxScene);
+                        confirmationBox.showAndWait();
 
-                        } catch (Exception ignored) {
-                            //ignoring the runtime error which occurs by JavaFX
-                        }
+                    } catch (Exception ignored) {
+                        //ignoring the runtime error which occurs by JavaFX
                     }
-                });
-            }
+                }
+            });
+        }
     }
 
     private void addCustomer(HashMap<Integer, String> users) {
-        MongoClient mongoClient = new MongoClient();
+/*        MongoClient mongoClient = new MongoClient();
         MongoClient mongoClient = new MongoClient("LocalHost");
-        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        MongoClient mongoClient = new MongoClient("localhost", 27017);*/
 
         System.out.println("-------------------------------------------------------------");
 
@@ -221,7 +266,14 @@ public class Main extends Application {
         System.out.println("************************\n");
 
         Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+
         window.setTitle("Train Seat Booking Program");
+
+        window.setOnCloseRequest(event -> {
+            event.consume();
+            alertBoxWindowTypeOne(window);
+        });
 
         FlowPane flowPane = new FlowPane();
         flowPane.setHgap(10);
@@ -231,8 +283,9 @@ public class Main extends Application {
         Scene scene = new Scene(flowPane, 445, 600);
 
         Label header = new Label("Select a Seat");
-        header.setAlignment(Pos.CENTER);
-        header.setPadding(new Insets(0, 200, 25, 150));
+        header.setFont(new Font("Arial Bold", 22));
+        header.setTextFill(Paint.valueOf("#414141"));
+        header.setPadding(new Insets(0, 200, 25, 125));
 
         flowPane.getChildren().add(header);
 
@@ -295,7 +348,9 @@ public class Main extends Application {
         //close button
         Button closeBtn = new Button();
         closeBtn.setText("Close");
-        closeBtn.setOnAction(e -> window.close());
+        closeBtn.setOnAction(e -> {
+            alertBoxWindowTypeOne(window);
+        });
 
         flowPane.getChildren().addAll(emptySpace, emptySpace1, closeBtn);
 
@@ -323,7 +378,9 @@ public class Main extends Application {
         Scene scene = new Scene(flowPane, 445, 600);
 
         Label header = new Label("Check Available Seats");
-        header.setPadding(new Insets(0, 150, 25, 130));
+        header.setFont(new Font("Arial Bold", 22));
+        header.setTextFill(Paint.valueOf("#414141"));
+        header.setPadding(new Insets(0, 150, 25, 80));
 
         flowPane.getChildren().addAll(header);
 
@@ -397,7 +454,14 @@ public class Main extends Application {
 
         Label colorOneLabel = new Label("Available Seats");
 
-        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel);
+        Button emptySpace2 = new Button();
+        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace.setMinSize(450, 10);
+
+        Button closeBtn = new Button("Close");
+        closeBtn.setOnAction(event -> window.close());
+
+        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, closeBtn);
         window.setScene(scene);
         window.showAndWait();
 
@@ -422,7 +486,9 @@ public class Main extends Application {
         Scene scene = new Scene(flowPane, 445, 600);
 
         Label header = new Label("All Seats");
-        header.setPadding(new Insets(0, 165, 25, 165));
+        header.setFont(new Font("Arial Bold", 22));
+        header.setTextFill(Paint.valueOf("#414141"));
+        header.setPadding(new Insets(0, 165, 25, 145));
 
         flowPane.getChildren().addAll(header);
 
@@ -510,7 +576,7 @@ public class Main extends Application {
         System.out.println("-------------------------------------------------------------");
     }
 
-    private void findSeat(HashMap<Integer, String> users, int seatNumber) {
+    private void findSeat(HashMap<Integer, String> users, Scanner sc) {
         System.out.println("-------------------------------------------------------------");
 
         System.out.println("\n**************");
@@ -522,7 +588,6 @@ public class Main extends Application {
         for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
             if (userName.equals(entry.getValue())) {
                 System.out.println(userName + " already booked seat #" + entry.getKey());
-                alertBoxWindow("Alert", userName + " has booked seat #" + entry.getKey());
             } else {
                 System.out.println("No seat has been booked under " + userName);
             }
@@ -530,7 +595,7 @@ public class Main extends Application {
         System.out.println("\n-------------------------------------------------------------");
     }
 
-    public void deleteCustomer(HashMap<Integer, String> users) {
+    public void deleteCustomer(HashMap<Integer, String> users, Scanner sc) {
         System.out.println("-------------------------------------------------------------");
 
         System.out.println("\n*************");
@@ -539,15 +604,17 @@ public class Main extends Application {
 
         System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
         int removedSeat = sc.nextInt();
+
         if (users.containsKey(removedSeat)) {
             users.remove(removedSeat);
             System.out.println("Seat #" + removedSeat + " is successfully deleted!");
-            alertBoxWindow("Alert", "Seat #" + removedSeat + " is successfully deleted!\n");
+            alertBoxWindowTypeTwo("Alert", "Seat #" + removedSeat + " is successfully deleted!\n");
         } else {
             System.out.println("No seat has been booked under this seat number\n");
         }
 
         System.out.println("\n-------------------------------------------------------------");
+
     }
 
     private void alphabeticalOrder(HashMap<Integer, String> users) {
