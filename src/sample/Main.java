@@ -41,7 +41,12 @@ public class Main extends Application {
         // Converting HashMap values into ArrayList
         List<String> userNameList = new ArrayList<>(users.values());
 
+        // Converting HashMap values into ArrayList
+        List<Integer> userNumberList = new ArrayList<>(users.keySet());
+
         Scanner sc = new Scanner(System.in);
+
+        Button seat = new Button();
 
         String actionType = new String();
         String name = new String();
@@ -70,27 +75,27 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
-                    addCustomer(users, userNameList);
+                    addCustomer(users, userNameList, userNumberList);
                     break;
 
                 case "V":
                 case "v":
-                    displayAllSeats(users, userNameList);
+                    displayAllSeats(users, userNameList, userNumberList);
                     break;
 
                 case "E":
                 case "e":
-                    displayEmptySeats(users, userNameList);
+                    displayEmptySeats(users, userNameList, userNumberList);
                     break;
 
                 case "D":
                 case "d":
-                    deleteCustomer(users, sc, userNameList);
+                    deleteCustomer(users, sc);
                     break;
 
                 case "F":
                 case "f":
-                    findSeat(users, sc);
+                    findSeat(users, sc, userNameList);
                     break;
 
                 case "S":
@@ -124,7 +129,6 @@ public class Main extends Application {
         MongoCollection mongoCollection;
         MongoDatabase mongoDatabase = mongoClient.getDatabase("TrainSeatsBookingsProgram");
         mongoCollection = mongoDatabase.getCollection("Seats");
-
     }
 
     //type one alert box act as a confirmation box for the quit the current stage
@@ -201,17 +205,6 @@ public class Main extends Application {
 
     }
 
-    private void displaySpecificSeatsOnly(HashMap<Integer, String> users, Button seat, String name) {
-        for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
-            if (name.equals(entry.getValue())) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                System.out.println(entry.getKey());
-            } else {
-                seat.setDisable(true);
-            }
-        }
-    }
-
     private void allSeatsDisplay(HashMap<Integer, String> users, int i, Button seat) {
         if (users.containsKey(i)) {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
@@ -229,7 +222,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatAction(Button seat, HashMap<Integer, String> users, int i, List<String> userNameList) {
+    private void seatAction(Button seat, HashMap<Integer, String> users, int i, List<String> userNameList, List<Integer> userNumberList) {
         seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         });
@@ -269,6 +262,7 @@ public class Main extends Application {
                         });
 
                         confirmUser.setOnAction(event2 -> {
+                            userNumberList.add(Integer.valueOf(seat.getId()));
                             //print the current action in console
                             System.out.println(userNameTxtField.getText() + " has booked Seat #" + seat.getId());
 
@@ -276,10 +270,9 @@ public class Main extends Application {
                             if (userNameList.contains(userNameTxtField.getText())) {
                                 //put data to the hashMap
                                 users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
-                                //add names to the userNameList
-                                userNameList.add(userNameTxtField.getText());
                             } else {
                                 users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
+                                //add names to the userNameList
                                 userNameList.add(userNameTxtField.getText());
                             }
 
@@ -288,7 +281,6 @@ public class Main extends Application {
                             //change color of the booked seat and disable it
                             seat.setStyle(null);
                             seat.setDisable(true);
-                            seat.setText("Booked");
                             confirmationBox.close();
                         });
 
@@ -304,7 +296,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatDisplay(HashMap<Integer, String> users, List<String> userNameList, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType, String name) {
+    private void seatDisplay(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
         for (int i = 1; i <= 11; i++) {
             Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
@@ -313,16 +305,13 @@ public class Main extends Application {
             leftSeatsRowOne.setSpacing(5);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, users, i, userNameList, userNumberList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
             }
             if (actionType.equals("allSeats")) {
                 allSeatsDisplay(users, i, seat);
-            }
-            if (actionType.equals("deleteSeats")) {
-                displaySpecificSeatsOnly(users, seat, name);
             }
         }
 
@@ -334,18 +323,15 @@ public class Main extends Application {
             leftSeatsRowTwo.setSpacing(5);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, users, i, userNameList, userNumberList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
             }
             if (actionType.equals("allSeats")) {
                 allSeatsDisplay(users, i, seat);
-            } if (actionType.equals("deleteSeats")) {
-                displaySpecificSeatsOnly(users, seat, name);
             }
         }
-
 
         for (int i = 22; i <= 31; i++) {
             Button seat = new Button("Seat " + String.format("%02d", i));
@@ -356,15 +342,13 @@ public class Main extends Application {
             RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, users, i, userNameList, userNumberList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
             }
             if (actionType.equals("allSeats")) {
                 allSeatsDisplay(users, i, seat);
-            } if (actionType.equals("deleteSeats")) {
-                displaySpecificSeatsOnly(users, seat, name);
             }
         }
 
@@ -376,21 +360,18 @@ public class Main extends Application {
             RightSeatsRowTwo.setSpacing(5);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, users, i, userNameList, userNumberList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
             }
             if (actionType.equals("allSeats")) {
                 allSeatsDisplay(users, i, seat);
-            } if (actionType.equals("deleteSeats")) {
-                displaySpecificSeatsOnly(users, seat, name);
             }
         }
-
     }
 
-    private void addCustomer(HashMap<Integer, String> users, List<String> userNameList) {
+    private void addCustomer(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList) {
 
         System.out.println("--------------------------------------------------");
 
@@ -413,7 +394,7 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 450, 600);
+        Scene scene = new Scene(flowPane, 442, 600);
 
         Label header = new Label("Select a Seat");
         header.setFont(new Font("Arial Bold", 22));
@@ -427,7 +408,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction", null);
+        seatDisplay(users, userNameList, userNumberList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -454,7 +435,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void displayEmptySeats(HashMap<Integer, String> users, List<String> userNameList) {
+    private void displayEmptySeats(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*******************");
@@ -469,7 +450,7 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 450, 600);
+        Scene scene = new Scene(flowPane, 442, 600);
 
         Label header = new Label("Check Available Seats");
         header.setFont(new Font("Arial Bold", 22));
@@ -483,7 +464,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats", null);
+        seatDisplay(users, userNameList, userNumberList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -511,7 +492,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void displayAllSeats(HashMap<Integer, String> users, List<String> userNameList) {
+    private void displayAllSeats(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*****************");
@@ -526,7 +507,7 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 450, 600);
+        Scene scene = new Scene(flowPane, 442, 600);
 
         Label header = new Label("All Seats");
         header.setFont(new Font("Arial Bold", 22));
@@ -540,7 +521,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats", null);
+        seatDisplay(users, userNameList, userNumberList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -568,7 +549,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void findSeat(HashMap<Integer, String> users, Scanner sc) {
+    private void findSeat(HashMap<Integer, String> users, Scanner sc, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**************");
@@ -578,21 +559,29 @@ public class Main extends Application {
         if (users.isEmpty()) {
             System.out.println("No seats have been booked yet!");
         } else {
-            System.out.print("Which seat do you need to find (Prompt Username) : ");
-            String userName = sc.next();
-            for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
-                if (userName.equals(entry.getValue())) {
-                    System.out.println(userName + " already booked seat #" + entry.getKey());
-                } else {
-                    System.out.println("No seat has been booked under " + userName);
+            System.out.print("Prompt your name to find the seat : ");
+            String findUserName = sc.next();
+            if (users.containsValue(findUserName)) {
+                for (String s : userNameList) {
+                    if (s.equalsIgnoreCase(findUserName)) {
+                        for (Object o : users.keySet()) {
+                            if (users.get(o).equalsIgnoreCase(findUserName)) {
+                                System.out.println(s + "-" + o);
+                            }
+                        }
+                    }
                 }
+            } else {
+                System.out.println("\nNo seat has been booked under " + findUserName);
             }
         }
         System.out.println("\n--------------------------------------------------");
     }
 
-    public void deleteCustomer(HashMap<Integer, String> users, Scanner sc, List<String> userNameList) {
+    public void deleteCustomer(HashMap<Integer, String> users, Scanner sc) {
         System.out.println("--------------------------------------------------");
+        int removedSeatNumber;
+        String removedSeatName;
 
         System.out.println("\n*************");
         System.out.println("DELETE A SEAT");
@@ -601,60 +590,36 @@ public class Main extends Application {
         if (users.isEmpty()) {
             System.out.println("No seats have been booked yet!");
         } else {
-            System.out.print("What is the name that you prompted to book you seat (Prompt Username) : ");
-            String name = sc.next();
+            System.out.print("What is the name that you prompted to book your seat (Prompt Username) : ");
+            removedSeatName = sc.next();
 
-            Stage window = new Stage();
-            window.setTitle("Train Seat Booking Program");
+            if (!users.containsValue(removedSeatName)) {
+                System.out.println("\nNo seat has been booked under " + removedSeatName);
+            } else {
+                System.out.println("\nYou have booked these seats;");
+                if (users.containsValue(removedSeatName)) {
+                    for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
+                        if (removedSeatName.equals(entry.getValue())) {
+                            System.out.print(entry.getKey() + " ");
+                        }
+                    }
 
-            FlowPane flowPane = new FlowPane();
-            flowPane.setHgap(10);
-            flowPane.setVgap(10);
-            flowPane.setPadding(new Insets(30));
+                    System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
+                    while (!sc.hasNextInt()) {
+                        System.out.println("Prompt Integers!!");
+                        System.out.print("\nWhich seat do you want to delete (Prompt Seat Number) : ");
+                        sc.next();
+                    }
+                    removedSeatNumber = sc.nextInt();
 
-            Scene scene = new Scene(flowPane, 450, 600);
-
-            Label header = new Label(name + " choose a seat to Remove");
-            header.setFont(new Font("Arial Bold", 22));
-            header.setTextFill(Paint.valueOf("#414141"));
-            header.setPadding(new Insets(0, 200, 25, 0));
-
-            flowPane.getChildren().addAll(header);
-
-            VBox leftSeatsRowOne = new VBox();
-            VBox leftSeatsRowTwo = new VBox();
-            VBox RightSeatsRowOne = new VBox();
-            VBox RightSeatsRowTwo = new VBox();
-
-            seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "deleteSeats", name);
-
-            flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
-
-            Button emptySpace = new Button();
-            emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-            emptySpace.setMinSize(450, 10);
-
-            Button colorOneButton = new Button();
-            colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            colorOneButton.setMinSize(33, 10);
-
-            Label colorOneLabel = new Label("Available Seats");
-
-            Button emptySpace2 = new Button();
-            emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-            emptySpace.setMinSize(450, 10);
-
-            Button closeBtn = new Button("Close");
-            closeBtn.setOnAction(event -> window.close());
-
-            flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, closeBtn);
-            window.setScene(scene);
-            window.showAndWait();
-
+                    if (users.containsKey(removedSeatNumber)) {
+                        users.remove(removedSeatNumber);
+                        System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
+                    }
+                }
+            }
+            System.out.println("\n--------------------------------------------------");
         }
-
-        System.out.println("\n--------------------------------------------------");
-
     }
 
     private void alphabeticalOrder(HashMap<Integer, String> users, List<String> userNameList) {
@@ -680,13 +645,10 @@ public class Main extends Application {
                     }
                 }
 
-                //index number of the array list
-                int i = 0;
-                for (Object o : userNameList) {
-                    for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
-                        if (o.equals(entry.getValue())) {
-                            System.out.println(userNameList.get(i) + " has booked seat #" + entry.getKey());
-                            i++;
+                for (String s : userNameList) {
+                    for (Object o : users.keySet() ) {
+                        if (users.get(o).equalsIgnoreCase(s)) {
+                            System.out.println(s + " has booked seat #" + o);
                         }
                     }
                 }
