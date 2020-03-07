@@ -22,10 +22,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main extends Application {
 
@@ -41,7 +38,13 @@ public class Main extends Application {
         // Create a HashMap object called users to store userName and seatNumber
         HashMap<Integer, String> users = new HashMap<Integer, String>();
 
+        // Converting HashMap values into ArrayList
+        List<String> userNameList = new ArrayList<>(users.values());
+
         Scanner sc = new Scanner(System.in);
+
+        String actionType = new String();
+        String name = new String();
 
         String userOption;
 
@@ -67,22 +70,22 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
-                    addCustomer(users);
+                    addCustomer(users, userNameList);
                     break;
 
                 case "V":
                 case "v":
-                    displayAllSeats(users);
+                    displayAllSeats(users, userNameList);
                     break;
 
                 case "E":
                 case "e":
-                    displayEmptySeats(users);
+                    displayEmptySeats(users, userNameList);
                     break;
 
                 case "D":
                 case "d":
-                    deleteCustomer(users, sc);
+                    deleteCustomer(users, sc, userNameList);
                     break;
 
                 case "F":
@@ -102,7 +105,7 @@ public class Main extends Application {
 
                 case "O":
                 case "o":
-                    alphabeticalOrder(users);
+                    alphabeticalOrder(users, userNameList);
                     break;
 
                 case "q":
@@ -121,6 +124,7 @@ public class Main extends Application {
         MongoCollection mongoCollection;
         MongoDatabase mongoDatabase = mongoClient.getDatabase("TrainSeatsBookingsProgram");
         mongoCollection = mongoDatabase.getCollection("Seats");
+
     }
 
     //type one alert box act as a confirmation box for the quit the current stage
@@ -143,7 +147,7 @@ public class Main extends Application {
         Button okBtn = new Button("OK");
         Button cancelBtn = new Button("Cancel");
 
-        Label label = new Label("Do you want to exist?");
+        Label label = new Label("Do you want to exit?");
 
         okBtn.setOnAction(event -> {
             alertBoxWindow.close();
@@ -165,12 +169,12 @@ public class Main extends Application {
     }
 
     //type two alert box popup a new window and show messages according to the the parameters
-    private void alertBoxWindowTypeTwo(String title, String message) {
+    private void alertBoxWindowTypeTwo(String message) {
         Stage alertBoxWindow = new Stage();
 
         //Block events to other windows
         alertBoxWindow.initModality(Modality.APPLICATION_MODAL);
-        alertBoxWindow.setTitle(title);
+        alertBoxWindow.setTitle("Alert!");
         alertBoxWindow.setMinWidth(300);
         alertBoxWindow.setMinHeight(150);
 
@@ -197,7 +201,35 @@ public class Main extends Application {
 
     }
 
-    private void seatAction(Button seat, HashMap<Integer, String> users, int i) {
+    private void displaySpecificSeatsOnly(HashMap<Integer, String> users, Button seat, String name) {
+        for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
+            if (name.equals(entry.getValue())) {
+                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                System.out.println(entry.getKey());
+            } else {
+                seat.setDisable(true);
+            }
+        }
+    }
+
+    private void allSeatsDisplay(HashMap<Integer, String> users, int i, Button seat) {
+        if (users.containsKey(i)) {
+            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+        } else {
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+        }
+    }
+
+    private void emptySeatsDisplay(HashMap<Integer, String> users, int i, Button seat) {
+        if (users.containsKey(i)) {
+            seat.setStyle(null);
+            seat.setDisable(true);
+        } else {
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+        }
+    }
+
+    private void seatAction(Button seat, HashMap<Integer, String> users, int i, List<String> userNameList) {
         seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         });
@@ -239,13 +271,24 @@ public class Main extends Application {
                         confirmUser.setOnAction(event2 -> {
                             //print the current action in console
                             System.out.println(userNameTxtField.getText() + " has booked Seat #" + seat.getId());
-                            //hashMap data
-                            users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
+
+                            //if user name already added to the userNameList it won't added again
+                            if (userNameList.contains(userNameTxtField.getText())) {
+                                //put data to the hashMap
+                                users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
+                                //add names to the userNameList
+                                userNameList.add(userNameTxtField.getText());
+                            } else {
+                                users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
+                                userNameList.add(userNameTxtField.getText());
+                            }
+
                             //popup alertBox
-                            alertBoxWindowTypeTwo("Alert!", "You have successfully booked Seat #" + seat.getId());
-                            //change color of the booked seat
+                            alertBoxWindowTypeTwo("You have successfully booked Seat #" + seat.getId());
+                            //change color of the booked seat and disable it
                             seat.setStyle(null);
                             seat.setDisable(true);
+                            seat.setText("Booked");
                             confirmationBox.close();
                         });
 
@@ -261,9 +304,95 @@ public class Main extends Application {
         }
     }
 
-    private void addCustomer(HashMap<Integer, String> users) {
+    private void seatDisplay(HashMap<Integer, String> users, List<String> userNameList, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType, String name) {
+        for (int i = 1; i <= 11; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            leftSeatsRowOne.getChildren().add(seat);
+            leftSeatsRowOne.setSpacing(5);
 
-        System.out.println("-------------------------------------------------------------");
+            if (actionType.equals("seatAction")) {
+                seatAction(seat, users, i, userNameList);
+            }
+            if (actionType.equals("emptySeats")) {
+                emptySeatsDisplay(users, i, seat);
+            }
+            if (actionType.equals("allSeats")) {
+                allSeatsDisplay(users, i, seat);
+            }
+            if (actionType.equals("deleteSeats")) {
+                displaySpecificSeatsOnly(users, seat, name);
+            }
+        }
+
+        for (int i = 12; i <= 21; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            leftSeatsRowTwo.getChildren().add(seat);
+            leftSeatsRowTwo.setSpacing(5);
+
+            if (actionType.equals("seatAction")) {
+                seatAction(seat, users, i, userNameList);
+            }
+            if (actionType.equals("emptySeats")) {
+                emptySeatsDisplay(users, i, seat);
+            }
+            if (actionType.equals("allSeats")) {
+                allSeatsDisplay(users, i, seat);
+            } if (actionType.equals("deleteSeats")) {
+                displaySpecificSeatsOnly(users, seat, name);
+            }
+        }
+
+
+        for (int i = 22; i <= 31; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            RightSeatsRowOne.getChildren().add(seat);
+            RightSeatsRowOne.setSpacing(5);
+            RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
+
+            if (actionType.equals("seatAction")) {
+                seatAction(seat, users, i, userNameList);
+            }
+            if (actionType.equals("emptySeats")) {
+                emptySeatsDisplay(users, i, seat);
+            }
+            if (actionType.equals("allSeats")) {
+                allSeatsDisplay(users, i, seat);
+            } if (actionType.equals("deleteSeats")) {
+                displaySpecificSeatsOnly(users, seat, name);
+            }
+        }
+
+        for (int i = 32; i <= SEATING_CAPACITY; i++) {
+            Button seat = new Button("Seat " + String.format("%02d", i));
+            seat.setId(Integer.toString(i));
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            RightSeatsRowTwo.getChildren().add(seat);
+            RightSeatsRowTwo.setSpacing(5);
+
+            if (actionType.equals("seatAction")) {
+                seatAction(seat, users, i, userNameList);
+            }
+            if (actionType.equals("emptySeats")) {
+                emptySeatsDisplay(users, i, seat);
+            }
+            if (actionType.equals("allSeats")) {
+                allSeatsDisplay(users, i, seat);
+            } if (actionType.equals("deleteSeats")) {
+                displaySpecificSeatsOnly(users, seat, name);
+            }
+        }
+
+    }
+
+    private void addCustomer(HashMap<Integer, String> users, List<String> userNameList) {
+
+        System.out.println("--------------------------------------------------");
 
         System.out.println("\n************************");
         System.out.println("ADD A CUSTOMER TO A SEAT");
@@ -284,7 +413,7 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 445, 600);
+        Scene scene = new Scene(flowPane, 450, 600);
 
         Label header = new Label("Select a Seat");
         header.setFont(new Font("Arial Bold", 22));
@@ -298,46 +427,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        for (int i = 1; i <= 11; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            leftSeatsRowOne.getChildren().add(seat);
-            leftSeatsRowOne.setSpacing(5);
-
-            seatAction(seat, users, i);
-        }
-
-        for (int i = 12; i <= 21; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            leftSeatsRowTwo.getChildren().add(seat);
-            leftSeatsRowTwo.setSpacing(5);
-
-            seatAction(seat, users, i);
-        }
-
-        for (int i = 22; i <= 31; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            RightSeatsRowOne.getChildren().add(seat);
-            RightSeatsRowOne.setSpacing(5);
-            RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
-
-            seatAction(seat, users, i);
-        }
-
-        for (int i = 32; i <= SEATING_CAPACITY; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            RightSeatsRowTwo.getChildren().add(seat);
-            RightSeatsRowTwo.setSpacing(5);
-
-            seatAction(seat, users, i);
-        }
+        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction", null);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -361,11 +451,11 @@ public class Main extends Application {
         window.setScene(scene);
         window.showAndWait();
 
-        System.out.println("\n-------------------------------------------------------------");
+        System.out.println("\n--------------------------------------------------");
     }
 
-    private void displayEmptySeats(HashMap<Integer, String> users) {
-        System.out.println("-------------------------------------------------------------");
+    private void displayEmptySeats(HashMap<Integer, String> users, List<String> userNameList) {
+        System.out.println("--------------------------------------------------");
 
         System.out.println("\n*******************");
         System.out.println("DISPLAY EMPTY SEATS");
@@ -379,7 +469,7 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 445, 600);
+        Scene scene = new Scene(flowPane, 450, 600);
 
         Label header = new Label("Check Available Seats");
         header.setFont(new Font("Arial Bold", 22));
@@ -393,58 +483,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        for (int i = 1; i <= 11; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            leftSeatsRowOne.getChildren().add(seat);
-            leftSeatsRowOne.setSpacing(5);
-
-            if (users.containsKey(i)) {
-                seat.setDisable(true);
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
-
-        for (int i = 12; i <= 21; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            leftSeatsRowTwo.getChildren().add(seat);
-            leftSeatsRowTwo.setSpacing(5);
-
-            if (users.containsKey(i)) {
-                seat.setDisable(true);
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
-
-        for (int i = 22; i <= 31; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            RightSeatsRowOne.getChildren().add(seat);
-            RightSeatsRowOne.setSpacing(5);
-            RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
-
-            if (users.containsKey(i)) {
-                seat.setDisable(true);
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
-
-        for (int i = 32; i <= SEATING_CAPACITY; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            RightSeatsRowTwo.getChildren().add(seat);
-            RightSeatsRowTwo.setSpacing(5);
-
-            if (users.containsKey(i)) {
-                seat.setDisable(true);
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
+        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats", null);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -469,11 +508,11 @@ public class Main extends Application {
         window.setScene(scene);
         window.showAndWait();
 
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("\n--------------------------------------------------");
     }
 
-    private void displayAllSeats(HashMap<Integer, String> users) {
-        System.out.println("-------------------------------------------------------------");
+    private void displayAllSeats(HashMap<Integer, String> users, List<String> userNameList) {
+        System.out.println("--------------------------------------------------");
 
         System.out.println("\n*****************");
         System.out.println("DISPLAY ALL SEATS");
@@ -487,7 +526,7 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 445, 600);
+        Scene scene = new Scene(flowPane, 450, 600);
 
         Label header = new Label("All Seats");
         header.setFont(new Font("Arial Bold", 22));
@@ -501,58 +540,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        for (int i = 1; i <= 11; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            leftSeatsRowOne.getChildren().add(seat);
-            leftSeatsRowOne.setSpacing(5);
-
-            if (users.containsKey(i)) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
-
-        for (int i = 12; i <= 21; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            leftSeatsRowTwo.getChildren().add(seat);
-            leftSeatsRowTwo.setSpacing(5);
-
-            if (users.containsKey(i)) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
-
-        for (int i = 22; i <= 31; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            RightSeatsRowOne.getChildren().add(seat);
-            RightSeatsRowOne.setSpacing(5);
-            RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
-
-            if (users.containsKey(i)) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
-
-        for (int i = 32; i <= SEATING_CAPACITY; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            RightSeatsRowTwo.getChildren().add(seat);
-            RightSeatsRowTwo.setSpacing(5);
-
-            if (users.containsKey(i)) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            } else {
-                seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            }
-        }
+        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats", null);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -577,21 +565,15 @@ public class Main extends Application {
         window.setScene(scene);
         window.showAndWait();
 
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("\n--------------------------------------------------");
     }
 
     private void findSeat(HashMap<Integer, String> users, Scanner sc) {
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("--------------------------------------------------");
 
         System.out.println("\n**************");
         System.out.println("FIND USER SEAT");
         System.out.println("**************\n");
-
-        // Converting HashMap keys into ArrayList
-        List<Integer> userSeatList = new ArrayList<Integer>(users.keySet());
-
-        // Converting HashMap values into ArrayList
-        List<String> userNameList = new ArrayList<String>(users.values());
 
         if (users.isEmpty()) {
             System.out.println("No seats have been booked yet!");
@@ -605,14 +587,12 @@ public class Main extends Application {
                     System.out.println("No seat has been booked under " + userName);
                 }
             }
-            System.out.println("\n-------------------------------------------------------------");
         }
+        System.out.println("\n--------------------------------------------------");
     }
 
-    public void deleteCustomer(HashMap<Integer, String> users, Scanner sc) {
-        System.out.println("-------------------------------------------------------------");
-        int removedSeatNumber;
-        String removedSeatName;
+    public void deleteCustomer(HashMap<Integer, String> users, Scanner sc, List<String> userNameList) {
+        System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************");
         System.out.println("DELETE A SEAT");
@@ -622,64 +602,99 @@ public class Main extends Application {
             System.out.println("No seats have been booked yet!");
         } else {
             System.out.print("What is the name that you prompted to book you seat (Prompt Username) : ");
-            removedSeatName = sc.next();
+            String name = sc.next();
 
-            System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
-            while (!sc.hasNextInt()) {
-                System.out.println("Prompt Integers!!");
-                System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
-                sc.next();
-            }
-            removedSeatNumber = sc.nextInt();
+            Stage window = new Stage();
+            window.setTitle("Train Seat Booking Program");
 
-            if (users.containsKey(removedSeatNumber) && (users.containsValue(removedSeatName))) {
-                users.remove(removedSeatNumber);
-                System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
-                alertBoxWindowTypeTwo("Alert", "Seat #" + removedSeatNumber + " is successfully deleted!\n");
-            } else {
-                if (!users.containsKey(removedSeatNumber)) {
-                    System.out.println("\n" + removedSeatName + " did't book any seats under this seat #" + removedSeatNumber);
-                } else if (!users.containsValue(removedSeatName)) {
-                    System.out.println("\nNo seat has been booked under this name " + removedSeatName);
-                }
-            }
+            FlowPane flowPane = new FlowPane();
+            flowPane.setHgap(10);
+            flowPane.setVgap(10);
+            flowPane.setPadding(new Insets(30));
+
+            Scene scene = new Scene(flowPane, 450, 600);
+
+            Label header = new Label(name + " choose a seat to Remove");
+            header.setFont(new Font("Arial Bold", 22));
+            header.setTextFill(Paint.valueOf("#414141"));
+            header.setPadding(new Insets(0, 200, 25, 0));
+
+            flowPane.getChildren().addAll(header);
+
+            VBox leftSeatsRowOne = new VBox();
+            VBox leftSeatsRowTwo = new VBox();
+            VBox RightSeatsRowOne = new VBox();
+            VBox RightSeatsRowTwo = new VBox();
+
+            seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "deleteSeats", name);
+
+            flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
+
+            Button emptySpace = new Button();
+            emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+            emptySpace.setMinSize(450, 10);
+
+            Button colorOneButton = new Button();
+            colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+            colorOneButton.setMinSize(33, 10);
+
+            Label colorOneLabel = new Label("Available Seats");
+
+            Button emptySpace2 = new Button();
+            emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+            emptySpace.setMinSize(450, 10);
+
+            Button closeBtn = new Button("Close");
+            closeBtn.setOnAction(event -> window.close());
+
+            flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, closeBtn);
+            window.setScene(scene);
+            window.showAndWait();
+
         }
 
-        System.out.println("\n-------------------------------------------------------------");
+        System.out.println("\n--------------------------------------------------");
 
     }
 
-    private void alphabeticalOrder(HashMap<Integer, String> users) {
-        System.out.println("-------------------------------------------------------------");
+    private void alphabeticalOrder(HashMap<Integer, String> users, List<String> userNameList) {
+        System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************************************************");
         System.out.println("VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME");
         System.out.println("*************************************************\n");
 
-        // Converting HashMap keys into ArrayList
-        List<String> userNameList = new ArrayList<String>(users.values());
-
         String temp;
-        int i, j;
-        for (i = 0; i < userNameList.size(); i++) {
-            for (j = i + 1; j < userNameList.size(); j++) {
-                if (userNameList.get(i).compareTo(userNameList.get(j)) > 0) {
-                    temp = userNameList.get(i);
-                    userNameList.set(i, userNameList.get(j));
-                    userNameList.set(j, temp);
+
+        try {
+            if (users.isEmpty()) {
+                System.out.println("No seats have been booked yet!");
+            } else {
+                for (int i = 0; i < userNameList.size(); i++) {
+                    for (int j = i + 1; j < userNameList.size(); j++) {
+                        if (userNameList.get(i).compareTo(userNameList.get(j)) > 0) {
+                            temp = userNameList.get(i);
+                            userNameList.set(i, userNameList.get(j));
+                            userNameList.set(j, temp);
+                        }
+                    }
+                }
+
+                //index number of the array list
+                int i = 0;
+                for (Object o : userNameList) {
+                    for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
+                        if (o.equals(entry.getValue())) {
+                            System.out.println(userNameList.get(i) + " has booked seat #" + entry.getKey());
+                            i++;
+                        }
+                    }
                 }
             }
-            System.out.println(userNameList.get(i) + " has booked seat #" + getKeyFromValue(users, userNameList.get(i)));
+        } catch (Exception ignored) {
+            //ignored
         }
-        System.out.println("\n-------------------------------------------------------------");
-    }
 
-    private static Object getKeyFromValue(HashMap<Integer, String> users, Object value) {
-        for (Object o : users.keySet()) {
-            if (users.get(o).equals(value)) {
-                return o;
-            }
-        }
-        return null;
+        System.out.println("\n--------------------------------------------------");
     }
 }
