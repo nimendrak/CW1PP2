@@ -33,10 +33,10 @@ public class Main extends Application {
     public void start(Stage window) throws Exception {
 
         // Create a HashMap object called users to store userName and seatNumber
-        HashMap<Integer, String> users = new HashMap<Integer, String>();
+        HashMap<Integer, String> passengers = new HashMap<Integer, String>();
 
         // Converting HashMap values into ArrayList
-        List<String> userNameList = new ArrayList<>(users.values());
+        List<String> userNameList = new ArrayList<>(passengers.values());
 
         Scanner sc = new Scanner(System.in);
 
@@ -50,7 +50,7 @@ public class Main extends Application {
             System.out.println("Choose a option, which mentioned below\n");
             System.out.println("Prompt \"A\" to add a customer to a seat");
             System.out.println("Prompt \"V\" to display all seats");
-            System.out.println("Prompt \"E\" to display empty seats");
+            System.out.println("Prompt \"E\" to display available seats");
             System.out.println("Prompt \"D\" to delete customer from a seat");
             System.out.println("Prompt \"F\" to find the seat for a given customer");
             System.out.println("Prompt \"S\" to store program data into a file");
@@ -64,58 +64,57 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
-                    addCustomer(users, userNameList);
+                    addCustomer(passengers, userNameList);
                     break;
 
                 case "V":
                 case "v":
-                    displayAllSeats(users, userNameList);
+                    displayAllSeats(passengers, userNameList);
                     break;
 
                 case "E":
                 case "e":
-                    displayEmptySeats(users, userNameList);
+                    displayAvailableSeats(passengers, userNameList);
                     break;
 
                 case "D":
                 case "d":
-                    deleteCustomer(users, sc);
+                    deleteCustomer(passengers, sc);
                     break;
 
                 case "F":
                 case "f":
-                    findSeat(users, sc, userNameList);
+                    findSeat(passengers, sc, userNameList);
                     break;
 
                 case "S":
                 case "s":
-                    storeData(users);
+                    storeData(passengers);
                     break;
 
                 case "L":
                 case "l":
-                    loadProgramFile(users, userNameList);
+                    loadProgramFile(passengers, userNameList);
                     break;
 
                 case "O":
                 case "o":
-                    alphabeticalOrder(users, userNameList);
+                    alphabeticalOrder(passengers, userNameList);
                     break;
 
                 case "q":
                 case "Q":
-                    System.out.print("\nIf you want to store data Prompt \"S\" or prompt any key to Exit : ");
+                    System.out.print("\nIf you want to store data before you exit from the program\nPrompt \"S\" or prompt any key to Exit : ");
                     String option = sc.next();
                     if (option.equalsIgnoreCase("s")) {
-                        storeData(users);
-                        break;
+                        storeData(passengers);
                     } else {
-                        System.out.println("Program is now Exiting..");
-                        break;
+                        System.out.println("\nProgram is now Exiting..");
                     }
+                    break;
 
                 default:
-                    System.out.println("You have entered a Invalid Input!");
+                    System.out.println("\nYou have entered a Invalid Input!");
                     System.out.println("---------------------------------\n");
             }
         } while (!userOption.equals("q"));
@@ -187,7 +186,7 @@ public class Main extends Application {
         alertBoxWindow.showAndWait();
     }
 
-    private void loadProgramFile(HashMap<Integer, String> users, List<String> userNameList) {
+    private void loadProgramFile(HashMap<Integer, String> passengers, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**********************");
@@ -218,7 +217,7 @@ public class Main extends Application {
 
                 //put name, age in HashMap if they are not empty
                 if (!passengerName.equals("") && !passengerSeat.equals(""))
-                    users.put(passengerSeat, passengerName);
+                    passengers.put(passengerSeat, passengerName);
                 userNameList.add(passengerName);
             }
 
@@ -230,7 +229,7 @@ public class Main extends Application {
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
-                    System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to display all seats");
+                    System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"E\" to check available seats");
                 } catch (Exception e) {
                 }
             }
@@ -239,7 +238,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void storeData(HashMap<Integer, String> users) {
+    private void storeData(HashMap<Integer, String> passengers) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**********");
@@ -250,14 +249,14 @@ public class Main extends Application {
         File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
         BufferedWriter bufferedWriter = null;
 
-        if (users.isEmpty()) {
+        if (passengers.isEmpty()) {
             System.out.println("No seats have been booked yet!");
         } else {
             try {
                 //create new BufferedWriter for the output file
                 bufferedWriter = new BufferedWriter(new FileWriter(file));
                 //iterate map entries
-                for (Map.Entry<Integer, String> entry : users.entrySet()) {
+                for (Map.Entry<Integer, String> entry : passengers.entrySet()) {
                     //put key and value
                     bufferedWriter.write(entry.getValue() + " has booked seat #" + entry.getKey());
                     //new line
@@ -281,16 +280,16 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void allSeatsDisplay(HashMap<Integer, String> users, int i, Button seat) {
-        if (users.containsKey(i)) {
+    private void allSeatsDisplay(HashMap<Integer, String> passengers, int i, Button seat) {
+        if (passengers.containsKey(i)) {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         } else {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         }
     }
 
-    private void emptySeatsDisplay(HashMap<Integer, String> users, int i, Button seat) {
-        if (users.containsKey(i)) {
+    private void emptySeatsDisplay(HashMap<Integer, String> passengers, int i, Button seat) {
+        if (passengers.containsKey(i)) {
             seat.setStyle(null);
             seat.setDisable(true);
         } else {
@@ -298,7 +297,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatAction(Button seat, HashMap<Integer, String> users, int i, List<String> userNameList) {
+    private void seatAction(Button seat, HashMap<Integer, String> passengers, int i, List<String> userNameList) {
         seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         });
@@ -307,12 +306,12 @@ public class Main extends Application {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         });
 
-        if (users.containsKey(i)) {
+        if (passengers.containsKey(i)) {
             seat.setStyle(null);
             seat.setDisable(true);
         } else {
             seat.setOnAction(event -> {
-                if (!users.containsKey(seat.getId())) {
+                if (!passengers.containsKey(seat.getId())) {
                     try {
                         Stage confirmationBox = new Stage();
                         confirmationBox.initModality(Modality.APPLICATION_MODAL);
@@ -335,6 +334,7 @@ public class Main extends Application {
                         //user must enter at least one character as the name to confirm his/her booking
                         userNameTxtField.setOnKeyTyped(event1 -> {
                             if (userNameTxtField.getText().isEmpty()) {
+                                userNameTxtField.setStyle("-fx-faint-focus-color: transparent;");
                                 confirmUser.setDisable(true);
                             } else {
                                 userNameTxtField.setStyle("-fx-border-color: #00A69C; -fx-border-width: 2px;");
@@ -344,16 +344,16 @@ public class Main extends Application {
 
                         confirmUser.setOnAction(event2 -> {
                             //print the current action in console
-                            System.out.println(userNameTxtField.getText() + " has booked Seat #" + seat.getId());
+                            System.out.println(userNameTxtField.getText().toLowerCase() + " has booked Seat #" + seat.getId());
 
                             //if user name already added to the userNameList it won't added again
-                            if (userNameList.contains(userNameTxtField.getText())) {
+                            if (userNameList.contains(userNameTxtField.getText().toLowerCase())) {
                                 //put data to the hashMap
-                                users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
+                                passengers.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
                             } else {
-                                users.put(Integer.valueOf(seat.getId()), userNameTxtField.getText());
+                                passengers.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
                                 //add names to the userNameList
-                                userNameList.add(userNameTxtField.getText());
+                                userNameList.add(userNameTxtField.getText().toLowerCase());
                             }
 
                             //popup alertBox
@@ -376,7 +376,8 @@ public class Main extends Application {
         }
     }
 
-    private void seatDisplay(HashMap<Integer, String> users, List<String> userNameList, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
+    private void seatDisplay(HashMap<Integer, String> passengers, List<String> userNameList, VBox
+            leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
         for (int i = 1; i <= 11; i++) {
             Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
@@ -386,13 +387,13 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(users, i, seat);
+                emptySeatsDisplay(passengers, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(users, i, seat);
+                allSeatsDisplay(passengers, i, seat);
             }
         }
 
@@ -405,13 +406,13 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(users, i, seat);
+                emptySeatsDisplay(passengers, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(users, i, seat);
+                allSeatsDisplay(passengers, i, seat);
             }
         }
 
@@ -425,13 +426,13 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(users, i, seat);
+                emptySeatsDisplay(passengers, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(users, i, seat);
+                allSeatsDisplay(passengers, i, seat);
             }
         }
 
@@ -444,19 +445,18 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList);
+                seatAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(users, i, seat);
+                emptySeatsDisplay(passengers, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(users, i, seat);
+                allSeatsDisplay(passengers, i, seat);
             }
         }
     }
 
-    private void addCustomer(HashMap<Integer, String> users, List<String> userNameList) {
-
+    private void addCustomer(HashMap<Integer, String> passengers, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n************************");
@@ -466,7 +466,7 @@ public class Main extends Application {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
 
-        window.setTitle("Train Seat Booking Program");
+        window.setTitle("Train Seats Booking Program");
 
         window.setOnCloseRequest(event -> {
             event.consume();
@@ -492,7 +492,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
+        seatDisplay(passengers, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -505,8 +505,7 @@ public class Main extends Application {
         emptySpace1.setMinSize(150, 10);
 
         //close button
-        Button closeBtn = new Button();
-        closeBtn.setText("Close");
+        Button closeBtn = new Button("Close");
         closeBtn.setOnAction(e -> {
             alertBoxWindowTypeOne(window);
         });
@@ -519,7 +518,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void displayEmptySeats(HashMap<Integer, String> users, List<String> userNameList) {
+    private void displayAvailableSeats(HashMap<Integer, String> passengers, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*******************");
@@ -548,7 +547,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
+        seatDisplay(passengers, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -563,20 +562,20 @@ public class Main extends Application {
         Label colorOneLabel = new Label("Available Seats");
 
         Button emptySpace2 = new Button();
-        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace.setMinSize(450, 10);
+        emptySpace2.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace2.setMinSize(163, 10);
 
         Button closeBtn = new Button("Close");
         closeBtn.setOnAction(event -> window.close());
 
-        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, closeBtn);
+        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, emptySpace2, closeBtn);
         window.setScene(scene);
         window.showAndWait();
 
         System.out.println("--------------------------------------------------");
     }
 
-    private void displayAllSeats(HashMap<Integer, String> users, List<String> userNameList) {
+    private void displayAllSeats(HashMap<Integer, String> passengers, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*****************");
@@ -605,13 +604,17 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
+        seatDisplay(passengers, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
         Button emptySpace = new Button();
         emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
         emptySpace.setMinSize(450, 10);
+
+        Button emptySpace2 = new Button();
+        emptySpace2.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace2.setMinSize(20, 10);
 
         Button colorOneButton = new Button();
         colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
@@ -625,7 +628,10 @@ public class Main extends Application {
 
         Label colorTwoLabel = new Label("Booked Seats");
 
-        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, colorTwoButton, colorTwoLabel);
+        Button closeBtn = new Button("Close");
+        closeBtn.setOnAction(event -> window.close());
+
+        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, colorTwoButton, colorTwoLabel, emptySpace2, closeBtn);
 
         window.setScene(scene);
         window.showAndWait();
@@ -633,23 +639,23 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
     }
 
-    private void findSeat(HashMap<Integer, String> users, Scanner sc, List<String> userNameList) {
+    private void findSeat(HashMap<Integer, String> passengers, Scanner sc, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**************");
         System.out.println("FIND USER SEAT");
         System.out.println("**************\n");
 
-        if (users.isEmpty()) {
+        if (passengers.isEmpty()) {
             System.out.println("No seats have been booked yet!");
         } else {
-            System.out.print("Prompt your name to find the seat : ");
+            System.out.println("Prompt your name to find the seat : ");
             String findUserName = sc.next();
-            if (users.containsValue(findUserName)) {
+            if (passengers.containsValue(findUserName)) {
                 for (String s : userNameList) {
                     if (s.equalsIgnoreCase(findUserName)) {
-                        for (Object o : users.keySet()) {
-                            if (users.get(o).equalsIgnoreCase(findUserName)) {
+                        for (Object o : passengers.keySet()) {
+                            if (passengers.get(o).equalsIgnoreCase(findUserName)) {
                                 System.out.println("\n" + s + " has booked Seat #" + o);
                             }
                         }
@@ -662,7 +668,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    public void deleteCustomer(HashMap<Integer, String> users, Scanner sc) {
+    public void deleteCustomer(HashMap<Integer, String> passengers, Scanner sc) {
         System.out.println("--------------------------------------------------");
         int removedSeatNumber;
         String removedSeatName;
@@ -671,18 +677,18 @@ public class Main extends Application {
         System.out.println("DELETE A SEAT");
         System.out.println("*************\n");
 
-        if (users.isEmpty()) {
+        if (passengers.isEmpty()) {
             System.out.println("No seats have been booked yet!");
         } else {
             System.out.print("What is the name that you prompted to book your seat (Prompt Username) : ");
             removedSeatName = sc.next();
 
-            if (!users.containsValue(removedSeatName)) {
+            if (!passengers.containsValue(removedSeatName)) {
                 System.out.println("\nNo seat has been booked under " + removedSeatName);
             } else {
                 System.out.println("\nYou have booked these seats;");
-                if (users.containsValue(removedSeatName)) {
-                    for (HashMap.Entry<Integer, String> entry : users.entrySet()) {
+                if (passengers.containsValue(removedSeatName)) {
+                    for (HashMap.Entry<Integer, String> entry : passengers.entrySet()) {
                         if (removedSeatName.equals(entry.getValue())) {
                             System.out.print(entry.getKey() + " ");
                         }
@@ -696,8 +702,8 @@ public class Main extends Application {
                     }
                     removedSeatNumber = sc.nextInt();
 
-                    if (users.containsKey(removedSeatNumber)) {
-                        users.remove(removedSeatNumber);
+                    if (passengers.containsKey(removedSeatNumber)) {
+                        passengers.remove(removedSeatNumber);
                         System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
                     } else {
                         System.out.println("\nYou did not book any seats under this seat #" + removedSeatNumber);
@@ -708,7 +714,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void alphabeticalOrder(HashMap<Integer, String> users, List<String> userNameList) {
+    private void alphabeticalOrder(HashMap<Integer, String> passengers, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************************************************");
@@ -718,7 +724,7 @@ public class Main extends Application {
         String temp;
 
         try {
-            if (users.isEmpty()) {
+            if (passengers.isEmpty()) {
                 System.out.println("No seats have been booked yet!");
             } else {
                 for (int i = 0; i < userNameList.size(); i++) {
@@ -732,8 +738,8 @@ public class Main extends Application {
                 }
 
                 for (String s : userNameList) {
-                    for (Object o : users.keySet()) {
-                        if (users.get(o).equalsIgnoreCase(s)) {
+                    for (Object o : passengers.keySet()) {
+                        if (passengers.get(o).equalsIgnoreCase(s)) {
                             System.out.println(s + " has booked seat #" + o);
                         }
                     }
