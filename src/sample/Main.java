@@ -1,13 +1,9 @@
 package sample;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,6 +18,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.*;
 import java.util.*;
 
 public class Main extends Application {
@@ -41,15 +38,7 @@ public class Main extends Application {
         // Converting HashMap values into ArrayList
         List<String> userNameList = new ArrayList<>(users.values());
 
-        // Converting HashMap values into ArrayList
-        List<Integer> userNumberList = new ArrayList<>(users.keySet());
-
         Scanner sc = new Scanner(System.in);
-
-        Button seat = new Button();
-
-        String actionType = new String();
-        String name = new String();
 
         String userOption;
 
@@ -75,17 +64,17 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
-                    addCustomer(users, userNameList, userNumberList);
+                    addCustomer(users, userNameList);
                     break;
 
                 case "V":
                 case "v":
-                    displayAllSeats(users, userNameList, userNumberList);
+                    displayAllSeats(users, userNameList);
                     break;
 
                 case "E":
                 case "e":
-                    displayEmptySeats(users, userNameList, userNumberList);
+                    displayEmptySeats(users, userNameList);
                     break;
 
                 case "D":
@@ -100,12 +89,12 @@ public class Main extends Application {
 
                 case "S":
                 case "s":
-                    storeData();
+                    storeData(users);
                     break;
 
                 case "L":
                 case "l":
-                    loadProgramFile();
+                    loadProgramFile(users, userNameList);
                     break;
 
                 case "O":
@@ -115,20 +104,21 @@ public class Main extends Application {
 
                 case "q":
                 case "Q":
-                    System.out.println("Program is now Existing..");
-                    break;
+                    System.out.print("\nIf you want to store data Prompt \"S\" or prompt any key to Exit : ");
+                    String option = sc.next();
+                    if (option.equalsIgnoreCase("s")) {
+                        storeData(users);
+                        break;
+                    } else {
+                        System.out.println("Program is now Exiting..");
+                        break;
+                    }
 
                 default:
                     System.out.println("You have entered a Invalid Input!");
                     System.out.println("---------------------------------\n");
             }
         } while (!userOption.equals("q"));
-
-        //create a mongodb
-        MongoClient mongoClient = MongoClients.create();
-        MongoCollection mongoCollection;
-        MongoDatabase mongoDatabase = mongoClient.getDatabase("TrainSeatsBookingsProgram");
-        mongoCollection = mongoDatabase.getCollection("Seats");
     }
 
     //type one alert box act as a confirmation box for the quit the current stage
@@ -197,12 +187,98 @@ public class Main extends Application {
         alertBoxWindow.showAndWait();
     }
 
-    private void loadProgramFile() {
+    private void loadProgramFile(HashMap<Integer, String> users, List<String> userNameList) {
+        System.out.println("--------------------------------------------------");
 
+        System.out.println("\n**********************");
+        System.out.println("LOAD PROGRAM FROM DATA");
+        System.out.println("**********************\n");
+
+        BufferedReader bufferedReader = null;
+
+        try {
+
+            //create file object
+            File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
+
+            //create BufferedReader object from the File
+            bufferedReader = new BufferedReader(new FileReader(file));
+
+            String line;
+
+            //read file line by line
+            while ((line = bufferedReader.readLine()) != null) {
+
+                //split the line by :
+                String[] parts = line.split(" has booked seat #");
+
+                //first part is name, second is age
+                String passengerName = parts[0].trim();
+                Integer passengerSeat = Integer.parseInt(parts[1].trim());
+
+                //put name, age in HashMap if they are not empty
+                if (!passengerName.equals("") && !passengerSeat.equals(""))
+                    users.put(passengerSeat, passengerName);
+                userNameList.add(passengerName);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+            //Always close the BufferedReader
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                    System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to display all seats");
+                } catch (Exception e) {
+                }
+            }
+        }
+
+        System.out.println("\n--------------------------------------------------");
     }
 
-    private void storeData() {
+    private void storeData(HashMap<Integer, String> users) {
+        System.out.println("--------------------------------------------------");
 
+        System.out.println("\n**********");
+        System.out.println("STORE DATA");
+        System.out.println("**********\n");
+
+        //new file object
+        File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
+        BufferedWriter bufferedWriter = null;
+
+        if (users.isEmpty()) {
+            System.out.println("No seats have been booked yet!");
+        } else {
+            try {
+                //create new BufferedWriter for the output file
+                bufferedWriter = new BufferedWriter(new FileWriter(file));
+                //iterate map entries
+                for (Map.Entry<Integer, String> entry : users.entrySet()) {
+                    //put key and value
+                    bufferedWriter.write(entry.getValue() + " has booked seat #" + entry.getKey());
+                    //new line
+                    bufferedWriter.newLine();
+                }
+
+                bufferedWriter.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    System.out.println("Data has been successfully stored!");
+                    //always close the writer
+                    bufferedWriter.close();
+                } catch (Exception e) {
+                    //error ignored
+                }
+            }
+        }
+        System.out.println("\n--------------------------------------------------");
     }
 
     private void allSeatsDisplay(HashMap<Integer, String> users, int i, Button seat) {
@@ -222,7 +298,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatAction(Button seat, HashMap<Integer, String> users, int i, List<String> userNameList, List<Integer> userNumberList) {
+    private void seatAction(Button seat, HashMap<Integer, String> users, int i, List<String> userNameList) {
         seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         });
@@ -258,11 +334,15 @@ public class Main extends Application {
 
                         //user must enter at least one character as the name to confirm his/her booking
                         userNameTxtField.setOnKeyTyped(event1 -> {
-                            confirmUser.setDisable(false);
+                            if (userNameTxtField.getText().isEmpty()) {
+                                confirmUser.setDisable(true);
+                            } else {
+                                userNameTxtField.setStyle("-fx-border-color: #00A69C; -fx-border-width: 2px;");
+                                confirmUser.setDisable(false);
+                            }
                         });
 
                         confirmUser.setOnAction(event2 -> {
-                            userNumberList.add(Integer.valueOf(seat.getId()));
                             //print the current action in console
                             System.out.println(userNameTxtField.getText() + " has booked Seat #" + seat.getId());
 
@@ -296,16 +376,17 @@ public class Main extends Application {
         }
     }
 
-    private void seatDisplay(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
+    private void seatDisplay(HashMap<Integer, String> users, List<String> userNameList, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
         for (int i = 1; i <= 11; i++) {
             Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowOne.getChildren().add(seat);
             leftSeatsRowOne.setSpacing(5);
+            seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList, userNumberList);
+                seatAction(seat, users, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
@@ -321,9 +402,10 @@ public class Main extends Application {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowTwo.getChildren().add(seat);
             leftSeatsRowTwo.setSpacing(5);
+            seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList, userNumberList);
+                seatAction(seat, users, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
@@ -340,9 +422,10 @@ public class Main extends Application {
             RightSeatsRowOne.getChildren().add(seat);
             RightSeatsRowOne.setSpacing(5);
             RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
+            seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList, userNumberList);
+                seatAction(seat, users, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
@@ -358,9 +441,10 @@ public class Main extends Application {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             RightSeatsRowTwo.getChildren().add(seat);
             RightSeatsRowTwo.setSpacing(5);
+            seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, users, i, userNameList, userNumberList);
+                seatAction(seat, users, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(users, i, seat);
@@ -371,7 +455,7 @@ public class Main extends Application {
         }
     }
 
-    private void addCustomer(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList) {
+    private void addCustomer(HashMap<Integer, String> users, List<String> userNameList) {
 
         System.out.println("--------------------------------------------------");
 
@@ -408,7 +492,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, userNumberList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
+        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -435,7 +519,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void displayEmptySeats(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList) {
+    private void displayEmptySeats(HashMap<Integer, String> users, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*******************");
@@ -464,7 +548,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, userNumberList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
+        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -489,10 +573,10 @@ public class Main extends Application {
         window.setScene(scene);
         window.showAndWait();
 
-        System.out.println("\n--------------------------------------------------");
+        System.out.println("--------------------------------------------------");
     }
 
-    private void displayAllSeats(HashMap<Integer, String> users, List<String> userNameList, List<Integer> userNumberList) {
+    private void displayAllSeats(HashMap<Integer, String> users, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*****************");
@@ -521,7 +605,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(users, userNameList, userNumberList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
+        seatDisplay(users, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -546,7 +630,7 @@ public class Main extends Application {
         window.setScene(scene);
         window.showAndWait();
 
-        System.out.println("\n--------------------------------------------------");
+        System.out.println("--------------------------------------------------");
     }
 
     private void findSeat(HashMap<Integer, String> users, Scanner sc, List<String> userNameList) {
@@ -566,7 +650,7 @@ public class Main extends Application {
                     if (s.equalsIgnoreCase(findUserName)) {
                         for (Object o : users.keySet()) {
                             if (users.get(o).equalsIgnoreCase(findUserName)) {
-                                System.out.println(s + "-" + o);
+                                System.out.println("\n" + s + " has booked Seat #" + o);
                             }
                         }
                     }
@@ -604,7 +688,7 @@ public class Main extends Application {
                         }
                     }
 
-                    System.out.print("Which seat do you want to delete (Prompt Seat Number) : ");
+                    System.out.print("\nWhich seat do you want to delete (Prompt Seat Number) : ");
                     while (!sc.hasNextInt()) {
                         System.out.println("Prompt Integers!!");
                         System.out.print("\nWhich seat do you want to delete (Prompt Seat Number) : ");
@@ -615,11 +699,13 @@ public class Main extends Application {
                     if (users.containsKey(removedSeatNumber)) {
                         users.remove(removedSeatNumber);
                         System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
+                    } else {
+                        System.out.println("\nYou did not book any seats under this seat #" + removedSeatNumber);
                     }
                 }
             }
-            System.out.println("\n--------------------------------------------------");
         }
+        System.out.println("\n--------------------------------------------------");
     }
 
     private void alphabeticalOrder(HashMap<Integer, String> users, List<String> userNameList) {
@@ -646,7 +732,7 @@ public class Main extends Application {
                 }
 
                 for (String s : userNameList) {
-                    for (Object o : users.keySet() ) {
+                    for (Object o : users.keySet()) {
                         if (users.get(o).equalsIgnoreCase(s)) {
                             System.out.println(s + " has booked seat #" + o);
                         }
