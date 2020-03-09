@@ -37,6 +37,8 @@ public class Main extends Application {
         // Converting HashMap values into ArrayList
         List<String> userNameList = new ArrayList<>(passengers.values());
 
+        boolean alreadyExecuted = false;
+
         Scanner sc = new Scanner(System.in);
 
         String userOption;
@@ -63,6 +65,10 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
+                    if (!alreadyExecuted) {
+                        welcomeScreen();
+                    } alreadyExecuted = true;
+
                     addCustomer(passengers, userNameList);
                     break;
 
@@ -117,6 +123,62 @@ public class Main extends Application {
                     System.out.println("---------------------------------\n");
             }
         } while (!userOption.equals("q"));
+    }
+
+    private void welcomeScreen() {
+        Stage welcomeWindow = new Stage();
+        welcomeWindow.setTitle("Welcome!");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("mainIcon.png"));
+        welcomeWindow.getIcons().add(windowIcon);
+
+        Pane pane = new Pane();
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(20));
+
+        Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
+        labelMain.setFont(new Font("Arial Bold", 18));
+
+        Label labePrimary = new Label("v1.0");
+        labePrimary.setFont(new Font("Arial", 12));
+
+        Button emptySpace = new Button();
+        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace.setMinSize(0, 15);
+
+        Button continueBtn = new Button("Continue");
+        continueBtn.setOnAction(event -> welcomeWindow.close());
+
+        welcomeWindow.initModality(Modality.APPLICATION_MODAL);
+
+        Scene mainScene = new Scene(pane, 550, 525);
+
+        try {
+            // create a input stream
+            FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
+
+            // create a image
+            Image image = new Image(input);
+
+            // create a background image
+            BackgroundImage backgroundimage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+
+            // create Background
+            Background background = new Background(backgroundimage);
+
+            // set background
+            pane.setBackground(background);
+
+        } catch (Exception e) {
+            //ignored
+        }
+
+        vBox.getChildren().addAll(labelMain, labePrimary, emptySpace, continueBtn);
+        pane.getChildren().add(vBox);
+
+        welcomeWindow.setScene(mainScene);
+        welcomeWindow.showAndWait();
     }
 
     //type one alert box act as a confirmation box for the quit the current stage
@@ -479,62 +541,6 @@ public class Main extends Application {
         }
     }
 
-    private void testA() {
-        Stage welcomeWindow = new Stage();
-        welcomeWindow.setTitle("Welcome!");
-
-        Image windowIcon = new Image(getClass().getResourceAsStream("mainIcon.png"));
-        welcomeWindow.getIcons().add(windowIcon);
-
-        Pane pane = new Pane();
-        VBox vBox = new VBox();
-        vBox.setPadding(new Insets(20));
-
-        Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
-        labelMain.setFont(new Font("Arial Bold", 18));
-
-        Label labePrimary = new Label("v1.0");
-        labePrimary.setFont(new Font("Arial", 12));
-
-        Button emptySpace = new Button();
-        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace.setMinSize(0, 15);
-
-        Button continueBtn = new Button("Continue");
-        continueBtn.setOnAction(event -> welcomeWindow.close());
-
-        welcomeWindow.initModality(Modality.APPLICATION_MODAL);
-
-        Scene mainScene = new Scene(pane, 550, 525);
-
-        try {
-            // create a input stream
-            FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
-
-            // create a image
-            Image image = new Image(input);
-
-            // create a background image
-            BackgroundImage backgroundimage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-
-            // create Background
-            Background background = new Background(backgroundimage);
-
-            // set background
-            pane.setBackground(background);
-
-        } catch (Exception e) {
-            //ignored
-        }
-
-        vBox.getChildren().addAll(labelMain, labePrimary, emptySpace, continueBtn);
-        pane.getChildren().add(vBox);
-
-        welcomeWindow.setScene(mainScene);
-        welcomeWindow.showAndWait();
-    }
-
     private void addCustomer(HashMap<Integer, String> passengers, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
@@ -543,19 +549,11 @@ public class Main extends Application {
         System.out.println("************************\n");
 
         Stage window = new Stage();
+        window.setTitle("Train Seats Booking Program");
         window.initModality(Modality.APPLICATION_MODAL);
 
         Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
         window.getIcons().add(windowIcon);
-
-        window.setTitle("Train Seats Booking Program");
-
-        boolean alreadyExecuted = false;
-
-        if (!alreadyExecuted) {
-            testA();
-            alreadyExecuted = true;
-        }
 
         window.setOnCloseRequest(event -> {
             event.consume();
@@ -738,14 +736,14 @@ public class Main extends Application {
         if (passengers.isEmpty()) {
             System.out.println("No seats have been booked yet!");
         } else {
-            System.out.println("Prompt your name to find the seat : ");
+            System.out.print("Prompt your name to find the seat : ");
             String findUserName = sc.next();
             if (passengers.containsValue(findUserName)) {
                 for (String s : userNameList) {
                     if (s.equalsIgnoreCase(findUserName)) {
                         for (Object o : passengers.keySet()) {
                             if (passengers.get(o).equalsIgnoreCase(findUserName)) {
-                                System.out.println("\n" + s + " has booked Seat #" + o);
+                                System.out.println(s + " has booked Seat #" + o);
                             }
                         }
                     }
