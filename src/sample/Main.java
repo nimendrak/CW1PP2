@@ -8,10 +8,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -127,6 +126,10 @@ public class Main extends Application {
         //Block events to other windows
         alertBoxWindow.initModality(Modality.APPLICATION_MODAL);
         alertBoxWindow.setTitle("Alert!");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("alertIcon.png"));
+        alertBoxWindow.getIcons().add(windowIcon);
+
         alertBoxWindow.setMinWidth(300);
         alertBoxWindow.setMinHeight(150);
 
@@ -167,7 +170,11 @@ public class Main extends Application {
 
         //Block events to other windows
         alertBoxWindow.initModality(Modality.APPLICATION_MODAL);
-        alertBoxWindow.setTitle("Alert!");
+        alertBoxWindow.setTitle("Booked!");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("confirmIcon.png"));
+        alertBoxWindow.getIcons().add(windowIcon);
+
         alertBoxWindow.setMinWidth(300);
         alertBoxWindow.setMinHeight(150);
 
@@ -316,10 +323,18 @@ public class Main extends Application {
                         Stage confirmationBox = new Stage();
                         confirmationBox.initModality(Modality.APPLICATION_MODAL);
 
+                        FlowPane flowPane = new FlowPane();
+                        flowPane.setPadding(new Insets(30));
+
+                        Image windowIcon = new Image(getClass().getResourceAsStream("pendingIcon.png"));
+                        confirmationBox.getIcons().add(windowIcon);
+
                         confirmationBox.setTitle("Confirmation");
 
                         VBox vBox = new VBox();
+                        HBox hBox = new HBox();
                         vBox.setAlignment(Pos.CENTER);
+                        hBox.setAlignment(Pos.CENTER);
 
                         Text userNameTxt = new Text("Enter your name : ");
                         TextField userNameTxtField = new TextField();
@@ -327,17 +342,24 @@ public class Main extends Application {
                         Button confirmUser = new Button("Confirm");
                         confirmUser.setDisable(true);
 
-                        vBox.getChildren().addAll(userNameTxt, userNameTxtField, confirmUser);
-                        vBox.setPadding(new Insets(20));
+                        Button cancelBtn = new Button("Cancel");
+                        cancelBtn.setOnAction(event1 -> confirmationBox.hide());
+
+                        hBox.getChildren().addAll(confirmUser, cancelBtn);
+                        hBox.setPadding(new Insets(0,0,0,45));
+                        hBox.setSpacing(10);
+
+                        vBox.getChildren().addAll(userNameTxt, userNameTxtField);
+                        vBox.setPadding(new Insets(0,0,10,25));
                         vBox.setSpacing(10);
 
-                        //user must enter at least one character as the name to confirm his/her booking
+                        flowPane.getChildren().addAll(vBox, hBox);
+
+                        //user must enter at least two character as the name to confirm his/her booking
                         userNameTxtField.setOnKeyTyped(event1 -> {
                             if (userNameTxtField.getText().isEmpty()) {
-                                userNameTxtField.setStyle("-fx-faint-focus-color: transparent;");
                                 confirmUser.setDisable(true);
                             } else {
-                                userNameTxtField.setStyle("-fx-border-color: #00A69C; -fx-border-width: 2px;");
                                 confirmUser.setDisable(false);
                             }
                         });
@@ -364,7 +386,7 @@ public class Main extends Application {
                             confirmationBox.close();
                         });
 
-                        Scene confirmationBoxScene = new Scene(vBox, 300, 150);
+                        Scene confirmationBoxScene = new Scene(flowPane, 300, 175);
                         confirmationBox.setScene(confirmationBoxScene);
                         confirmationBox.showAndWait();
 
@@ -378,6 +400,7 @@ public class Main extends Application {
 
     private void seatDisplay(HashMap<Integer, String> passengers, List<String> userNameList, VBox
             leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
+
         for (int i = 1; i <= 11; i++) {
             Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
@@ -456,6 +479,62 @@ public class Main extends Application {
         }
     }
 
+    private void testA() {
+        Stage welcomeWindow = new Stage();
+        welcomeWindow.setTitle("Welcome!");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("mainIcon.png"));
+        welcomeWindow.getIcons().add(windowIcon);
+
+        Pane pane = new Pane();
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(20));
+
+        Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
+        labelMain.setFont(new Font("Arial Bold", 18));
+
+        Label labePrimary = new Label("v1.0");
+        labePrimary.setFont(new Font("Arial", 12));
+
+        Button emptySpace = new Button();
+        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace.setMinSize(0, 15);
+
+        Button continueBtn = new Button("Continue");
+        continueBtn.setOnAction(event -> welcomeWindow.close());
+
+        welcomeWindow.initModality(Modality.APPLICATION_MODAL);
+
+        Scene mainScene = new Scene(pane, 550, 525);
+
+        try {
+            // create a input stream
+            FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
+
+            // create a image
+            Image image = new Image(input);
+
+            // create a background image
+            BackgroundImage backgroundimage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+
+            // create Background
+            Background background = new Background(backgroundimage);
+
+            // set background
+            pane.setBackground(background);
+
+        } catch (Exception e) {
+            //ignored
+        }
+
+        vBox.getChildren().addAll(labelMain, labePrimary, emptySpace, continueBtn);
+        pane.getChildren().add(vBox);
+
+        welcomeWindow.setScene(mainScene);
+        welcomeWindow.showAndWait();
+    }
+
     private void addCustomer(HashMap<Integer, String> passengers, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
@@ -466,7 +545,17 @@ public class Main extends Application {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
 
+        Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
+        window.getIcons().add(windowIcon);
+
         window.setTitle("Train Seats Booking Program");
+
+        boolean alreadyExecuted = false;
+
+        if (!alreadyExecuted) {
+            testA();
+            alreadyExecuted = true;
+        }
 
         window.setOnCloseRequest(event -> {
             event.consume();
