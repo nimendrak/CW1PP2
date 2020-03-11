@@ -1,7 +1,0 @@
-nim has booked seat #1
-ok has booked seat #24
-ko has booked seat #11
-nim has booked seat #1
-ok has booked seat #6
-ok has booked seat #24
-ko has booked seat #11

@@ -32,14 +32,15 @@ public class Main extends Application {
     @Override
     public void start(Stage window) throws Exception {
 
-        // Create a HashMap object called users to store userName and seatNumber
-        HashMap<Integer, String> passengers = new HashMap<>();
-
+        // Create a HashMap object called badullaToColombo to store userName and seatNumber
+        HashMap<Integer, String> badullaToColombo = new HashMap<>();
         // Converting HashMap values into ArrayList
-        List<String> userNameList = new ArrayList<>(passengers.values());
+        List<String> toColomboPassengersNameList = new ArrayList<>();
 
-        // there's a block of code that should run only once in the program
-        boolean alreadyExecuted = false;
+        // Create a HashMap object called colomboToBadulla to store userName and seatNumber
+        HashMap<Integer, String> colomboToBadulla = new HashMap<>();
+        // Converting HashMap values into ArrayList
+        List<String> toBadullaPassengersNameList = new ArrayList<>();
 
         Scanner sc = new Scanner(System.in);
 
@@ -67,47 +68,42 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
-                    if (!alreadyExecuted) {
-                        welcomeScreen(passengers);
-                    }
-                    alreadyExecuted = true;
-
-                    addCustomer(passengers, userNameList);
+                    welcomeScreenOne(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList);
                     break;
 
                 case "V":
                 case "v":
-                    displayAllSeats(passengers, userNameList);
+                    welcomeScreenTwo(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList);
                     break;
 
                 case "E":
                 case "e":
-                    displayAvailableSeats(passengers, userNameList);
+                    welcomeScreenThree(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList);
                     break;
 
                 case "D":
                 case "d":
-                    deleteCustomer(passengers, sc);
+                    //deleteCustomer(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "F":
                 case "f":
-                    findSeat(passengers, sc, userNameList);
+                    //findSeat(badullaToColombo, colomboToBadulla, sc, userNameList);
                     break;
 
                 case "S":
                 case "s":
-                    storeData(passengers);
+                    //storeData(badullaToColombo, colomboToBadulla);
                     break;
 
                 case "L":
                 case "l":
-                    loadProgramFile(passengers, userNameList);
+                    //loadProgramFile(badullaToColombo, colomboToBadulla, userNameList);
                     break;
 
                 case "O":
                 case "o":
-                    alphabeticalOrder(passengers, userNameList);
+                    //alphabeticalOrder(badullaToColombo, colomboToBadulla, userNameList);
                     break;
 
                 case "q":
@@ -115,7 +111,7 @@ public class Main extends Application {
                     System.out.print("\nIf you want to store data before you exit from the program\nPrompt \"S\" or prompt any key to Exit : ");
                     String option = sc.next();
                     if (option.equalsIgnoreCase("s")) {
-                        storeData(passengers);
+                        //storeData(badullaToColombo, colomboToBadulla);
                     } else {
                         System.out.println("\nProgram is now Exiting..");
                     }
@@ -128,7 +124,7 @@ public class Main extends Application {
         } while (!userOption.equals("q"));
     }
 
-    private void welcomeScreen(HashMap<Integer, String> passengers) {
+    private void welcomeScreenOne(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
         Stage welcomeWindow = new Stage();
         welcomeWindow.setTitle("Welcome!");
 
@@ -143,34 +139,180 @@ public class Main extends Application {
         Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
         labelMain.setFont(new Font("Arial Bold", 18));
 
-        Label labePrimary = new Label("v1.0");
+        Label labePrimary = new Label("v2.0");
         labePrimary.setFont(new Font("Arial", 12));
 
         Label destinationsLabel = new Label("Select your Destination");
         destinationsLabel.setFont(new Font("Arial", 15));
-        destinationsLabel.setPadding(new Insets(30,0,0,0));
+        destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
 
-        String[] destinations = {"Maradana to Badulla", "Badulla to Maradana"};
+        String[] destinations = {"Colombo to Badulla", "Badulla to Colombo"};
         ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
         comboBox.getSelectionModel().select(0);
-
-        String value = (String)comboBox.getValue();
 
         Button emptySpace = new Button();
         emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
         emptySpace.setMinSize(0, 15);
 
-        if (value.equals("Maradana to Badulla")) {
-            HashMap<Integer, String> passengersTripOne = new HashMap<>();
-            System.out.println("a");
-        } if (value.equals("Badulla to Maradana")) {
-            HashMap<Integer, String> passengersTripTwo = new HashMap<>();
-            passengers = passengersTripTwo;
-            System.out.println("b");
+        Button continueBtn = new Button("Continue");
+        continueBtn.setOnAction(event -> {
+            if (comboBox.getValue().equals("Badulla to Colombo")) {
+                System.out.println("\nYour final destination is Badulla");
+                addCustomer(badullaToColombo, toBadullaPassengersNameList);
+            } else {
+                System.out.println("\nYour final destination is Colombo");
+                addCustomer(colomboToBadulla, toColomboPassengersNameList);
+            }
+            welcomeWindow.close();
+        });
+
+        welcomeWindow.initModality(Modality.APPLICATION_MODAL);
+
+        Scene mainScene = new Scene(pane, 550, 525);
+
+        try {
+            // create a input stream
+            FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
+
+            // create a image
+            Image image = new Image(input);
+
+            // create a background image
+            BackgroundImage backgroundimage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+
+            // create Background
+            Background background = new Background(backgroundimage);
+
+            // set background
+            pane.setBackground(background);
+
+        } catch (Exception e) {
+            //ignored
         }
+
+        vBox.getChildren().addAll(labelMain, labePrimary, destinationsLabel, comboBox, emptySpace, continueBtn);
+        pane.getChildren().add(vBox);
+
+        welcomeWindow.setScene(mainScene);
+        welcomeWindow.showAndWait();
+    }
+
+    private void welcomeScreenTwo(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
+        Stage welcomeWindow = new Stage();
+        welcomeWindow.setTitle("Welcome!");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("mainIcon.png"));
+        welcomeWindow.getIcons().add(windowIcon);
+
+        Pane pane = new Pane();
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(20));
+        vBox.setSpacing(5);
+
+        Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
+        labelMain.setFont(new Font("Arial Bold", 18));
+
+        Label labePrimary = new Label("v2.0");
+        labePrimary.setFont(new Font("Arial", 12));
+
+        Label destinationsLabel = new Label("Select your Destination");
+        destinationsLabel.setFont(new Font("Arial", 15));
+        destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
+
+        String[] destinations = {"Colombo to Badulla", "Badulla to Colombo"};
+        ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
+        comboBox.getSelectionModel().select(0);
+        String value = (String) comboBox.getValue();
+
+        Button emptySpace = new Button();
+        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace.setMinSize(0, 15);
 
         Button continueBtn = new Button("Continue");
         continueBtn.setOnAction(event -> {
+            if (comboBox.getValue().equals("Badulla to Colombo")) {
+                System.out.println("\nYour final destination is Badulla");
+                displayAllSeats(badullaToColombo, toBadullaPassengersNameList);
+            } else {
+                System.out.println("\nYour final destination is Colombo");
+                displayAllSeats(colomboToBadulla, toColomboPassengersNameList);
+            }
+            welcomeWindow.close();
+        });
+
+        welcomeWindow.initModality(Modality.APPLICATION_MODAL);
+
+        Scene mainScene = new Scene(pane, 550, 525);
+
+        try {
+            // create a input stream
+            FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
+
+            // create a image
+            Image image = new Image(input);
+
+            // create a background image
+            BackgroundImage backgroundimage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+
+            // create Background
+            Background background = new Background(backgroundimage);
+
+            // set background
+            pane.setBackground(background);
+
+        } catch (Exception e) {
+            //ignored
+        }
+
+        vBox.getChildren().addAll(labelMain, labePrimary, destinationsLabel, comboBox, emptySpace, continueBtn);
+        pane.getChildren().add(vBox);
+
+        welcomeWindow.setScene(mainScene);
+        welcomeWindow.showAndWait();
+    }
+
+    private void welcomeScreenThree(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
+        Stage welcomeWindow = new Stage();
+        welcomeWindow.setTitle("Welcome!");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("mainIcon.png"));
+        welcomeWindow.getIcons().add(windowIcon);
+
+        Pane pane = new Pane();
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(20));
+        vBox.setSpacing(5);
+
+        Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
+        labelMain.setFont(new Font("Arial Bold", 18));
+
+        Label labePrimary = new Label("v2.0");
+        labePrimary.setFont(new Font("Arial", 12));
+
+        Label destinationsLabel = new Label("Select your Destination");
+        destinationsLabel.setFont(new Font("Arial", 15));
+        destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
+
+        String[] destinations = {"Colombo to Badulla", "Badulla to Colombo"};
+        ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
+        comboBox.getSelectionModel().select(0);
+        String value = (String) comboBox.getValue();
+
+        Button emptySpace = new Button();
+        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace.setMinSize(0, 15);
+
+        Button continueBtn = new Button("Continue");
+        continueBtn.setOnAction(event -> {
+            if (comboBox.getValue().equals("Badulla to Colombo")) {
+                System.out.println("\nYour final destination is Badulla");
+                displayAvailableSeats(badullaToColombo, toBadullaPassengersNameList);
+            } else {
+                System.out.println("\nYour final destination is Colombo");
+                displayAvailableSeats(colomboToBadulla, toColomboPassengersNameList);
+            }
             welcomeWindow.close();
         });
 
@@ -280,109 +422,109 @@ public class Main extends Application {
         alertBoxWindow.showAndWait();
     }
 
-    private void loadProgramFile(HashMap<Integer, String> passengers, List<String> userNameList) throws IOException {
-        System.out.println("--------------------------------------------------");
+    /*    private void loadProgramFile(HashMap<Integer, String> passengers, List<String> userNameList) throws IOException {
+            System.out.println("--------------------------------------------------");
 
-        System.out.println("\n**********************");
-        System.out.println("LOAD PROGRAM FROM DATA");
-        System.out.println("**********************\n");
+            System.out.println("\n**********************");
+            System.out.println("LOAD PROGRAM FROM DATA");
+            System.out.println("**********************\n");
 
-        BufferedReader bufferedReader = null;
+            BufferedReader bufferedReader = null;
 
-        try {
-            //create file object
-            File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
-
-            //create BufferedReader object from the File
-            bufferedReader = new BufferedReader(new FileReader(file));
-
-            String line;
-
-            //read file line by line
-            while ((line = bufferedReader.readLine()) != null) {
-
-                //split the line by :
-                String[] parts = line.split(" has booked seat #");
-
-                //first part is name, second is age
-                String passengerName = parts[0].trim();
-                Integer passengerSeat = Integer.parseInt(parts[1].trim());
-
-                //put name, age in HashMap if they are not empty
-                if (!passengerName.equals("") && !passengerSeat.equals(""))
-                    passengers.put(passengerSeat, passengerName);
-                    userNameList.add(passengerName);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            //Always close the BufferedReader
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                    System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats");
-                } catch (Exception e) {
-                    //ignored
-                }
-            }
-        }
-
-        System.out.println("\n--------------------------------------------------");
-    }
-
-    private void storeData(HashMap<Integer, String> passengers) {
-        System.out.println("--------------------------------------------------");
-
-        System.out.println("\n**********");
-        System.out.println("STORE DATA");
-        System.out.println("**********\n");
-
-        //new file object
-        File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\passengersTripOne.txt");
-        BufferedWriter bufferedWriter = null;
-
-        if (passengers.isEmpty()) {
-            System.out.println("No seats have been booked yet!");
-        } else {
             try {
-                //create new BufferedWriter for the output file
-                bufferedWriter = new BufferedWriter(new FileWriter(file, true));
-                //iterate map entries
-                for (Map.Entry<Integer, String> entry : passengers.entrySet()) {
-                    //put key and value
-                    bufferedWriter.write(entry.getValue() + " has booked seat #" + entry.getKey());
-                    //new line
-                    bufferedWriter.newLine();
+                //create file object
+                File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
+
+                //create BufferedReader object from the File
+                bufferedReader = new BufferedReader(new FileReader(file));
+
+                String line;
+
+                //read file line by line
+                while ((line = bufferedReader.readLine()) != null) {
+
+                    //split the line by :
+                    String[] parts = line.split(" has booked seat #");
+
+                    //first part is name, second is age
+                    String passengerName = parts[0].trim();
+                    Integer passengerSeat = Integer.parseInt(parts[1].trim());
+
+                    //put name, age in HashMap if they are not empty
+                    if (!passengerName.equals("") && !passengerSeat.equals(""))
+                        passengers.put(passengerSeat, passengerName);
+                    userNameList.add(passengerName);
                 }
 
-                bufferedWriter.flush();
-
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                try {
-                    System.out.println("Data has been successfully stored!");
-                    //always close the writer
-                    bufferedWriter.close();
-                } catch (Exception e) {
-                    //error ignored
+                //Always close the BufferedReader
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close();
+                        System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats");
+                    } catch (Exception e) {
+                        //ignored
+                    }
                 }
             }
-        }
-        System.out.println("\n--------------------------------------------------");
-    }
 
-    private void allSeatsDisplay(HashMap<Integer, String> passengers, int i, RadioButton seat) {
-        if (passengers.containsKey(i)) {
+            System.out.println("\n--------------------------------------------------");
+        }
+
+        private void storeData(HashMap<Integer, String> passengers) {
+            System.out.println("--------------------------------------------------");
+
+            System.out.println("\n**********");
+            System.out.println("STORE DATA");
+            System.out.println("**********\n");
+
+            //new file object
+            File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\passengersTripOne.txt");
+            BufferedWriter bufferedWriter = null;
+
+            if (passengers.isEmpty()) {
+                System.out.println("No seats have been booked yet!");
+            } else {
+                try {
+                    //create new BufferedWriter for the output file
+                    bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+                    //iterate map entries
+                    for (Map.Entry<Integer, String> entry : passengers.entrySet()) {
+                        //put key and value
+                        bufferedWriter.write(entry.getValue() + " has booked seat #" + entry.getKey());
+                        //new line
+                        bufferedWriter.newLine();
+                    }
+
+                    bufferedWriter.flush();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        System.out.println("Data has been successfully stored!");
+                        //always close the writer
+                        bufferedWriter.close();
+                    } catch (Exception e) {
+                        //error ignored
+                    }
+                }
+            }
+            System.out.println("\n--------------------------------------------------");
+        }
+    */
+    private void allSeatsDisplay(HashMap<Integer, String> passengerDestination, int i, RadioButton seat) {
+        if (passengerDestination.containsKey(i)) {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         } else {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         }
     }
 
-    private void emptySeatsDisplay(HashMap<Integer, String> passengers, int i, RadioButton seat) {
-        if (passengers.containsKey(i)) {
+    private void emptySeatsDisplay(HashMap<Integer, String> passengerDestination, int i, RadioButton seat) {
+        if (passengerDestination.containsKey(i)) {
             seat.setStyle(null);
             seat.setDisable(true);
         } else {
@@ -390,7 +532,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatBookingAction(RadioButton seat, HashMap<Integer, String> passengers, int i, List<String> userNameList) {
+    private void seatBookingAction(RadioButton seat, HashMap<Integer, String> passengerDestination, int i, List<String> passengersNameList) {
         seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         });
@@ -399,12 +541,12 @@ public class Main extends Application {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         });
 
-        if (passengers.containsKey(i)) {
+        if (passengerDestination.containsKey(i)) {
             seat.setStyle(null);
             seat.setDisable(true);
         } else {
             seat.setOnAction(event -> {
-                if (!passengers.containsKey(seat.getId())) {
+                if (!passengerDestination.containsKey(seat.getId())) {
                     try {
                         Stage confirmationBox = new Stage();
                         confirmationBox.initModality(Modality.APPLICATION_MODAL);
@@ -455,13 +597,13 @@ public class Main extends Application {
                             System.out.println(userNameTxtField.getText().toLowerCase() + " has booked Seat #" + seat.getId());
 
                             //if user name already added to the userNameList it won't added again
-                            if (userNameList.contains(userNameTxtField.getText().toLowerCase())) {
+                            if (passengersNameList.contains(userNameTxtField.getText().toLowerCase())) {
                                 //put data to the hashMap
-                                passengers.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
+                                passengerDestination.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
                             } else {
-                                passengers.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
+                                passengerDestination.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
                                 //add names to the userNameList
-                                userNameList.add(userNameTxtField.getText().toLowerCase());
+                                passengersNameList.add(userNameTxtField.getText().toLowerCase());
                             }
 
                             //popup alertBox
@@ -486,7 +628,7 @@ public class Main extends Application {
 
     /* i've used 4 different for loops to print seats as vertical rows, so each row should contain a action
     that each seat can perform in a specific condition whether it could be select only or display only */
-    private void seatDisplay(HashMap<Integer, String> passengers, List<String> userNameList, VBox
+    private void seatDisplay(HashMap<Integer, String> passengerDestination, List<String> passengersNameList, VBox
             leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
 
         for (int i = 1; i <= 11; i++) {
@@ -500,13 +642,13 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengerDestination, i, passengersNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengers, i, seat);
+                emptySeatsDisplay(passengerDestination, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengers, i, seat);
+                allSeatsDisplay(passengerDestination, i, seat);
             }
         }
 
@@ -521,13 +663,13 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengerDestination, i, passengersNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengers, i, seat);
+                emptySeatsDisplay(passengerDestination, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengers, i, seat);
+                allSeatsDisplay(passengerDestination, i, seat);
             }
         }
 
@@ -543,13 +685,13 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengerDestination, i, passengersNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengers, i, seat);
+                emptySeatsDisplay(passengerDestination, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengers, i, seat);
+                allSeatsDisplay(passengerDestination, i, seat);
             }
         }
 
@@ -564,18 +706,18 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengerDestination, i, passengersNameList);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengers, i, seat);
+                emptySeatsDisplay(passengerDestination, i, seat);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengers, i, seat);
+                allSeatsDisplay(passengerDestination, i, seat);
             }
         }
     }
 
-    private void addCustomer(HashMap<Integer, String> passengers, List<String> userNameList) {
+    private void addCustomer(HashMap passengerDestination, List<String> passengersNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n************************");
@@ -610,7 +752,7 @@ public class Main extends Application {
 
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER);
-        hBox.setPadding(new Insets(41,0,0,162));
+        hBox.setPadding(new Insets(41, 0, 0, 162));
         hBox.setSpacing(10);
 
         VBox leftSeatsRowOne = new VBox();
@@ -618,7 +760,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(passengers, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
+        seatDisplay(passengerDestination, passengersNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -637,7 +779,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void displayAvailableSeats(HashMap<Integer, String> passengers, List<String> userNameList) {
+    private void displayAvailableSeats(HashMap passengerDestination, List<String> passengersNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*******************");
@@ -669,7 +811,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(passengers, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
+        seatDisplay(passengerDestination, passengersNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -697,7 +839,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
     }
 
-    private void displayAllSeats(HashMap<Integer, String> passengers, List<String> userNameList) {
+    private void displayAllSeats(HashMap passengerDestination, List<String> passengersNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*****************");
@@ -729,7 +871,7 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(passengers, userNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
+        seatDisplay(passengerDestination, passengersNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -764,7 +906,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
     }
 
-    private void findSeat(HashMap<Integer, String> passengers, Scanner sc, List<String> userNameList) {
+    /*private void findSeat(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**************");
@@ -794,7 +936,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    public void deleteCustomer(HashMap<Integer, String> passengers, Scanner sc) {
+    public void deleteCustomer(HashMap<Integer, String> badullaToColombo, Scanner sc) {
         System.out.println("--------------------------------------------------");
         int removedSeatNumber;
         String removedSeatName;
@@ -840,7 +982,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void alphabeticalOrder(HashMap<Integer, String> passengers, List<String> userNameList) {
+    private void alphabeticalOrder(HashMap badullaToColombo, HashMap colomboToBadulla, List<String> userNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************************************************");
@@ -876,5 +1018,5 @@ public class Main extends Application {
         }
 
         System.out.println("\n--------------------------------------------------");
-    }
+    }*/
 }
