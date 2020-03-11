@@ -1,8 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -32,14 +30,12 @@ public class Main extends Application {
     @Override
     public void start(Stage window) throws Exception {
 
-        // Create a HashMap object called badullaToColombo to store userName and seatNumber
+        // Create a HashMap object called badullaToColombo to store userName and seatNumber and array to store passengers' names
         HashMap<Integer, String> badullaToColombo = new HashMap<>();
-        // Converting HashMap values into ArrayList
         List<String> toColomboPassengersNameList = new ArrayList<>();
 
-        // Create a HashMap object called colomboToBadulla to store userName and seatNumber
+        // Create a HashMap object called colomboToBadulla to store userName and seatNumber and array to store passengers' names
         HashMap<Integer, String> colomboToBadulla = new HashMap<>();
-        // Converting HashMap values into ArrayList
         List<String> toBadullaPassengersNameList = new ArrayList<>();
 
         Scanner sc = new Scanner(System.in);
@@ -83,27 +79,27 @@ public class Main extends Application {
 
                 case "D":
                 case "d":
-                    //deleteCustomer(badullaToColombo, colomboToBadulla, sc);
+                    deleteCustomer(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "F":
                 case "f":
-                    //findSeat(badullaToColombo, colomboToBadulla, sc, userNameList);
+                    findSeat(badullaToColombo, colomboToBadulla, sc, toColomboPassengersNameList, toBadullaPassengersNameList);
                     break;
 
                 case "S":
                 case "s":
-                    //storeData(badullaToColombo, colomboToBadulla);
+                    storeData(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "L":
                 case "l":
-                    //loadProgramFile(badullaToColombo, colomboToBadulla, userNameList);
+                    loadProgramFile(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "O":
                 case "o":
-                    //alphabeticalOrder(badullaToColombo, colomboToBadulla, userNameList);
+                    alphabeticalOrder(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "q":
@@ -111,7 +107,7 @@ public class Main extends Application {
                     System.out.print("\nIf you want to store data before you exit from the program\nPrompt \"S\" or prompt any key to Exit : ");
                     String option = sc.next();
                     if (option.equalsIgnoreCase("s")) {
-                        //storeData(badullaToColombo, colomboToBadulla);
+                        storeData(badullaToColombo, colomboToBadulla, sc);
                     } else {
                         System.out.println("\nProgram is now Exiting..");
                     }
@@ -146,7 +142,7 @@ public class Main extends Application {
         destinationsLabel.setFont(new Font("Arial", 15));
         destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
 
-        String[] destinations = {"Colombo to Badulla", "Badulla to Colombo"};
+        String[] destinations = {"Badulla to Colombo", "Colombo to Badulla"};
         ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
         comboBox.getSelectionModel().select(0);
 
@@ -157,10 +153,10 @@ public class Main extends Application {
         Button continueBtn = new Button("Continue");
         continueBtn.setOnAction(event -> {
             if (comboBox.getValue().equals("Badulla to Colombo")) {
-                System.out.println("\nYour final destination is Badulla");
+                System.out.println("\nYou have selected Badulla to Colombo\n");
                 addCustomer(badullaToColombo, toBadullaPassengersNameList);
             } else {
-                System.out.println("\nYour final destination is Colombo");
+                System.out.println("\nYou have selected Colombo to Badulla\n");
                 addCustomer(colomboToBadulla, toColomboPassengersNameList);
             }
             welcomeWindow.close();
@@ -220,10 +216,9 @@ public class Main extends Application {
         destinationsLabel.setFont(new Font("Arial", 15));
         destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
 
-        String[] destinations = {"Colombo to Badulla", "Badulla to Colombo"};
+        String[] destinations = {"Badulla to Colombo", "Colombo to Badulla"};
         ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
         comboBox.getSelectionModel().select(0);
-        String value = (String) comboBox.getValue();
 
         Button emptySpace = new Button();
         emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
@@ -232,10 +227,10 @@ public class Main extends Application {
         Button continueBtn = new Button("Continue");
         continueBtn.setOnAction(event -> {
             if (comboBox.getValue().equals("Badulla to Colombo")) {
-                System.out.println("\nYour final destination is Badulla");
+                System.out.println("\nYou have selected Badulla to Colombo\n");
                 displayAllSeats(badullaToColombo, toBadullaPassengersNameList);
             } else {
-                System.out.println("\nYour final destination is Colombo");
+                System.out.println("\nYou have selected Colombo to Badulla\n");
                 displayAllSeats(colomboToBadulla, toColomboPassengersNameList);
             }
             welcomeWindow.close();
@@ -295,10 +290,9 @@ public class Main extends Application {
         destinationsLabel.setFont(new Font("Arial", 15));
         destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
 
-        String[] destinations = {"Colombo to Badulla", "Badulla to Colombo"};
+        String[] destinations = {"Badulla to Colombo", "Colombo to Badulla"};
         ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
         comboBox.getSelectionModel().select(0);
-        String value = (String) comboBox.getValue();
 
         Button emptySpace = new Button();
         emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
@@ -307,10 +301,10 @@ public class Main extends Application {
         Button continueBtn = new Button("Continue");
         continueBtn.setOnAction(event -> {
             if (comboBox.getValue().equals("Badulla to Colombo")) {
-                System.out.println("\nYour final destination is Badulla");
+                System.out.println("\nYou have selected Badulla to Colombo\n");
                 displayAvailableSeats(badullaToColombo, toBadullaPassengersNameList);
             } else {
-                System.out.println("\nYour final destination is Colombo");
+                System.out.println("\nYou have selected Colombo to Badulla\n");
                 displayAvailableSeats(colomboToBadulla, toColomboPassengersNameList);
             }
             welcomeWindow.close();
@@ -422,99 +416,134 @@ public class Main extends Application {
         alertBoxWindow.showAndWait();
     }
 
-    /*    private void loadProgramFile(HashMap<Integer, String> passengers, List<String> userNameList) throws IOException {
-            System.out.println("--------------------------------------------------");
+    private void loadProgramFile(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
+        System.out.println("--------------------------------------------------");
 
-            System.out.println("\n**********************");
-            System.out.println("LOAD PROGRAM FROM DATA");
-            System.out.println("**********************\n");
+        System.out.println("\n**********************");
+        System.out.println("LOAD PROGRAM FROM DATA");
+        System.out.println("**********************\n");
 
-            BufferedReader bufferedReader = null;
+        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
+        String option = sc.next();
 
+        switch (option) {
+            case "1":
+                File file1 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\colomboToBadullaPassengers.txt");
+                List<String> toBadullaPassengersNameList = new ArrayList<>(colomboToBadulla.values());
+                loadProgramFileMain(colomboToBadulla, toBadullaPassengersNameList, file1);
+                break;
+            case "2":
+                File file2 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\badullaToColomboPassengers.txt");
+                List<String> toColomboPassengersNameList = new ArrayList<>(badullaToColombo.values());
+                loadProgramFileMain(badullaToColombo, toColomboPassengersNameList, file2);
+                break;
+            default:
+                System.out.println("You have entered a invalid input");
+                break;
+        }
+        System.out.println("\n--------------------------------------------------");
+    }
+
+    private void loadProgramFileMain(HashMap<Integer, String> passengers, List<String> userNameList, File file) {
+        BufferedReader bufferedReader = null;
+
+        try {
+            //create BufferedReader object from the File
+            bufferedReader = new BufferedReader(new FileReader(file));
+
+            String line;
+
+            //read file line by line
+            while ((line = bufferedReader.readLine()) != null) {
+
+                //split the line by :
+                String[] parts = line.split(" has booked seat #");
+
+                //first part is name, second is age
+                String passengerName = parts[0].trim();
+                Integer passengerSeat = Integer.parseInt(parts[1].trim());
+
+                //put name, age in HashMap if they are not empty
+                if (!passengerName.equals("") && !passengerSeat.equals(""))
+                    passengers.put(passengerSeat, passengerName);
+                userNameList.add(passengerName);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            //Always close the BufferedReader
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                    System.out.println("\nStored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats");
+                } catch (Exception e) {
+                    //ignored
+                }
+            }
+        }
+    }
+
+    private void storeData(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
+        System.out.println("--------------------------------------------------");
+
+        System.out.println("\n**********");
+        System.out.println("STORE DATA");
+        System.out.println("**********\n");
+
+        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
+        String option = sc.next();
+
+        switch (option) {
+            case "1":
+                File file1 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\colomboToBadullaPassengers.txt");
+                storeDataMain(colomboToBadulla, file1);
+                break;
+            case "2":
+                File file2 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\badullaToColomboPassengers.txt");
+                storeDataMain(badullaToColombo, file2);
+                break;
+            default:
+                System.out.println("You have entered a invalid input");
+                break;
+        }
+        System.out.println("\n--------------------------------------------------");
+    }
+
+    private void storeDataMain(HashMap<Integer, String> passengers, File file) {
+        //new file object
+        BufferedWriter bufferedWriter = null;
+
+        if (passengers.isEmpty()) {
+            System.out.println("\nNo seats have been booked yet!");
+        } else {
             try {
-                //create file object
-                File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
-
-                //create BufferedReader object from the File
-                bufferedReader = new BufferedReader(new FileReader(file));
-
-                String line;
-
-                //read file line by line
-                while ((line = bufferedReader.readLine()) != null) {
-
-                    //split the line by :
-                    String[] parts = line.split(" has booked seat #");
-
-                    //first part is name, second is age
-                    String passengerName = parts[0].trim();
-                    Integer passengerSeat = Integer.parseInt(parts[1].trim());
-
-                    //put name, age in HashMap if they are not empty
-                    if (!passengerName.equals("") && !passengerSeat.equals(""))
-                        passengers.put(passengerSeat, passengerName);
-                    userNameList.add(passengerName);
+                //create new BufferedWriter for the output file
+                bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+                //iterate map entries
+                for (Map.Entry<Integer, String> entry : passengers.entrySet()) {
+                    //put key and value
+                    bufferedWriter.write(entry.getValue() + " has booked seat #" + entry.getKey());
+                    //new line
+                    bufferedWriter.newLine();
                 }
 
-            } catch (Exception e) {
+                bufferedWriter.flush();
+
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                //Always close the BufferedReader
-                if (bufferedReader != null) {
-                    try {
-                        bufferedReader.close();
-                        System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats");
-                    } catch (Exception e) {
-                        //ignored
-                    }
-                }
-            }
-
-            System.out.println("\n--------------------------------------------------");
-        }
-
-        private void storeData(HashMap<Integer, String> passengers) {
-            System.out.println("--------------------------------------------------");
-
-            System.out.println("\n**********");
-            System.out.println("STORE DATA");
-            System.out.println("**********\n");
-
-            //new file object
-            File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\passengersTripOne.txt");
-            BufferedWriter bufferedWriter = null;
-
-            if (passengers.isEmpty()) {
-                System.out.println("No seats have been booked yet!");
-            } else {
                 try {
-                    //create new BufferedWriter for the output file
-                    bufferedWriter = new BufferedWriter(new FileWriter(file, true));
-                    //iterate map entries
-                    for (Map.Entry<Integer, String> entry : passengers.entrySet()) {
-                        //put key and value
-                        bufferedWriter.write(entry.getValue() + " has booked seat #" + entry.getKey());
-                        //new line
-                        bufferedWriter.newLine();
-                    }
-
-                    bufferedWriter.flush();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        System.out.println("Data has been successfully stored!");
-                        //always close the writer
-                        bufferedWriter.close();
-                    } catch (Exception e) {
-                        //error ignored
-                    }
+                    System.out.println("\nData has been successfully stored!");
+                    //always close the writer
+                    bufferedWriter.close();
+                } catch (Exception e) {
+                    //error ignored
                 }
             }
-            System.out.println("\n--------------------------------------------------");
         }
-    */
+    }
+
     private void allSeatsDisplay(HashMap<Integer, String> passengerDestination, int i, RadioButton seat) {
         if (passengerDestination.containsKey(i)) {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
@@ -906,24 +935,42 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
     }
 
-    /*private void findSeat(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc, List<String> userNameList) {
+    private void findSeat(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**************");
         System.out.println("FIND USER SEAT");
         System.out.println("**************\n");
 
-        if (passengers.isEmpty()) {
-            System.out.println("No seats have been booked yet!");
+        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
+        String option = sc.next();
+
+        switch (option) {
+            case "1":
+                findSeatMain(colomboToBadulla, sc, toColomboPassengersNameList);
+                break;
+            case "2":
+                findSeatMain(badullaToColombo, sc, toBadullaPassengersNameList);
+                break;
+            default:
+                System.out.println("You have entered a invalid input");
+                break;
+        }
+        System.out.println("--------------------------------------------------");
+    }
+
+    private void findSeatMain(HashMap passengerDestination, Scanner sc, List<String> passengersNameList) {
+        if (passengerDestination.isEmpty()) {
+            System.out.println("\nNo seats have been booked yet!");
         } else {
-            System.out.print("Prompt your name to find the seat : ");
+            System.out.print("\nPrompt your name to find the seat : ");
             String findUserName = sc.next();
             System.out.println();
-            if (passengers.containsValue(findUserName)) {
-                for (String s : userNameList) {
+            if (passengerDestination.containsValue(findUserName)) {
+                for (String s : passengersNameList) {
                     if (s.equalsIgnoreCase(findUserName)) {
-                        for (Object o : passengers.keySet()) {
-                            if (passengers.get(o).equalsIgnoreCase(findUserName)) {
+                        for (Object o : passengerDestination.keySet()) {
+                            if (passengerDestination.get(o).equals(findUserName)) {
                                 System.out.println(s + " has booked Seat #" + o);
                             }
                         }
@@ -933,30 +980,48 @@ public class Main extends Application {
                 System.out.println("\nNo seat has been booked under " + findUserName);
             }
         }
-        System.out.println("\n--------------------------------------------------");
     }
 
-    public void deleteCustomer(HashMap<Integer, String> badullaToColombo, Scanner sc) {
+    private void deleteCustomer(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
         System.out.println("--------------------------------------------------");
-        int removedSeatNumber;
-        String removedSeatName;
 
         System.out.println("\n*************");
         System.out.println("DELETE A SEAT");
         System.out.println("*************\n");
 
-        if (passengers.isEmpty()) {
-            System.out.println("No seats have been booked yet!");
+        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
+        String option = sc.next();
+
+        switch (option) {
+            case "1":
+                deleteCustomerMain(colomboToBadulla, sc);
+                break;
+            case "2":
+                deleteCustomerMain(badullaToColombo, sc);
+                break;
+            default:
+                System.out.println("You have entered a invalid input");
+                break;
+        }
+        System.out.println("\n--------------------------------------------------");
+    }
+
+    public void deleteCustomerMain(HashMap<Integer, String> passengerDestination, Scanner sc) {
+        int removedSeatNumber;
+        String removedSeatName;
+
+        if (passengerDestination.isEmpty()) {
+            System.out.println("\nNo seats have been booked yet!");
         } else {
-            System.out.print("What is the name that you prompted to book your seat (Prompt Username) : ");
+            System.out.print("\nWhat is the name that you prompted to book your seat (Prompt Username) : ");
             removedSeatName = sc.next();
 
-            if (!passengers.containsValue(removedSeatName)) {
+            if (!passengerDestination.containsValue(removedSeatName)) {
                 System.out.println("\nNo seat has been booked under " + removedSeatName);
             } else {
                 System.out.println("\nYou have booked these seats;");
-                if (passengers.containsValue(removedSeatName)) {
-                    for (HashMap.Entry<Integer, String> entry : passengers.entrySet()) {
+                if (passengerDestination.containsValue(removedSeatName)) {
+                    for (HashMap.Entry<Integer, String> entry : passengerDestination.entrySet()) {
                         if (removedSeatName.equals(entry.getValue())) {
                             System.out.print(entry.getKey() + " ");
                         }
@@ -970,8 +1035,8 @@ public class Main extends Application {
                     }
                     removedSeatNumber = sc.nextInt();
 
-                    if (passengers.containsKey(removedSeatNumber)) {
-                        passengers.remove(removedSeatNumber);
+                    if (passengerDestination.containsKey(removedSeatNumber)) {
+                        passengerDestination.remove(removedSeatNumber);
                         System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
                     } else {
                         System.out.println("\nYou did not book any seats under this seat #" + removedSeatNumber);
@@ -979,35 +1044,56 @@ public class Main extends Application {
                 }
             }
         }
-        System.out.println("\n--------------------------------------------------");
     }
 
-    private void alphabeticalOrder(HashMap badullaToColombo, HashMap colomboToBadulla, List<String> userNameList) {
+    private void alphabeticalOrder(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************************************************");
         System.out.println("VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME");
         System.out.println("*************************************************\n");
 
-        String temp;
+        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
+        String option = sc.next();
 
+        switch (option) {
+            case "1":
+                // Converting HashMap values into ArrayList
+                List<String> toBadullaPassengersNameList = new ArrayList<>(colomboToBadulla.values());
+                alphabeticalOrderMain(colomboToBadulla, toBadullaPassengersNameList);
+                break;
+            case "2":
+                // Converting HashMap values into ArrayList
+                List<String> toColomboPassengersNameList = new ArrayList<>(badullaToColombo.values());
+                alphabeticalOrderMain(badullaToColombo, toColomboPassengersNameList);
+                break;
+            default:
+                System.out.println("You have entered a invalid input");
+                break;
+        }
+        System.out.println("\n--------------------------------------------------");
+    }
+
+    private void alphabeticalOrderMain(HashMap passengerDestination, List<String> passengersNameList) {
+        String temp;
         try {
-            if (passengers.isEmpty()) {
-                System.out.println("No seats have been booked yet!");
+            if (passengerDestination.isEmpty()) {
+                System.out.println("\nNo seats have been booked yet!");
             } else {
-                for (int i = 0; i < userNameList.size(); i++) {
-                    for (int j = i + 1; j < userNameList.size(); j++) {
-                        if (userNameList.get(i).compareTo(userNameList.get(j)) > 0) {
-                            temp = userNameList.get(i);
-                            userNameList.set(i, userNameList.get(j));
-                            userNameList.set(j, temp);
+                System.out.println();
+                for (int i = 0; i < passengersNameList.size(); i++) {
+                    for (int j = i + 1; j < passengersNameList.size(); j++) {
+                        if (passengersNameList.get(i).compareTo(passengersNameList.get(j)) > 0) {
+                            temp = passengersNameList.get(i);
+                            passengersNameList.set(i, passengersNameList.get(j));
+                            passengersNameList.set(j, temp);
                         }
                     }
                 }
 
-                for (String s : userNameList) {
-                    for (Object o : passengers.keySet()) {
-                        if (passengers.get(o).equalsIgnoreCase(s)) {
+                for (String s : passengersNameList) {
+                    for (Object o : passengerDestination.keySet()) {
+                        if (passengerDestination.get(o).equals(s)) {
                             System.out.println(s + " has booked seat #" + o);
                         }
                     }
@@ -1016,7 +1102,7 @@ public class Main extends Application {
         } catch (Exception ignored) {
             //ignored
         }
-
-        System.out.println("\n--------------------------------------------------");
-    }*/
+    }
 }
+
+
