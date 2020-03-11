@@ -1,13 +1,14 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -32,11 +33,12 @@ public class Main extends Application {
     public void start(Stage window) throws Exception {
 
         // Create a HashMap object called users to store userName and seatNumber
-        HashMap<Integer, String> passengers = new HashMap<Integer, String>();
+        HashMap<Integer, String> passengers = new HashMap<>();
 
         // Converting HashMap values into ArrayList
         List<String> userNameList = new ArrayList<>(passengers.values());
 
+        // there's a block of code that should run only once in the program
         boolean alreadyExecuted = false;
 
         Scanner sc = new Scanner(System.in);
@@ -57,7 +59,7 @@ public class Main extends Application {
             System.out.println("Prompt \"S\" to store program data into a file");
             System.out.println("Prompt \"L\" to load program data from a file");
             System.out.println("Prompt \"O\" to view seats in ordered alphabetically by name");
-            System.out.println("Prompt \"Q\" to exist from the program");
+            System.out.println("Prompt \"Q\" to exit from the program");
 
             System.out.print("\nPrompt your option : ");
             userOption = sc.next();
@@ -66,8 +68,9 @@ public class Main extends Application {
                 case "A":
                 case "a":
                     if (!alreadyExecuted) {
-                        welcomeScreen();
-                    } alreadyExecuted = true;
+                        welcomeScreen(passengers);
+                    }
+                    alreadyExecuted = true;
 
                     addCustomer(passengers, userNameList);
                     break;
@@ -125,7 +128,7 @@ public class Main extends Application {
         } while (!userOption.equals("q"));
     }
 
-    private void welcomeScreen() {
+    private void welcomeScreen(HashMap<Integer, String> passengers) {
         Stage welcomeWindow = new Stage();
         welcomeWindow.setTitle("Welcome!");
 
@@ -135,6 +138,7 @@ public class Main extends Application {
         Pane pane = new Pane();
         VBox vBox = new VBox();
         vBox.setPadding(new Insets(20));
+        vBox.setSpacing(5);
 
         Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
         labelMain.setFont(new Font("Arial Bold", 18));
@@ -142,12 +146,33 @@ public class Main extends Application {
         Label labePrimary = new Label("v1.0");
         labePrimary.setFont(new Font("Arial", 12));
 
+        Label destinationsLabel = new Label("Select your Destination");
+        destinationsLabel.setFont(new Font("Arial", 15));
+        destinationsLabel.setPadding(new Insets(30,0,0,0));
+
+        String[] destinations = {"Maradana to Badulla", "Badulla to Maradana"};
+        ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
+        comboBox.getSelectionModel().select(0);
+
+        String value = (String)comboBox.getValue();
+
         Button emptySpace = new Button();
         emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
         emptySpace.setMinSize(0, 15);
 
+        if (value.equals("Maradana to Badulla")) {
+            HashMap<Integer, String> passengersTripOne = new HashMap<>();
+            System.out.println("a");
+        } if (value.equals("Badulla to Maradana")) {
+            HashMap<Integer, String> passengersTripTwo = new HashMap<>();
+            passengers = passengersTripTwo;
+            System.out.println("b");
+        }
+
         Button continueBtn = new Button("Continue");
-        continueBtn.setOnAction(event -> welcomeWindow.close());
+        continueBtn.setOnAction(event -> {
+            welcomeWindow.close();
+        });
 
         welcomeWindow.initModality(Modality.APPLICATION_MODAL);
 
@@ -174,7 +199,7 @@ public class Main extends Application {
             //ignored
         }
 
-        vBox.getChildren().addAll(labelMain, labePrimary, emptySpace, continueBtn);
+        vBox.getChildren().addAll(labelMain, labePrimary, destinationsLabel, comboBox, emptySpace, continueBtn);
         pane.getChildren().add(vBox);
 
         welcomeWindow.setScene(mainScene);
@@ -255,7 +280,7 @@ public class Main extends Application {
         alertBoxWindow.showAndWait();
     }
 
-    private void loadProgramFile(HashMap<Integer, String> passengers, List<String> userNameList) {
+    private void loadProgramFile(HashMap<Integer, String> passengers, List<String> userNameList) throws IOException {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**********************");
@@ -265,7 +290,6 @@ public class Main extends Application {
         BufferedReader bufferedReader = null;
 
         try {
-
             //create file object
             File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
 
@@ -287,19 +311,19 @@ public class Main extends Application {
                 //put name, age in HashMap if they are not empty
                 if (!passengerName.equals("") && !passengerSeat.equals(""))
                     passengers.put(passengerSeat, passengerName);
-                userNameList.add(passengerName);
+                    userNameList.add(passengerName);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-
             //Always close the BufferedReader
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
-                    System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"E\" to check available seats");
+                    System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats");
                 } catch (Exception e) {
+                    //ignored
                 }
             }
         }
@@ -315,7 +339,7 @@ public class Main extends Application {
         System.out.println("**********\n");
 
         //new file object
-        File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\hashMapData.txt");
+        File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\passengersTripOne.txt");
         BufferedWriter bufferedWriter = null;
 
         if (passengers.isEmpty()) {
@@ -323,7 +347,7 @@ public class Main extends Application {
         } else {
             try {
                 //create new BufferedWriter for the output file
-                bufferedWriter = new BufferedWriter(new FileWriter(file));
+                bufferedWriter = new BufferedWriter(new FileWriter(file, true));
                 //iterate map entries
                 for (Map.Entry<Integer, String> entry : passengers.entrySet()) {
                     //put key and value
@@ -349,7 +373,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
-    private void allSeatsDisplay(HashMap<Integer, String> passengers, int i, Button seat) {
+    private void allSeatsDisplay(HashMap<Integer, String> passengers, int i, RadioButton seat) {
         if (passengers.containsKey(i)) {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         } else {
@@ -357,7 +381,7 @@ public class Main extends Application {
         }
     }
 
-    private void emptySeatsDisplay(HashMap<Integer, String> passengers, int i, Button seat) {
+    private void emptySeatsDisplay(HashMap<Integer, String> passengers, int i, RadioButton seat) {
         if (passengers.containsKey(i)) {
             seat.setStyle(null);
             seat.setDisable(true);
@@ -366,7 +390,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatAction(Button seat, HashMap<Integer, String> passengers, int i, List<String> userNameList) {
+    private void seatBookingAction(RadioButton seat, HashMap<Integer, String> passengers, int i, List<String> userNameList) {
         seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         });
@@ -398,7 +422,7 @@ public class Main extends Application {
                         vBox.setAlignment(Pos.CENTER);
                         hBox.setAlignment(Pos.CENTER);
 
-                        Text userNameTxt = new Text("Enter your name : ");
+                        Text userNameTxt = new Text("Enter your name");
                         TextField userNameTxtField = new TextField();
 
                         Button confirmUser = new Button("Confirm");
@@ -408,11 +432,11 @@ public class Main extends Application {
                         cancelBtn.setOnAction(event1 -> confirmationBox.hide());
 
                         hBox.getChildren().addAll(confirmUser, cancelBtn);
-                        hBox.setPadding(new Insets(0,0,0,45));
+                        hBox.setPadding(new Insets(0, 0, 0, 45));
                         hBox.setSpacing(10);
 
                         vBox.getChildren().addAll(userNameTxt, userNameTxtField);
-                        vBox.setPadding(new Insets(0,0,10,25));
+                        vBox.setPadding(new Insets(0, 0, 10, 25));
                         vBox.setSpacing(10);
 
                         flowPane.getChildren().addAll(vBox, hBox);
@@ -460,19 +484,23 @@ public class Main extends Application {
         }
     }
 
+    /* i've used 4 different for loops to print seats as vertical rows, so each row should contain a action
+    that each seat can perform in a specific condition whether it could be select only or display only */
     private void seatDisplay(HashMap<Integer, String> passengers, List<String> userNameList, VBox
             leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
 
         for (int i = 1; i <= 11; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
+            seat.getStyleClass().remove("radio-button");
+            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowOne.getChildren().add(seat);
             leftSeatsRowOne.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(passengers, i, seat);
@@ -483,15 +511,17 @@ public class Main extends Application {
         }
 
         for (int i = 12; i <= 21; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
+            seat.getStyleClass().remove("radio-button");
+            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowTwo.getChildren().add(seat);
             leftSeatsRowTwo.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(passengers, i, seat);
@@ -502,8 +532,10 @@ public class Main extends Application {
         }
 
         for (int i = 22; i <= 31; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
+            seat.getStyleClass().remove("radio-button");
+            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             RightSeatsRowOne.getChildren().add(seat);
             RightSeatsRowOne.setSpacing(5);
@@ -511,7 +543,7 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(passengers, i, seat);
@@ -522,15 +554,17 @@ public class Main extends Application {
         }
 
         for (int i = 32; i <= SEATING_CAPACITY; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
+            seat.getStyleClass().remove("radio-button");
+            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             RightSeatsRowTwo.getChildren().add(seat);
             RightSeatsRowTwo.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatAction(seat, passengers, i, userNameList);
+                seatBookingAction(seat, passengers, i, userNameList);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplay(passengers, i, seat);
@@ -570,9 +604,14 @@ public class Main extends Application {
         Label header = new Label("Select a Seat");
         header.setFont(new Font("Arial Bold", 22));
         header.setTextFill(Paint.valueOf("#414141"));
-        header.setPadding(new Insets(0, 200, 25, 125));
+        header.setPadding(new Insets(0, 200, 25, 120));
 
         flowPane.getChildren().add(header);
+
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER);
+        hBox.setPadding(new Insets(41,0,0,162));
+        hBox.setSpacing(10);
 
         VBox leftSeatsRowOne = new VBox();
         VBox leftSeatsRowTwo = new VBox();
@@ -583,21 +622,14 @@ public class Main extends Application {
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
-        Button emptySpace = new Button();
-        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace.setMinSize(450, 10);
-
-        Button emptySpace1 = new Button();
-        emptySpace1.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace1.setMinSize(150, 10);
-
         //close button
         Button closeBtn = new Button("Close");
         closeBtn.setOnAction(e -> {
             alertBoxWindowTypeOne(window);
         });
 
-        flowPane.getChildren().addAll(emptySpace, emptySpace1, closeBtn);
+        hBox.getChildren().addAll(closeBtn);
+        flowPane.getChildren().addAll(hBox);
 
         window.setScene(scene);
         window.showAndWait();
@@ -614,6 +646,9 @@ public class Main extends Application {
 
         Stage window = new Stage();
         window.setTitle("Train Seat Booking Program");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
+        window.getIcons().add(windowIcon);
 
         FlowPane flowPane = new FlowPane();
         flowPane.setHgap(10);
@@ -671,6 +706,9 @@ public class Main extends Application {
 
         Stage window = new Stage();
         window.setTitle("Train Seat Booking Program");
+
+        Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
+        window.getIcons().add(windowIcon);
 
         FlowPane flowPane = new FlowPane();
         flowPane.setHgap(10);
@@ -738,6 +776,7 @@ public class Main extends Application {
         } else {
             System.out.print("Prompt your name to find the seat : ");
             String findUserName = sc.next();
+            System.out.println();
             if (passengers.containsValue(findUserName)) {
                 for (String s : userNameList) {
                     if (s.equalsIgnoreCase(findUserName)) {
