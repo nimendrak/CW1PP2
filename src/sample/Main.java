@@ -39,7 +39,7 @@ public class Main extends Application {
         List<String> toBadullaPassengersNameList = new ArrayList<>();
 
         Scanner sc = new Scanner(System.in);
-
+        int welcomeScreenType;
         String userOption;
 
         System.out.println("\n***************************************************");
@@ -64,17 +64,20 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
-                    welcomeScreenOne(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList);
+                    welcomeScreenType = 1;
+                    welcomeScreen(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList, welcomeScreenType);
                     break;
 
                 case "V":
                 case "v":
-                    welcomeScreenTwo(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList);
+                    welcomeScreenType = 2;
+                    welcomeScreen(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList, welcomeScreenType);
                     break;
 
                 case "E":
                 case "e":
-                    welcomeScreenThree(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList);
+                    welcomeScreenType = 3;
+                    welcomeScreen(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList, welcomeScreenType);
                     break;
 
                 case "D":
@@ -120,7 +123,7 @@ public class Main extends Application {
         } while (!userOption.equals("q"));
     }
 
-    private void welcomeScreenOne(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
+    private void welcomeScreen(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList, int welcomeScreenType) {
         Stage welcomeWindow = new Stage();
         welcomeWindow.setTitle("Welcome!");
 
@@ -151,161 +154,34 @@ public class Main extends Application {
         emptySpace.setMinSize(0, 15);
 
         Button continueBtn = new Button("Continue");
+
         continueBtn.setOnAction(event -> {
-            if (comboBox.getValue().equals("Badulla to Colombo")) {
-                System.out.println("\nYou have selected Badulla to Colombo\n");
-                addCustomer(badullaToColombo, toBadullaPassengersNameList);
-            } else {
-                System.out.println("\nYou have selected Colombo to Badulla\n");
-                addCustomer(colomboToBadulla, toColomboPassengersNameList);
-            }
-            welcomeWindow.close();
-        });
+            if (welcomeScreenType == 1) {
+                if (comboBox.getValue().equals("Badulla to Colombo")) {
+                    System.out.println("\nYou have selected Badulla to Colombo\n");
+                    addCustomer(badullaToColombo, toBadullaPassengersNameList);
+                } else {
+                    System.out.println("\nYou have selected Colombo to Badulla\n");
+                    addCustomer(colomboToBadulla, toColomboPassengersNameList);
+                }
 
-        welcomeWindow.initModality(Modality.APPLICATION_MODAL);
+            } else if (welcomeScreenType == 2) {
+                if (comboBox.getValue().equals("Badulla to Colombo")) {
+                    System.out.println("\nYou have selected Badulla to Colombo\n");
+                    displayAllSeats(badullaToColombo, toBadullaPassengersNameList);
+                } else {
+                    System.out.println("\nYou have selected Colombo to Badulla\n");
+                    displayAllSeats(colomboToBadulla, toColomboPassengersNameList);
+                }
 
-        Scene mainScene = new Scene(pane, 550, 525);
-
-        try {
-            // create a input stream
-            FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
-
-            // create a image
-            Image image = new Image(input);
-
-            // create a background image
-            BackgroundImage backgroundimage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-
-            // create Background
-            Background background = new Background(backgroundimage);
-
-            // set background
-            pane.setBackground(background);
-
-        } catch (Exception e) {
-            //ignored
-        }
-
-        vBox.getChildren().addAll(labelMain, labePrimary, destinationsLabel, comboBox, emptySpace, continueBtn);
-        pane.getChildren().add(vBox);
-
-        welcomeWindow.setScene(mainScene);
-        welcomeWindow.showAndWait();
-    }
-
-    private void welcomeScreenTwo(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
-        Stage welcomeWindow = new Stage();
-        welcomeWindow.setTitle("Welcome!");
-
-        Image windowIcon = new Image(getClass().getResourceAsStream("mainIcon.png"));
-        welcomeWindow.getIcons().add(windowIcon);
-
-        Pane pane = new Pane();
-        VBox vBox = new VBox();
-        vBox.setPadding(new Insets(20));
-        vBox.setSpacing(5);
-
-        Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
-        labelMain.setFont(new Font("Arial Bold", 18));
-
-        Label labePrimary = new Label("v2.0");
-        labePrimary.setFont(new Font("Arial", 12));
-
-        Label destinationsLabel = new Label("Select your Destination");
-        destinationsLabel.setFont(new Font("Arial", 15));
-        destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
-
-        String[] destinations = {"Badulla to Colombo", "Colombo to Badulla"};
-        ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
-        comboBox.getSelectionModel().select(0);
-
-        Button emptySpace = new Button();
-        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace.setMinSize(0, 15);
-
-        Button continueBtn = new Button("Continue");
-        continueBtn.setOnAction(event -> {
-            if (comboBox.getValue().equals("Badulla to Colombo")) {
-                System.out.println("\nYou have selected Badulla to Colombo\n");
-                displayAllSeats(badullaToColombo, toBadullaPassengersNameList);
-            } else {
-                System.out.println("\nYou have selected Colombo to Badulla\n");
-                displayAllSeats(colomboToBadulla, toColomboPassengersNameList);
-            }
-            welcomeWindow.close();
-        });
-
-        welcomeWindow.initModality(Modality.APPLICATION_MODAL);
-
-        Scene mainScene = new Scene(pane, 550, 525);
-
-        try {
-            // create a input stream
-            FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
-
-            // create a image
-            Image image = new Image(input);
-
-            // create a background image
-            BackgroundImage backgroundimage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-
-            // create Background
-            Background background = new Background(backgroundimage);
-
-            // set background
-            pane.setBackground(background);
-
-        } catch (Exception e) {
-            //ignored
-        }
-
-        vBox.getChildren().addAll(labelMain, labePrimary, destinationsLabel, comboBox, emptySpace, continueBtn);
-        pane.getChildren().add(vBox);
-
-        welcomeWindow.setScene(mainScene);
-        welcomeWindow.showAndWait();
-    }
-
-    private void welcomeScreenThree(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
-        Stage welcomeWindow = new Stage();
-        welcomeWindow.setTitle("Welcome!");
-
-        Image windowIcon = new Image(getClass().getResourceAsStream("mainIcon.png"));
-        welcomeWindow.getIcons().add(windowIcon);
-
-        Pane pane = new Pane();
-        VBox vBox = new VBox();
-        vBox.setPadding(new Insets(20));
-        vBox.setSpacing(5);
-
-        Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
-        labelMain.setFont(new Font("Arial Bold", 18));
-
-        Label labePrimary = new Label("v2.0");
-        labePrimary.setFont(new Font("Arial", 12));
-
-        Label destinationsLabel = new Label("Select your Destination");
-        destinationsLabel.setFont(new Font("Arial", 15));
-        destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
-
-        String[] destinations = {"Badulla to Colombo", "Colombo to Badulla"};
-        ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
-        comboBox.getSelectionModel().select(0);
-
-        Button emptySpace = new Button();
-        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace.setMinSize(0, 15);
-
-        Button continueBtn = new Button("Continue");
-        continueBtn.setOnAction(event -> {
-            if (comboBox.getValue().equals("Badulla to Colombo")) {
-                System.out.println("\nYou have selected Badulla to Colombo\n");
-                displayAvailableSeats(badullaToColombo, toBadullaPassengersNameList);
-            } else {
-                System.out.println("\nYou have selected Colombo to Badulla\n");
-                displayAvailableSeats(colomboToBadulla, toColomboPassengersNameList);
+            } else if (welcomeScreenType == 3) {
+                if (comboBox.getValue().equals("Badulla to Colombo")) {
+                    System.out.println("\nYou have selected Badulla to Colombo\n");
+                    displayAvailableSeats(badullaToColombo, toBadullaPassengersNameList);
+                } else {
+                    System.out.println("\nYou have selected Colombo to Badulla\n");
+                    displayAvailableSeats(colomboToBadulla, toColomboPassengersNameList);
+                }
             }
             welcomeWindow.close();
         });
@@ -544,7 +420,7 @@ public class Main extends Application {
         }
     }
 
-    private void allSeatsDisplay(HashMap<Integer, String> passengerDestination, int i, RadioButton seat) {
+    private void allSeatsDisplay(HashMap<Integer, String> passengerDestination, int i, Button seat) {
         if (passengerDestination.containsKey(i)) {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         } else {
@@ -552,7 +428,7 @@ public class Main extends Application {
         }
     }
 
-    private void emptySeatsDisplay(HashMap<Integer, String> passengerDestination, int i, RadioButton seat) {
+    private void emptySeatsDisplay(HashMap<Integer, String> passengerDestination, int i, Button seat) {
         if (passengerDestination.containsKey(i)) {
             seat.setStyle(null);
             seat.setDisable(true);
@@ -561,7 +437,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatBookingAction(RadioButton seat, HashMap<Integer, String> passengerDestination, int i, List<String> passengersNameList) {
+    private void seatBookingAction(Button seat, HashMap<Integer, String> passengerDestination, int i, List<String> passengersNameList) {
         seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         });
@@ -569,6 +445,7 @@ public class Main extends Application {
         seat.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
             seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         });
+
 
         if (passengerDestination.containsKey(i)) {
             seat.setStyle(null);
@@ -651,6 +528,7 @@ public class Main extends Application {
                         //ignoring the runtime error which occurs by JavaFX which I dont know exactly
                     }
                 }
+
             });
         }
     }
@@ -661,10 +539,8 @@ public class Main extends Application {
             leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
 
         for (int i = 1; i <= 11; i++) {
-            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
+            Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
-            seat.getStyleClass().remove("radio-button");
-            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowOne.getChildren().add(seat);
             leftSeatsRowOne.setSpacing(5);
@@ -682,10 +558,8 @@ public class Main extends Application {
         }
 
         for (int i = 12; i <= 21; i++) {
-            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
+            Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
-            seat.getStyleClass().remove("radio-button");
-            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowTwo.getChildren().add(seat);
             leftSeatsRowTwo.setSpacing(5);
@@ -703,10 +577,8 @@ public class Main extends Application {
         }
 
         for (int i = 22; i <= 31; i++) {
-            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
+            Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
-            seat.getStyleClass().remove("radio-button");
-            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             RightSeatsRowOne.getChildren().add(seat);
             RightSeatsRowOne.setSpacing(5);
@@ -725,10 +597,8 @@ public class Main extends Application {
         }
 
         for (int i = 32; i <= SEATING_CAPACITY; i++) {
-            RadioButton seat = new RadioButton("Seat " + String.format("%02d", i));
+            Button seat = new Button("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
-            seat.getStyleClass().remove("radio-button");
-            seat.getStyleClass().add("toggle-button");
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             RightSeatsRowTwo.getChildren().add(seat);
             RightSeatsRowTwo.setSpacing(5);
