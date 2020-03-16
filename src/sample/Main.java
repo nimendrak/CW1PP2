@@ -8,7 +8,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -30,16 +29,9 @@ public class Main extends Application {
     @Override
     public void start(Stage window) throws Exception {
 
-        // Create a HashMap object called badullaToColombo to store userName and seatNumber and array to store passengers' names
-        HashMap<Integer, String> badullaToColombo = new HashMap<>();
-        List<String> toColomboPassengersNameList = new ArrayList<>();
-
-        // Create a HashMap object called colomboToBadulla to store userName and seatNumber and array to store passengers' names
-        HashMap<Integer, String> colomboToBadulla = new HashMap<>();
-        List<String> toBadullaPassengersNameList = new ArrayList<>();
+        String[][][][] passengersArray = new String[2][30][SEATING_CAPACITY][4];
 
         Scanner sc = new Scanner(System.in);
-        int welcomeScreenType;
         String userOption;
 
         System.out.println("\n***************************************************");
@@ -64,45 +56,42 @@ public class Main extends Application {
             switch (userOption) {
                 case "A":
                 case "a":
-                    welcomeScreenType = 1;
-                    welcomeScreen(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList, welcomeScreenType);
+                    welcomeScreen(passengersArray, 1);
                     break;
 
                 case "V":
                 case "v":
-                    welcomeScreenType = 2;
-                    welcomeScreen(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList, welcomeScreenType);
+                    welcomeScreen(passengersArray, 2);
                     break;
 
                 case "E":
                 case "e":
-                    welcomeScreenType = 3;
-                    welcomeScreen(badullaToColombo, colomboToBadulla, toColomboPassengersNameList, toBadullaPassengersNameList, welcomeScreenType);
+                    welcomeScreen(passengersArray, 3);
                     break;
 
                 case "D":
                 case "d":
-                    deleteCustomer(badullaToColombo, colomboToBadulla, sc);
+                    //deleteCustomer(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "F":
                 case "f":
-                    findSeat(badullaToColombo, colomboToBadulla, sc, toColomboPassengersNameList, toBadullaPassengersNameList);
+                    //findSeat(badullaToColombo, colomboToBadulla, sc, toColomboPassengersNameList, toBadullaPassengersNameList);
                     break;
 
                 case "S":
                 case "s":
-                    storeData(badullaToColombo, colomboToBadulla, sc);
+                    //storeData(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "L":
                 case "l":
-                    loadProgramFile(badullaToColombo, colomboToBadulla, sc);
+                    //loadProgramFile(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "O":
                 case "o":
-                    alphabeticalOrder(badullaToColombo, colomboToBadulla, sc);
+                    //alphabeticalOrder(badullaToColombo, colomboToBadulla, sc);
                     break;
 
                 case "q":
@@ -110,7 +99,7 @@ public class Main extends Application {
                     System.out.print("\nIf you want to store data before you exit from the program\nPrompt \"S\" or prompt any key to Exit : ");
                     String option = sc.next();
                     if (option.equalsIgnoreCase("s")) {
-                        storeData(badullaToColombo, colomboToBadulla, sc);
+                        //storeData(badullaToColombo, colomboToBadulla, sc);
                     } else {
                         System.out.println("\nProgram is now Exiting..");
                     }
@@ -123,7 +112,7 @@ public class Main extends Application {
         } while (!userOption.equals("q"));
     }
 
-    private void welcomeScreen(HashMap badullaToColombo, HashMap colomboToBadulla, List toColomboPassengersNameList, List toBadullaPassengersNameList, int welcomeScreenType) {
+    private void welcomeScreen(String[][][][] passengersArray, int welcomeScreenType) {
         Stage welcomeWindow = new Stage();
         welcomeWindow.setTitle("Welcome!");
 
@@ -138,7 +127,7 @@ public class Main extends Application {
         Label labelMain = new Label("Denuwara Manike Train Seats Booking Program");
         labelMain.setFont(new Font("Arial Bold", 18));
 
-        Label labePrimary = new Label("v2.0");
+        Label labePrimary = new Label("v3.0");
         labePrimary.setFont(new Font("Arial", 12));
 
         Label destinationsLabel = new Label("Select your Destination");
@@ -149,6 +138,12 @@ public class Main extends Application {
         ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
         comboBox.getSelectionModel().select(0);
 
+        Label dataLabel = new Label("Select your date");
+        dataLabel.setFont(new Font("Arial", 15));
+        dataLabel.setPadding(new Insets(30, 0, 0, 0));
+
+        DatePicker checkInDatePicker = new DatePicker();
+
         Button emptySpace = new Button();
         emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
         emptySpace.setMinSize(0, 15);
@@ -156,31 +151,38 @@ public class Main extends Application {
         Button continueBtn = new Button("Continue");
 
         continueBtn.setOnAction(event -> {
+            int station;
+            int pickedDate = Integer.parseInt(String.valueOf(checkInDatePicker.getValue()).substring(8, 10));
+
             if (welcomeScreenType == 1) {
                 if (comboBox.getValue().equals("Badulla to Colombo")) {
                     System.out.println("\nYou have selected Badulla to Colombo\n");
-                    addCustomer(badullaToColombo, toBadullaPassengersNameList);
+                    station = 0;
+                    addCustomer(passengersArray, station, pickedDate);
                 } else {
                     System.out.println("\nYou have selected Colombo to Badulla\n");
-                    addCustomer(colomboToBadulla, toColomboPassengersNameList);
+                    station = 1;
+                    addCustomer(passengersArray, station, pickedDate);
                 }
-
             } else if (welcomeScreenType == 2) {
                 if (comboBox.getValue().equals("Badulla to Colombo")) {
                     System.out.println("\nYou have selected Badulla to Colombo\n");
-                    displayAllSeats(badullaToColombo, toBadullaPassengersNameList);
+                    station = 0;
+                    allSeatsDisplay(passengersArray, station, pickedDate);
                 } else {
                     System.out.println("\nYou have selected Colombo to Badulla\n");
-                    displayAllSeats(colomboToBadulla, toColomboPassengersNameList);
+                    station = 1;
+                    allSeatsDisplay(passengersArray, station, pickedDate);
                 }
-
             } else if (welcomeScreenType == 3) {
                 if (comboBox.getValue().equals("Badulla to Colombo")) {
                     System.out.println("\nYou have selected Badulla to Colombo\n");
-                    displayAvailableSeats(badullaToColombo, toBadullaPassengersNameList);
+                    station = 0;
+                    emptySeatsDisplay(passengersArray, station, pickedDate);
                 } else {
                     System.out.println("\nYou have selected Colombo to Badulla\n");
-                    displayAvailableSeats(colomboToBadulla, toColomboPassengersNameList);
+                    station = 1;
+                    emptySeatsDisplay(passengersArray, station, pickedDate);
                 }
             }
             welcomeWindow.close();
@@ -211,7 +213,7 @@ public class Main extends Application {
             //ignored
         }
 
-        vBox.getChildren().addAll(labelMain, labePrimary, destinationsLabel, comboBox, emptySpace, continueBtn);
+        vBox.getChildren().addAll(labelMain, labePrimary, destinationsLabel, comboBox, dataLabel, checkInDatePicker, emptySpace, continueBtn);
         pane.getChildren().add(vBox);
 
         welcomeWindow.setScene(mainScene);
@@ -292,254 +294,13 @@ public class Main extends Application {
         alertBoxWindow.showAndWait();
     }
 
-    private void loadProgramFile(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
-        System.out.println("--------------------------------------------------");
-
-        System.out.println("\n**********************");
-        System.out.println("LOAD PROGRAM FROM DATA");
-        System.out.println("**********************\n");
-
-        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
-        String option = sc.next();
-
-        switch (option) {
-            case "1":
-                File file1 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\colomboToBadullaPassengers.txt");
-                List<String> toBadullaPassengersNameList = new ArrayList<>(colomboToBadulla.values());
-                loadProgramFileMain(colomboToBadulla, toBadullaPassengersNameList, file1);
-                break;
-            case "2":
-                File file2 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\badullaToColomboPassengers.txt");
-                List<String> toColomboPassengersNameList = new ArrayList<>(badullaToColombo.values());
-                loadProgramFileMain(badullaToColombo, toColomboPassengersNameList, file2);
-                break;
-            default:
-                System.out.println("You have entered a invalid input");
-                break;
-        }
-        System.out.println("\n--------------------------------------------------");
-    }
-
-    private void loadProgramFileMain(HashMap<Integer, String> passengers, List<String> userNameList, File file) {
-        BufferedReader bufferedReader = null;
-
-        try {
-            //create BufferedReader object from the File
-            bufferedReader = new BufferedReader(new FileReader(file));
-
-            String line;
-
-            //read file line by line
-            while ((line = bufferedReader.readLine()) != null) {
-
-                //split the line by :
-                String[] parts = line.split(" has booked seat #");
-
-                //first part is name, second is age
-                String passengerName = parts[0].trim();
-                Integer passengerSeat = Integer.parseInt(parts[1].trim());
-
-                //put name, age in HashMap if they are not empty
-                if (!passengerName.equals("") && !passengerSeat.equals(""))
-                    passengers.put(passengerSeat, passengerName);
-                userNameList.add(passengerName);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            //Always close the BufferedReader
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                    System.out.println("\nStored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats");
-                } catch (Exception e) {
-                    //ignored
-                }
-            }
-        }
-    }
-
-    private void storeData(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
-        System.out.println("--------------------------------------------------");
-
-        System.out.println("\n**********");
-        System.out.println("STORE DATA");
-        System.out.println("**********\n");
-
-        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
-        String option = sc.next();
-
-        switch (option) {
-            case "1":
-                File file1 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\colomboToBadullaPassengers.txt");
-                storeDataMain(colomboToBadulla, file1);
-                break;
-            case "2":
-                File file2 = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\badullaToColomboPassengers.txt");
-                storeDataMain(badullaToColombo, file2);
-                break;
-            default:
-                System.out.println("You have entered a invalid input");
-                break;
-        }
-        System.out.println("\n--------------------------------------------------");
-    }
-
-    private void storeDataMain(HashMap<Integer, String> passengers, File file) {
-        //new file object
-        BufferedWriter bufferedWriter = null;
-
-        if (passengers.isEmpty()) {
-            System.out.println("\nNo seats have been booked yet!");
-        } else {
-            try {
-                //create new BufferedWriter for the output file
-                bufferedWriter = new BufferedWriter(new FileWriter(file, true));
-                //iterate map entries
-                for (Map.Entry<Integer, String> entry : passengers.entrySet()) {
-                    //put key and value
-                    bufferedWriter.write(entry.getValue() + " has booked seat #" + entry.getKey());
-                    //new line
-                    bufferedWriter.newLine();
-                }
-
-                bufferedWriter.flush();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    System.out.println("\nData has been successfully stored!");
-                    //always close the writer
-                    bufferedWriter.close();
-                } catch (Exception e) {
-                    //error ignored
-                }
-            }
-        }
-    }
-
-    private void allSeatsDisplay(HashMap<Integer, String> passengerDestination, int i, Button seat) {
-        if (passengerDestination.containsKey(i)) {
-            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-        } else {
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        }
-    }
-
-    private void emptySeatsDisplay(HashMap<Integer, String> passengerDestination, int i, Button seat) {
-        if (passengerDestination.containsKey(i)) {
-            seat.setStyle(null);
-            seat.setDisable(true);
-        } else {
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        }
-    }
-
-    private void seatBookingAction(Button seat, HashMap<Integer, String> passengerDestination, int i, List<String> passengersNameList) {
-        seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        });
-
-        seat.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
-            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-        });
-
-
-        if (passengerDestination.containsKey(i)) {
-            seat.setStyle(null);
-            seat.setDisable(true);
-        } else {
-            seat.setOnAction(event -> {
-                if (!passengerDestination.containsKey(seat.getId())) {
-                    try {
-                        Stage confirmationBox = new Stage();
-                        confirmationBox.initModality(Modality.APPLICATION_MODAL);
-
-                        FlowPane flowPane = new FlowPane();
-                        flowPane.setPadding(new Insets(30));
-
-                        Image windowIcon = new Image(getClass().getResourceAsStream("pendingIcon.png"));
-                        confirmationBox.getIcons().add(windowIcon);
-
-                        confirmationBox.setTitle("Confirmation");
-
-                        VBox vBox = new VBox();
-                        HBox hBox = new HBox();
-                        vBox.setAlignment(Pos.CENTER);
-                        hBox.setAlignment(Pos.CENTER);
-
-                        Text userNameTxt = new Text("Enter your name");
-                        TextField userNameTxtField = new TextField();
-
-                        Button confirmUser = new Button("Confirm");
-                        confirmUser.setDisable(true);
-
-                        Button cancelBtn = new Button("Cancel");
-                        cancelBtn.setOnAction(event1 -> confirmationBox.hide());
-
-                        hBox.getChildren().addAll(confirmUser, cancelBtn);
-                        hBox.setPadding(new Insets(0, 0, 0, 45));
-                        hBox.setSpacing(10);
-
-                        vBox.getChildren().addAll(userNameTxt, userNameTxtField);
-                        vBox.setPadding(new Insets(0, 0, 10, 25));
-                        vBox.setSpacing(10);
-
-                        flowPane.getChildren().addAll(vBox, hBox);
-
-                        //user must enter at least two character as the name to confirm his/her booking
-                        userNameTxtField.setOnKeyTyped(event1 -> {
-                            if (userNameTxtField.getText().isEmpty()) {
-                                confirmUser.setDisable(true);
-                            } else {
-                                confirmUser.setDisable(false);
-                            }
-                        });
-
-                        confirmUser.setOnAction(event2 -> {
-                            //print the current action in console
-                            System.out.println(userNameTxtField.getText().toLowerCase() + " has booked Seat #" + seat.getId());
-
-                            //if user name already added to the userNameList it won't added again
-                            if (passengersNameList.contains(userNameTxtField.getText().toLowerCase())) {
-                                //put data to the hashMap
-                                passengerDestination.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
-                            } else {
-                                passengerDestination.put(Integer.valueOf(seat.getId()), userNameTxtField.getText().toLowerCase());
-                                //add names to the userNameList
-                                passengersNameList.add(userNameTxtField.getText().toLowerCase());
-                            }
-
-                            //popup alertBox
-                            alertBoxWindowTypeTwo("You have successfully booked Seat #" + seat.getId());
-                            //change color of the booked seat and disable it
-                            seat.setStyle(null);
-                            seat.setDisable(true);
-                            confirmationBox.close();
-                        });
-
-                        Scene confirmationBoxScene = new Scene(flowPane, 300, 175);
-                        confirmationBox.setScene(confirmationBoxScene);
-                        confirmationBox.showAndWait();
-
-                    } catch (Exception ignored) {
-                        //ignoring the runtime error which occurs by JavaFX which I dont know exactly
-                    }
-                }
-
-            });
-        }
-    }
-
     /* i've used 4 different for loops to print seats as vertical rows, so each row should contain a action
     that each seat can perform in a specific condition whether it could be select only or display only */
-    private void seatDisplay(HashMap<Integer, String> passengerDestination, List<String> passengersNameList, VBox
+    private void seatDisplay(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, List<Integer> seatNumbers, Stage window, VBox
             leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
 
         for (int i = 1; i <= 11; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowOne.getChildren().add(seat);
@@ -547,76 +308,236 @@ public class Main extends Application {
             seat.setCursor(Cursor.HAND);
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengerDestination, i, passengersNameList);
+                if (seatNumbers.contains(i)) {
+                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                } else {
+                    seat.setOnAction((e) -> {
+                        if (seat.isSelected()) {
+                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                            selectedSeats.add(Integer.valueOf(seat.getId()));
+                        } else {
+                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+                            selectedSeats.remove(Integer.valueOf(seat.getId()));
+                        }
+                        System.out.println(selectedSeats);
+                    });
+                }
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengerDestination, i, seat);
+                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengerDestination, i, seat);
+                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
         }
 
         for (int i = 12; i <= 21; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             leftSeatsRowTwo.getChildren().add(seat);
             leftSeatsRowTwo.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
+            if (seatNumbers.contains(i)) {
+                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+            } else {
+                seat.setOnAction((e) -> {
+                    if (seat.isSelected()) {
+                        seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                        selectedSeats.add(Integer.valueOf(seat.getId()));
+                    } else {
+                        seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+                        selectedSeats.remove(Integer.valueOf(seat.getId()));
+                    }
+                    System.out.println(selectedSeats);
+                });
+            }
+
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengerDestination, i, passengersNameList);
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengerDestination, i, seat);
+                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengerDestination, i, seat);
+                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
         }
 
         for (int i = 22; i <= 31; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             RightSeatsRowOne.getChildren().add(seat);
-            RightSeatsRowOne.setSpacing(5);
             RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
+            RightSeatsRowOne.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
+            if (seatNumbers.contains(i)) {
+                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+            } else {
+                seat.setOnAction((e) -> {
+                    if (seat.isSelected()) {
+                        seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                        selectedSeats.add(Integer.valueOf(seat.getId()));
+                    } else {
+                        seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+                        selectedSeats.remove(Integer.valueOf(seat.getId()));
+                    }
+                    System.out.println(selectedSeats);
+                });
+            }
+
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengerDestination, i, passengersNameList);
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengerDestination, i, seat);
+                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengerDestination, i, seat);
+                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
         }
 
         for (int i = 32; i <= SEATING_CAPACITY; i++) {
-            Button seat = new Button("Seat " + String.format("%02d", i));
+            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
             seat.setId(Integer.toString(i));
             seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
             RightSeatsRowTwo.getChildren().add(seat);
             RightSeatsRowTwo.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
+            if (seatNumbers.contains(i)) {
+                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+            } else {
+                seat.setOnAction((e) -> {
+                    if (seat.isSelected()) {
+                        seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                        selectedSeats.add(Integer.valueOf(seat.getId()));
+                    } else {
+                        seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+                        selectedSeats.remove(Integer.valueOf(seat.getId()));
+                    }
+                    System.out.println(selectedSeats);
+                });
+            }
+
             if (actionType.equals("seatAction")) {
-                seatBookingAction(seat, passengerDestination, i, passengersNameList);
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
             }
             if (actionType.equals("emptySeats")) {
-                emptySeatsDisplay(passengerDestination, i, seat);
+                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
             if (actionType.equals("allSeats")) {
-                allSeatsDisplay(passengerDestination, i, seat);
+                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
         }
     }
 
-    private void addCustomer(HashMap passengerDestination, List<String> passengersNameList) {
+    private void seatBookingAction(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, Stage window) {
+        bookBtn.setOnAction(event -> {
+            try {
+                Stage confirmationBox = new Stage();
+                confirmationBox.initModality(Modality.APPLICATION_MODAL);
+
+                FlowPane flowPane2 = new FlowPane();
+                flowPane2.setPadding(new Insets(30));
+
+                Image windowIcon2 = new Image(getClass().getResourceAsStream("pendingIcon.png"));
+                confirmationBox.getIcons().add(windowIcon2);
+
+                confirmationBox.setTitle("Confirmation");
+
+                VBox vBox = new VBox();
+                HBox hBox2 = new HBox();
+
+                Label headerConfirmationBox = new Label("Prompt Passenger's Details");
+                headerConfirmationBox.setFont(new Font("Arial Bold", 22));
+                headerConfirmationBox.setTextFill(Paint.valueOf("#414141"));
+                headerConfirmationBox.setPadding(new Insets(0, 0, 30, 0));
+
+                Text userNameTxt = new Text("Enter your name");
+                TextField userNameTxtField = new TextField();
+
+                Text userMobileTxt = new Text("Enter your mobile number");
+                TextField userMobileTxtField = new TextField();
+
+                Text userNicTxt = new Text("Enter your NIC");
+                TextField userNicTxtTxtField = new TextField();
+
+                Button confirmUser = new Button("Confirm");
+                confirmUser.setDisable(true);
+
+                Button cancelBtn = new Button("Cancel");
+                cancelBtn.setOnAction(event1 -> confirmationBox.hide());
+
+                hBox2.getChildren().addAll(confirmUser, cancelBtn);
+                hBox2.setPadding(new Insets(50, 0, 0, 0));
+                hBox2.setSpacing(10);
+
+                vBox.getChildren().addAll(headerConfirmationBox, userNameTxt, userNameTxtField, userMobileTxt, userMobileTxtField, userNicTxt, userNicTxtTxtField, hBox2);
+                vBox.setSpacing(10);
+
+                flowPane2.getChildren().addAll(vBox);
+
+                //user must enter at least two character as the name to confirm his/her booking
+                userNicTxtTxtField.setOnKeyTyped(event1 -> {
+                    if (userNicTxtTxtField.getText().isEmpty()) {
+                        confirmUser.setDisable(true);
+                    } else {
+                        confirmUser.setDisable(false);
+                    }
+                });
+                System.out.println("\n------------------");
+                System.out.println("Confirmed Bookings");
+                System.out.println("------------------\n");
+                confirmUser.setOnAction(event2 -> {
+                    for (int j : selectedSeats) {
+                        passengersArray[station][pickedDate - 1][j - 1][0] = userNameTxtField.getText().toLowerCase();
+                        passengersArray[station][pickedDate - 1][j - 1][1] = userMobileTxtField.getText();
+                        passengersArray[station][pickedDate - 1][j - 1][2] = userNicTxtTxtField.getText();
+                        passengersArray[station][pickedDate - 1][j - 1][3] = String.valueOf(j);
+
+                        //System.out.println(checkInDatePicker.getValue());
+
+                        if (station == 0) {
+                            System.out.println("Destination - Badulla to Colombo");
+                        } else {
+                            System.out.println("Destination - Colombo to Badulla");
+                        }
+
+                        System.out.println("Passenger name - " + passengersArray[station][pickedDate - 1][j - 1][0]);
+                        System.out.println("Mobile Number - " + passengersArray[station][pickedDate - 1][j - 1][1]);
+                        System.out.println("NIC - " + passengersArray[station][pickedDate - 1][j - 1][2]);
+                        System.out.println("Seat #" + passengersArray[station][pickedDate - 1][j - 1][3]);
+                        System.out.println();
+
+                        //popup alertBox
+                        alertBoxWindowTypeTwo("You have successfully booked Seat #" + passengersArray[station][pickedDate - 1][j - 1][3]);
+                    }
+                    confirmationBox.close();
+                    window.close();
+                });
+
+                Scene confirmationBoxScene = new Scene(flowPane2, 350, 420);
+                confirmationBox.setScene(confirmationBoxScene);
+                confirmationBox.showAndWait();
+
+            } catch (Exception ignored) {
+                //ignoring the runtime error which occurs by JavaFX which I dont know exactly
+            }
+        });
+    }
+
+    private void addCustomer(String[][][][] passengersArray, int station, int pickedDate) {
+        System.out.println(station);
+        System.out.println(pickedDate);
+
+        List<Integer> selectedSeats = new ArrayList<>();
+        List<Integer> seatNumbers = new ArrayList<>();
+
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n************************");
@@ -624,7 +545,13 @@ public class Main extends Application {
         System.out.println("************************\n");
 
         Stage window = new Stage();
-        window.setTitle("Train Seats Booking Program");
+
+        if (station == 0) {
+            window.setTitle("Destination - Badulla to Colombo");
+        } else {
+            window.setTitle("Destination - Colombo to Badulla");
+        }
+
         window.initModality(Modality.APPLICATION_MODAL);
 
         Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
@@ -651,7 +578,7 @@ public class Main extends Application {
 
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER);
-        hBox.setPadding(new Insets(41, 0, 0, 162));
+        hBox.setPadding(new Insets(41, 0, 0, 135));
         hBox.setSpacing(10);
 
         VBox leftSeatsRowOne = new VBox();
@@ -659,7 +586,16 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(passengerDestination, passengersNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
+        Button bookBtn = new Button("Book");
+
+        for (int i = 0; i < 42; i++) {
+            if (passengersArray[station][pickedDate - 1][i][3] != null) {
+                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][i][3]));
+            }
+        }
+        System.out.println(seatNumbers);
+
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -669,76 +605,35 @@ public class Main extends Application {
             alertBoxWindowTypeOne(window);
         });
 
-        hBox.getChildren().addAll(closeBtn);
+        hBox.getChildren().addAll(bookBtn, closeBtn);
         flowPane.getChildren().addAll(hBox);
 
         window.setScene(scene);
         window.showAndWait();
 
-        System.out.println("\n--------------------------------------------------");
-    }
-
-    private void displayAvailableSeats(HashMap passengerDestination, List<String> passengersNameList) {
-        System.out.println("--------------------------------------------------");
-
-        System.out.println("\n*******************");
-        System.out.println("DISPLAY EMPTY SEATS");
-        System.out.println("*******************\n");
-
-        Stage window = new Stage();
-        window.setTitle("Train Seat Booking Program");
-
-        Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
-        window.getIcons().add(windowIcon);
-
-        FlowPane flowPane = new FlowPane();
-        flowPane.setHgap(10);
-        flowPane.setVgap(10);
-        flowPane.setPadding(new Insets(30));
-
-        Scene scene = new Scene(flowPane, 442, 600);
-
-        Label header = new Label("Check Available Seats");
-        header.setFont(new Font("Arial Bold", 22));
-        header.setTextFill(Paint.valueOf("#414141"));
-        header.setPadding(new Insets(0, 150, 25, 80));
-
-        flowPane.getChildren().addAll(header);
-
-        VBox leftSeatsRowOne = new VBox();
-        VBox leftSeatsRowTwo = new VBox();
-        VBox RightSeatsRowOne = new VBox();
-        VBox RightSeatsRowTwo = new VBox();
-
-        seatDisplay(passengerDestination, passengersNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
-
-        flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
-
-        Button emptySpace = new Button();
-        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace.setMinSize(450, 10);
-
-        Button colorOneButton = new Button();
-        colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        colorOneButton.setMinSize(33, 10);
-
-        Label colorOneLabel = new Label("Available Seats");
-
-        Button emptySpace2 = new Button();
-        emptySpace2.setStyle("-fx-background-color: rgba(0,0,0,0)");
-        emptySpace2.setMinSize(163, 10);
-
-        Button closeBtn = new Button("Close");
-        closeBtn.setOnAction(event -> window.close());
-
-        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, emptySpace2, closeBtn);
-        window.setScene(scene);
-        window.showAndWait();
-
         System.out.println("--------------------------------------------------");
     }
 
-    private void displayAllSeats(HashMap passengerDestination, List<String> passengersNameList) {
+    private void allSeatsDisplayAction(String[][][][] passengersArray, int station, int pickedDate, ToggleButton seat, int i) {
+        List<Integer> seatNumbers = new ArrayList<>();
+
+        for (int j = 0; j < 42; j++) {
+            if (passengersArray[station][pickedDate - 1][j][3] != null) {
+                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][j][3]));
+            }
+        }
+
+        if (seatNumbers.contains(i)) {
+            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+        } else {
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+        }
+    }
+
+    private void allSeatsDisplay(String[][][][] passengersArray, int station, int pickedDate) {
+        List<Integer> selectedSeats = new ArrayList<>();
+        List<Integer> seatNumbers = new ArrayList<>();
+
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*****************");
@@ -746,7 +641,11 @@ public class Main extends Application {
         System.out.println("*****************\n");
 
         Stage window = new Stage();
-        window.setTitle("Train Seat Booking Program");
+        if (station == 0) {
+            window.setTitle("Destination - Badulla to Colombo");
+        } else {
+            window.setTitle("Destination - Colombo to Badulla");
+        }
 
         Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
         window.getIcons().add(windowIcon);
@@ -770,7 +669,9 @@ public class Main extends Application {
         VBox RightSeatsRowOne = new VBox();
         VBox RightSeatsRowTwo = new VBox();
 
-        seatDisplay(passengerDestination, passengersNameList, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
+        Button bookBtn = new Button();
+
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -805,173 +706,90 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
     }
 
-    private void findSeat(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc, List toColomboPassengersNameList, List toBadullaPassengersNameList) {
-        System.out.println("--------------------------------------------------");
+    private void emptySeatsDisplayAction(String[][][][] passengersArray, int station, int pickedDate, ToggleButton seat, int i) {
+        List<Integer> seatNumbers = new ArrayList<>();
 
-        System.out.println("\n**************");
-        System.out.println("FIND USER SEAT");
-        System.out.println("**************\n");
-
-        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
-        String option = sc.next();
-
-        switch (option) {
-            case "1":
-                findSeatMain(colomboToBadulla, sc, toColomboPassengersNameList);
-                break;
-            case "2":
-                findSeatMain(badullaToColombo, sc, toBadullaPassengersNameList);
-                break;
-            default:
-                System.out.println("You have entered a invalid input");
-                break;
+        for (int j = 0; j < 42; j++) {
+            if (passengersArray[station][pickedDate - 1][j][3] != null) {
+                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][j][3]));
+            }
         }
-        System.out.println("--------------------------------------------------");
-    }
 
-    private void findSeatMain(HashMap passengerDestination, Scanner sc, List<String> passengersNameList) {
-        if (passengerDestination.isEmpty()) {
-            System.out.println("\nNo seats have been booked yet!");
+        if (seatNumbers.contains(i)) {
+            seat.setStyle(null);
+            seat.setDisable(true);
         } else {
-            System.out.print("\nPrompt your name to find the seat : ");
-            String findUserName = sc.next();
-            System.out.println();
-            if (passengerDestination.containsValue(findUserName)) {
-                for (String s : passengersNameList) {
-                    if (s.equalsIgnoreCase(findUserName)) {
-                        for (Object o : passengerDestination.keySet()) {
-                            if (passengerDestination.get(o).equals(findUserName)) {
-                                System.out.println(s + " has booked Seat #" + o);
-                            }
-                        }
-                    }
-                }
-            } else {
-                System.out.println("\nNo seat has been booked under " + findUserName);
-            }
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         }
     }
 
-    private void deleteCustomer(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
+    private void emptySeatsDisplay(String[][][][] passengersArray, int station, int pickedDate) {
+        List<Integer> selectedSeats = new ArrayList<>();
+        List<Integer> seatNumbers = new ArrayList<>();
+
         System.out.println("--------------------------------------------------");
 
-        System.out.println("\n*************");
-        System.out.println("DELETE A SEAT");
-        System.out.println("*************\n");
+        System.out.println("\n*******************");
+        System.out.println("DISPLAY EMPTY SEATS");
+        System.out.println("*******************\n");
 
-        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
-        String option = sc.next();
-
-        switch (option) {
-            case "1":
-                deleteCustomerMain(colomboToBadulla, sc);
-                break;
-            case "2":
-                deleteCustomerMain(badullaToColombo, sc);
-                break;
-            default:
-                System.out.println("You have entered a invalid input");
-                break;
-        }
-        System.out.println("\n--------------------------------------------------");
-    }
-
-    public void deleteCustomerMain(HashMap<Integer, String> passengerDestination, Scanner sc) {
-        int removedSeatNumber;
-        String removedSeatName;
-
-        if (passengerDestination.isEmpty()) {
-            System.out.println("\nNo seats have been booked yet!");
+        Stage window = new Stage();
+        if (station == 0) {
+            window.setTitle("Destination - Badulla to Colombo");
         } else {
-            System.out.print("\nWhat is the name that you prompted to book your seat (Prompt Username) : ");
-            removedSeatName = sc.next();
-
-            if (!passengerDestination.containsValue(removedSeatName)) {
-                System.out.println("\nNo seat has been booked under " + removedSeatName);
-            } else {
-                System.out.println("\nYou have booked these seats;");
-                if (passengerDestination.containsValue(removedSeatName)) {
-                    for (HashMap.Entry<Integer, String> entry : passengerDestination.entrySet()) {
-                        if (removedSeatName.equals(entry.getValue())) {
-                            System.out.print(entry.getKey() + " ");
-                        }
-                    }
-
-                    System.out.print("\nWhich seat do you want to delete (Prompt Seat Number) : ");
-                    while (!sc.hasNextInt()) {
-                        System.out.println("Prompt Integers!!");
-                        System.out.print("\nWhich seat do you want to delete (Prompt Seat Number) : ");
-                        sc.next();
-                    }
-                    removedSeatNumber = sc.nextInt();
-
-                    if (passengerDestination.containsKey(removedSeatNumber)) {
-                        passengerDestination.remove(removedSeatNumber);
-                        System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
-                    } else {
-                        System.out.println("\nYou did not book any seats under this seat #" + removedSeatNumber);
-                    }
-                }
-            }
+            window.setTitle("Destination - Colombo to Badulla");
         }
-    }
 
-    private void alphabeticalOrder(HashMap badullaToColombo, HashMap colomboToBadulla, Scanner sc) {
+        Image windowIcon = new Image(getClass().getResourceAsStream("seatIcon.png"));
+        window.getIcons().add(windowIcon);
+
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(10);
+        flowPane.setVgap(10);
+        flowPane.setPadding(new Insets(30));
+
+        Scene scene = new Scene(flowPane, 442, 600);
+
+        Label header = new Label("Check Available Seats");
+        header.setFont(new Font("Arial Bold", 22));
+        header.setTextFill(Paint.valueOf("#414141"));
+        header.setPadding(new Insets(0, 150, 25, 80));
+
+        flowPane.getChildren().addAll(header);
+
+        VBox leftSeatsRowOne = new VBox();
+        VBox leftSeatsRowTwo = new VBox();
+        VBox RightSeatsRowOne = new VBox();
+        VBox RightSeatsRowTwo = new VBox();
+
+        Button bookBtn = new Button();
+
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
+
+        flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
+
+        Button emptySpace = new Button();
+        emptySpace.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace.setMinSize(450, 10);
+
+        Button colorOneButton = new Button();
+        colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+        colorOneButton.setMinSize(33, 10);
+
+        Label colorOneLabel = new Label("Available Seats");
+
+        Button emptySpace2 = new Button();
+        emptySpace2.setStyle("-fx-background-color: rgba(0,0,0,0)");
+        emptySpace2.setMinSize(163, 10);
+
+        Button closeBtn = new Button("Close");
+        closeBtn.setOnAction(event -> window.close());
+
+        flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, emptySpace2, closeBtn);
+        window.setScene(scene);
+        window.showAndWait();
+
         System.out.println("--------------------------------------------------");
-
-        System.out.println("\n*************************************************");
-        System.out.println("VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME");
-        System.out.println("*************************************************\n");
-
-        System.out.print("Select you destination\n1. To Badulla\n2. To Colombo\n\nPrompt 1 or 2 to continue : ");
-        String option = sc.next();
-
-        switch (option) {
-            case "1":
-                // Converting HashMap values into ArrayList
-                List<String> toBadullaPassengersNameList = new ArrayList<>(colomboToBadulla.values());
-                alphabeticalOrderMain(colomboToBadulla, toBadullaPassengersNameList);
-                break;
-            case "2":
-                // Converting HashMap values into ArrayList
-                List<String> toColomboPassengersNameList = new ArrayList<>(badullaToColombo.values());
-                alphabeticalOrderMain(badullaToColombo, toColomboPassengersNameList);
-                break;
-            default:
-                System.out.println("You have entered a invalid input");
-                break;
-        }
-        System.out.println("\n--------------------------------------------------");
-    }
-
-    private void alphabeticalOrderMain(HashMap passengerDestination, List<String> passengersNameList) {
-        String temp;
-        try {
-            if (passengerDestination.isEmpty()) {
-                System.out.println("\nNo seats have been booked yet!");
-            } else {
-                System.out.println();
-                for (int i = 0; i < passengersNameList.size(); i++) {
-                    for (int j = i + 1; j < passengersNameList.size(); j++) {
-                        if (passengersNameList.get(i).compareTo(passengersNameList.get(j)) > 0) {
-                            temp = passengersNameList.get(i);
-                            passengersNameList.set(i, passengersNameList.get(j));
-                            passengersNameList.set(j, temp);
-                        }
-                    }
-                }
-
-                for (String s : passengersNameList) {
-                    for (Object o : passengerDestination.keySet()) {
-                        if (passengerDestination.get(o).equals(s)) {
-                            System.out.println(s + " has booked seat #" + o);
-                        }
-                    }
-                }
-            }
-        } catch (Exception ignored) {
-            //ignored
-        }
     }
 }
 
