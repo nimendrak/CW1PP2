@@ -71,7 +71,7 @@ public class Main extends Application {
 
                 case "D":
                 case "d":
-                    //deleteCustomer(badullaToColombo, colomboToBadulla, sc);
+                    welcomeScreen(passengersArray, 4);
                     break;
 
                 case "F":
@@ -96,7 +96,7 @@ public class Main extends Application {
 
                 case "q":
                 case "Q":
-                    System.out.print("\nIf you want to store data before you exit from the program\nPrompt \"S\" or prompt any key to Exit : ");
+                    System.out.print("\nIf you want to store data before, you exit from the program\nPrompt \"S\" or prompt any key to Exit : ");
                     String option = sc.next();
                     if (option.equalsIgnoreCase("s")) {
                         //storeData(badullaToColombo, colomboToBadulla, sc);
@@ -153,45 +153,59 @@ public class Main extends Application {
         continueBtn.setOnAction(event -> {
             int station;
             int pickedDate = Integer.parseInt(String.valueOf(checkInDatePicker.getValue()).substring(8, 10));
+            String date = String.valueOf(checkInDatePicker.getValue());
 
             if (welcomeScreenType == 1) {
                 if (comboBox.getValue().equals("Badulla to Colombo")) {
-                    System.out.println("\nYou have selected Badulla to Colombo\n");
+                    System.out.println("\nYou selected to book seats on Badulla - Colombo => " + checkInDatePicker.getValue());
                     station = 0;
-                    addCustomer(passengersArray, station, pickedDate);
+                    addCustomer(passengersArray, station, pickedDate, date);
                 } else {
-                    System.out.println("\nYou have selected Colombo to Badulla\n");
+                    System.out.println("\nYou selected to book seats on Colombo - Badulla => " + checkInDatePicker.getValue());
                     station = 1;
-                    addCustomer(passengersArray, station, pickedDate);
+                    addCustomer(passengersArray, station, pickedDate, date);
                 }
             } else if (welcomeScreenType == 2) {
                 if (comboBox.getValue().equals("Badulla to Colombo")) {
-                    System.out.println("\nYou have selected Badulla to Colombo\n");
+                    System.out.println("\nYou selected to view seats on Badulla - Colombo => " + checkInDatePicker.getValue());
                     station = 0;
-                    allSeatsDisplay(passengersArray, station, pickedDate);
+                    allSeatsDisplay(passengersArray, station, pickedDate, date);
                 } else {
-                    System.out.println("\nYou have selected Colombo to Badulla\n");
+                    System.out.println("\nYou selected to view seats on Colombo - Badulla => " + checkInDatePicker.getValue());
                     station = 1;
-                    allSeatsDisplay(passengersArray, station, pickedDate);
+                    allSeatsDisplay(passengersArray, station, pickedDate, date);
                 }
             } else if (welcomeScreenType == 3) {
                 if (comboBox.getValue().equals("Badulla to Colombo")) {
-                    System.out.println("\nYou have selected Badulla to Colombo\n");
+                    System.out.println("\nYou selected to view seats on Badulla - Colombo => " + checkInDatePicker.getValue());
                     station = 0;
-                    emptySeatsDisplay(passengersArray, station, pickedDate);
+                    emptySeatsDisplay(passengersArray, station, pickedDate, date);
                 } else {
-                    System.out.println("\nYou have selected Colombo to Badulla\n");
+                    System.out.println("\nYou selected to view seats on Colombo - Badulla => " + checkInDatePicker.getValue());
                     station = 1;
-                    emptySeatsDisplay(passengersArray, station, pickedDate);
+                    emptySeatsDisplay(passengersArray, station, pickedDate, date);
+                }
+            } else if (welcomeScreenType == 4) {
+                if (comboBox.getValue().equals("Badulla to Colombo")) {
+                    System.out.println("\nYou selected to delete seats on Badulla - Colombo => " + checkInDatePicker.getValue());
+                    station = 0;
+                    welcomeWindow.close();
+                    deleteCustomer(passengersArray, station, pickedDate);
+                } else {
+                    System.out.println("\nYou selected to delete seats on Colombo - Badulla => " + checkInDatePicker.getValue());
+                    station = 1;
+                    welcomeWindow.close();
+                    deleteCustomer(passengersArray, station, pickedDate);
                 }
             }
-            welcomeWindow.close();
+            //welcomeWindow.close();
         });
 
         welcomeWindow.initModality(Modality.APPLICATION_MODAL);
 
         Scene mainScene = new Scene(pane, 550, 525);
 
+        //background image
         try {
             // create a input stream
             FileInputStream input = new FileInputStream("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\mainBg.jpg");
@@ -295,9 +309,9 @@ public class Main extends Application {
     }
 
     /* i've used 4 different for loops to print seats as vertical rows, so each row should contain a action
-    that each seat can perform in a specific condition whether it could be select only or display only */
+    that each seat can perform in a specific condition whether it could be book or display */
     private void seatDisplay(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, List<Integer> seatNumbers, Stage window, VBox
-            leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType) {
+            leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType, String date) {
 
         for (int i = 1; i <= 11; i++) {
             ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
@@ -322,7 +336,7 @@ public class Main extends Application {
                         System.out.println(selectedSeats);
                     });
                 }
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
@@ -356,7 +370,7 @@ public class Main extends Application {
             }
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
@@ -391,7 +405,7 @@ public class Main extends Application {
             }
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
@@ -425,7 +439,7 @@ public class Main extends Application {
             }
 
             if (actionType.equals("seatAction")) {
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window);
+                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
             }
             if (actionType.equals("emptySeats")) {
                 emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
@@ -436,7 +450,7 @@ public class Main extends Application {
         }
     }
 
-    private void seatBookingAction(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, Stage window) {
+    private void seatBookingAction(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, Stage window, String date) {
         bookBtn.setOnAction(event -> {
             try {
                 Stage confirmationBox = new Stage();
@@ -503,15 +517,16 @@ public class Main extends Application {
                         //System.out.println(checkInDatePicker.getValue());
 
                         if (station == 0) {
-                            System.out.println("Destination - Badulla to Colombo");
+                            System.out.println("Destination     - Badulla to Colombo");
                         } else {
-                            System.out.println("Destination - Colombo to Badulla");
+                            System.out.println("Destination     - Colombo to Badulla");
                         }
 
-                        System.out.println("Passenger name - " + passengersArray[station][pickedDate - 1][j - 1][0]);
-                        System.out.println("Mobile Number - " + passengersArray[station][pickedDate - 1][j - 1][1]);
-                        System.out.println("NIC - " + passengersArray[station][pickedDate - 1][j - 1][2]);
-                        System.out.println("Seat #" + passengersArray[station][pickedDate - 1][j - 1][3]);
+                        System.out.println("Booked Date     - " + date);
+                        System.out.println("Passenger name  - " + passengersArray[station][pickedDate - 1][j - 1][0]);
+                        System.out.println("Mobile Number   - " + passengersArray[station][pickedDate - 1][j - 1][1]);
+                        System.out.println("NIC             - " + passengersArray[station][pickedDate - 1][j - 1][2]);
+                        System.out.println("Seat            - #" + passengersArray[station][pickedDate - 1][j - 1][3]);
                         System.out.println();
 
                         //popup alertBox
@@ -531,10 +546,7 @@ public class Main extends Application {
         });
     }
 
-    private void addCustomer(String[][][][] passengersArray, int station, int pickedDate) {
-        System.out.println(station);
-        System.out.println(pickedDate);
-
+    private void addCustomer(String[][][][] passengersArray, int station, int pickedDate, String date) {
         List<Integer> selectedSeats = new ArrayList<>();
         List<Integer> seatNumbers = new ArrayList<>();
 
@@ -593,9 +605,8 @@ public class Main extends Application {
                 seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][i][3]));
             }
         }
-        System.out.println(seatNumbers);
 
-        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction");
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction", date);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -630,7 +641,7 @@ public class Main extends Application {
         }
     }
 
-    private void allSeatsDisplay(String[][][][] passengersArray, int station, int pickedDate) {
+    private void allSeatsDisplay(String[][][][] passengersArray, int station, int pickedDate, String date) {
         List<Integer> selectedSeats = new ArrayList<>();
         List<Integer> seatNumbers = new ArrayList<>();
 
@@ -671,7 +682,7 @@ public class Main extends Application {
 
         Button bookBtn = new Button();
 
-        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats");
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats", date);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -723,7 +734,7 @@ public class Main extends Application {
         }
     }
 
-    private void emptySeatsDisplay(String[][][][] passengersArray, int station, int pickedDate) {
+    private void emptySeatsDisplay(String[][][][] passengersArray, int station, int pickedDate, String date) {
         List<Integer> selectedSeats = new ArrayList<>();
         List<Integer> seatNumbers = new ArrayList<>();
 
@@ -763,8 +774,9 @@ public class Main extends Application {
         VBox RightSeatsRowTwo = new VBox();
 
         Button bookBtn = new Button();
+        DatePicker checkInDatePicker = new DatePicker();
 
-        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats");
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats", date);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -790,6 +802,70 @@ public class Main extends Application {
         window.showAndWait();
 
         System.out.println("--------------------------------------------------");
+    }
+
+    public void deleteCustomer(String[][][][] passengersArray, int station, int pickedDate) {
+        System.out.println("--------------------------------------------------");
+
+        System.out.println("\n*************");
+        System.out.println("DELETE A SEAT");
+        System.out.println("*************\n");
+
+        int removedSeatNumber;
+        String removedSeatName;
+
+        Scanner sc = new Scanner(System.in);
+        List<Integer> seatNumbers = new ArrayList<>();
+        List<String> passengerName = new ArrayList<>();
+
+        for (int i = 0; i < 42; i++) {
+            if (passengersArray[station][pickedDate - 1][i][3] != null) {
+                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][i][3]));
+            }
+        }
+
+        for (int i = 0; i < 42; i++) {
+            if (passengersArray[station][pickedDate - 1][i][3] != null) {
+                passengerName.add(passengersArray[station][pickedDate - 1][i][0]);
+            }
+        }
+
+        if (seatNumbers.isEmpty()) {
+            System.out.println("\nNo seats have been booked yet!");
+        } else {
+            System.out.print("What is the name that you prompted to book your seat/ seats (Prompt Username) : ");
+            removedSeatName = sc.next();
+
+            if (!passengerName.contains(removedSeatName)) {
+                System.out.println("\nNo seat has been booked under " + removedSeatName);
+            } else {
+                System.out.println("\nYou have booked these seats;");
+                if (passengerName.contains(removedSeatName)) {
+                    for (int seatNum : seatNumbers) {
+                        System.out.print(seatNum + " ");
+                    }
+                }
+            }
+
+            System.out.print("\nWhich seat do you want to delete (Prompt a Seat Number) : ");
+            while (!sc.hasNextInt()) {
+                System.out.println("Prompt Integers!!");
+                System.out.print("\nWhich seat do you want to delete (Prompt a Seat Number) : ");
+                sc.next();
+            }
+            removedSeatNumber = sc.nextInt();
+
+            if (seatNumbers.contains(removedSeatNumber)) {
+                passengersArray[station][pickedDate - 1][removedSeatNumber - 1][0] = null;
+                passengersArray[station][pickedDate - 1][removedSeatNumber - 1][1] = null;
+                passengersArray[station][pickedDate - 1][removedSeatNumber - 1][2] = null;
+                passengersArray[station][pickedDate - 1][removedSeatNumber - 1][3] = String.valueOf(0);
+                System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
+            } else {
+                System.out.println("\nYou did not book any seats under this seat #" + removedSeatNumber);
+            }
+        }
+        System.out.println("\n--------------------------------------------------");
     }
 }
 
