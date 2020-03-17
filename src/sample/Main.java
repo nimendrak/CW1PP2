@@ -76,7 +76,7 @@ public class Main extends Application {
 
                 case "F":
                 case "f":
-                    //findSeat(badullaToColombo, colomboToBadulla, sc, toColomboPassengersNameList, toBadullaPassengersNameList);
+                    welcomeScreen(passengersArray, 5);
                     break;
 
                 case "S":
@@ -197,8 +197,20 @@ public class Main extends Application {
                     welcomeWindow.close();
                     deleteCustomer(passengersArray, station, pickedDate);
                 }
+            } else if (welcomeScreenType == 5) {
+                if (comboBox.getValue().equals("Badulla to Colombo")) {
+                    System.out.println("\nYou selected to delete seats on Badulla - Colombo => " + checkInDatePicker.getValue());
+                    station = 0;
+                    welcomeWindow.close();
+                    findSeat(passengersArray, station, pickedDate);
+                } else {
+                    System.out.println("\nYou selected to delete seats on Colombo - Badulla => " + checkInDatePicker.getValue());
+                    station = 1;
+                    welcomeWindow.close();
+                    findSeat(passengersArray, station, pickedDate);
+                }
             }
-            //welcomeWindow.close();
+            welcomeWindow.close();
         });
 
         welcomeWindow.initModality(Modality.APPLICATION_MODAL);
@@ -774,7 +786,6 @@ public class Main extends Application {
         VBox RightSeatsRowTwo = new VBox();
 
         Button bookBtn = new Button();
-        DatePicker checkInDatePicker = new DatePicker();
 
         seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats", date);
 
@@ -863,6 +874,41 @@ public class Main extends Application {
                 System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
             } else {
                 System.out.println("\nYou did not book any seats under this seat #" + removedSeatNumber);
+            }
+        }
+        System.out.println("\n--------------------------------------------------");
+    }
+
+    private void findSeat(String[][][][] passengersArray, int station, int pickedDate) {
+        System.out.println("--------------------------------------------------");
+
+        System.out.println("\n**************");
+        System.out.println("FIND USER SEAT");
+        System.out.println("**************\n");
+
+        Scanner sc = new Scanner(System.in);
+        HashMap<Integer, String> passengerNameAndSeat = new HashMap<>();
+
+        for (int i = 0; i < 42; i++) {
+            if (passengersArray[station][pickedDate - 1][i][3] != null) {
+                passengerNameAndSeat.put((i + 1), passengersArray[station][pickedDate - 1][i][0]);
+            }
+        }
+
+        if (passengerNameAndSeat.isEmpty()) {
+            System.out.println("\nNo seats have been booked yet!");
+        } else {
+            System.out.print("Prompt your name to find the seat : ");
+            String findUserName = sc.next();
+            System.out.println();
+            if (passengerNameAndSeat.containsValue(findUserName)) {
+                for (int i : passengerNameAndSeat.keySet()) {
+                    if (passengerNameAndSeat.get(i).equals(findUserName)) {
+                        System.out.println(findUserName + " has booked Seat #" + i);
+                    }
+                }
+            } else {
+                System.out.println("No seat has been booked under " + findUserName);
             }
         }
         System.out.println("\n--------------------------------------------------");
