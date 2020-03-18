@@ -1,0 +1,3 @@
+Destination - Badulla - Colombo | Booked date - 2020-03-17 | Passenger name - nimendra | Mobile no - 0777898816 | NIC - 981871871v | Seat #8
+Destination - Badulla - Colombo | Booked date - 2020-03-17 | Passenger name - nimendra | Mobile no - 0777898816 | NIC - 981871871v | Seat #2
+Destination - Colombo - Badulla | Booked date - 2020-03-19 | Passenger name - nimendra | Mobile no - 0777898816 | NIC - 981871871v | Seat #19
