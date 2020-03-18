@@ -92,7 +92,7 @@ public class Main extends Application {
 
                 case "O":
                 case "o":
-                    welcomeScreen(passengersArray, 8, bookedDatesList);
+                    alphabeticalOrder(passengersArray, bookedDatesList);
                     break;
 
                 case "q":
@@ -100,7 +100,7 @@ public class Main extends Application {
                     System.out.print("\nIf you want to store data before, you exit from the program\nPrompt \"S\" or prompt any key to Exit : ");
                     String option = sc.next();
                     if (option.equalsIgnoreCase("s")) {
-                        welcomeScreen(passengersArray, 6, bookedDatesList);
+                        storeData(passengersArray, bookedDatesList);
                     } else {
                         System.out.println("\nProgram is now Exiting..");
                     }
@@ -192,17 +192,6 @@ public class Main extends Application {
                         station = 1;
                     }
                     emptySeatsDisplay(passengersArray, station, pickedDate, date);
-
-                } else if (welcomeScreenType == 8) {
-                    if (comboBox.getValue().equals("Badulla to Colombo")) {
-                        System.out.println("\nYou selected to book seats => Badulla - Colombo on " + checkInDatePicker.getValue());
-                        station = 0;
-                    } else {
-                        System.out.println("\nYou selected to delete seats => Colombo - Badulla on " + checkInDatePicker.getValue());
-                        station = 1;
-                    }
-                    welcomeWindow.close();
-                    alphabeticalOrder(passengersArray, station, pickedDate);
                 }
                 welcomeWindow.close();
 
@@ -991,108 +980,164 @@ public class Main extends Application {
                     passengerNames.add(passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0]);
                 }
             }
+        }
 
-            Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
-            System.out.print("What is the name that you prompted to book your seat/ seats (Prompt Username) : ");
-            String findUserName = sc.next();
+        System.out.print("What is the name that you prompted to book your seat/ seats (Prompt Username) : ");
+        String findUserName = sc.next();
 
-            System.out.print("What is the NIC that you prompted to book your seat/ seats : ");
-            String nic = sc.next();
+        System.out.print("What is the NIC that you prompted to book your seat/ seats : ");
+        String nic = sc.next();
 
-            if (bookedDatesList.isEmpty()) {
-                System.out.println("\nNo seats have been booked yet!");
-            } else {
-                if (passengerNic.contains(nic) && passengerNames.contains(findUserName)) {
-                    for (String s : bookedDatesList) {
-                        if (passengerNic.contains(nic)) {
-                            System.out.println("--------------------------------------");
-                            System.out.println("Bookings which were made on " + s);
-                            System.out.println("--------------------------------------");
-                        }
-                        for (int i = 1; i <= SEATING_CAPACITY; i++) {
-                            if (passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0] != null) {
-                                if (passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
-                                    System.out.println("Destination     - Badulla - Colombo");
-                                    System.out.println("Booked Date     - " + o);
-                                    System.out.println("Passenger name  - " + findUserName);
-                                    System.out.println("Mobile Number   - " + passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][1]);
-                                    System.out.println("NIC             - " + passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][2]);
-                                    System.out.println("Seat            - #" + passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][3]);
-                                    System.out.println();
-                                }
+        if (bookedDatesList.isEmpty()) {
+            System.out.println("\nNo seats have been booked yet!");
+        } else {
+            if (passengerNic.contains(nic) && passengerNames.contains(findUserName)) {
+                for (String s : bookedDatesList) {
+                    if (passengerNic.contains(nic)) {
+                        System.out.println("--------------------------------------");
+                        System.out.println("Bookings which were made on " + s);
+                        System.out.println("--------------------------------------");
+                    }
+                    for (int i = 1; i <= SEATING_CAPACITY; i++) {
+                        if (passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] != null) {
+                            if (passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
+                                System.out.println("Destination     - Badulla - Colombo");
+                                System.out.println("Booked Date     - " + s);
+                                System.out.println("Passenger name  - " + findUserName);
+                                System.out.println("Mobile Number   - " + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][1]);
+                                System.out.println("NIC             - " + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2]);
+                                System.out.println("Seat            - #" + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3]);
+                                System.out.println();
                             }
-                            if (passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0] != null) {
-                                if (passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
-                                    System.out.println("Destination     - Colombo - Badulla");
-                                    System.out.println("Booked Date     - " + o);
-                                    System.out.println("Passenger name  - " + findUserName);
-                                    System.out.println("Mobile Number   - " + passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][1]);
-                                    System.out.println("NIC             - " + passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][2]);
-                                    System.out.println("Seat            - #" + passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][3]);
-                                    System.out.println();
-                                }
+                        }
+                        if (passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] != null) {
+                            if (passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
+                                System.out.println("Destination     - Colombo - Badulla");
+                                System.out.println("Booked Date     - " + s);
+                                System.out.println("Passenger name  - " + findUserName);
+                                System.out.println("Mobile Number   - " + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][1]);
+                                System.out.println("NIC             - " + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2]);
+                                System.out.println("Seat            - #" + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3]);
+                                System.out.println();
                             }
                         }
                     }
-                } else {
-                    System.out.println("No seat has been booked under " + findUserName + " or " + nic);
-                    System.out.println("\n--------------------------------------------------");
-                    break;
                 }
+            } else {
+                System.out.println("No seat has been booked under " + findUserName + " or " + nic);
             }
         }
+        System.out.println("\n--------------------------------------------------");
     }
 
-    private void alphabeticalOrder(String[][][][] passengersArray, int station, int pickedDate) {
+    private void alphabeticalOrder(String[][][][] passengersArray, List<String> bookedDatesList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************************************************");
         System.out.println("VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME");
         System.out.println("*************************************************");
 
-        HashMap<Integer, String> passengerNameAndSeat = new HashMap<>();
-        List<String> passengersNameList = new ArrayList<>();
+        HashMap<Integer, String> passengerSeatAndNameDesOne = new HashMap<Integer, String>();
+        HashMap<Integer, String> passengerSeatAndNameDesTwo = new HashMap<Integer, String>();
 
-        for (int i = 0; i < 42; i++) {
-            if (passengersArray[station][pickedDate - 1][i][3] != null) {
-                passengerNameAndSeat.put((i + 1), passengersArray[station][pickedDate - 1][i][0]);
-            }
-        }
+        List<String> passengersNameListDesOne = new ArrayList<String>();
+        List<String> passengersNameListDesTwo = new ArrayList<String>();
+        Scanner sc = new Scanner(System.in);
 
-        for (int i = 0; i < 42; i++) {
-            if (passengersArray[station][pickedDate - 1][i][3] != null) {
-                if (!(passengersNameList.contains(passengersArray[station][pickedDate - 1][i][0]))) {
-                    passengersNameList.add(passengersArray[station][pickedDate - 1][i][0]);
+        for (String o : bookedDatesList) {
+            for (int i = 1; i <= SEATING_CAPACITY; i++) {
+                if (passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0] != null) {
+                    if (!passengersNameListDesOne.contains(passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0])) {
+                        passengersNameListDesOne.add(passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0]);
+                    }
+                    passengerSeatAndNameDesOne.put(i, passengersArray[0][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0]);
+                }
+                if (passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0] != null) {
+                    if (!passengersNameListDesTwo.contains(passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0])) {
+                        passengersNameListDesTwo.add(passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0]);
+                    }
+                    passengerSeatAndNameDesTwo.put(i, passengersArray[1][Integer.parseInt(o.substring(8, 10)) - 1][i - 1][0]);
                 }
             }
         }
 
         String temp;
-        try {
-            if (passengerNameAndSeat.isEmpty()) {
-                System.out.println("\nNo seats have been booked yet!");
-            } else {
-                System.out.println();
-                for (int i = 0; i < passengersNameList.size(); i++) {
-                    for (int j = i + 1; j < passengersNameList.size(); j++) {
-                        if (passengersNameList.get(i).compareTo(passengersNameList.get(j)) > 0) {
-                            temp = passengersNameList.get(i);
-                            passengersNameList.set(i, passengersNameList.get(j));
-                            passengersNameList.set(j, temp);
+
+        if (!passengerSeatAndNameDesOne.isEmpty()) {
+            System.out.print("\nSelect a Destination to sort seats by passenger names\n01 Badulla - Colombo\n02 Colombo - Badulla\n\nPrompt 1 or 2 to proceed : ");
+            while (!sc.hasNextInt()) {
+                System.out.println("Prompt Integers to proceed!!");
+                System.out.print("Select a Destination to sort seats by passenger names\n01 Badulla - Colombo\n02 Colombo - Badulla\n\nPrompt 1 or 2 to proceed : ");
+                sc.next();
+            }
+            int userOption = sc.nextInt();
+            System.out.println();
+
+            if (userOption == 1) {
+                loop1 : for (String s : bookedDatesList) {
+                    try {
+                        if (passengerSeatAndNameDesOne.isEmpty()) {
+                            System.out.println("\nNo seats have been booked yet!");
+                        } else {
+                            System.out.println("--------------------------------------");
+                            System.out.println("Bookings which were made on " + s);
+                            System.out.println("--------------------------------------");
+                            for (int i = 0; i < passengersNameListDesOne.size(); i++) {
+                                for (int j = i + 1; j < passengersNameListDesOne.size(); j++) {
+                                    if (passengersNameListDesOne.get(i).compareTo(passengersNameListDesOne.get(j)) > 0) {
+                                        temp = passengersNameListDesOne.get(i);
+                                        passengersNameListDesOne.set(i, passengersNameListDesOne.get(j));
+                                        passengersNameListDesOne.set(j, temp);
+                                    }
+                                }
+                            }
+                            for (String t : passengersNameListDesOne) {
+                                for (Object o : passengerSeatAndNameDesOne.keySet()) {
+                                    if (passengerSeatAndNameDesOne.get(o).equals(t)) {
+                                        System.out.println(t + " has booked seat #" + o);
+                                        break;
+                                    }
+                                }
+                            }
                         }
+                    } catch (Exception ignored) {
+                        //ignored
                     }
                 }
-                for (String s : passengersNameList) {
-                    for (Object o : passengerNameAndSeat.keySet()) {
-                        if (passengerNameAndSeat.get(o).equals(s)) {
-                            System.out.println(s + " has booked seat #" + o);
+            } else {
+                for (String s : bookedDatesList) {
+                    try {
+                        if (passengerSeatAndNameDesTwo.isEmpty()) {
+                            System.out.println("\nNo seats have been booked yet!");
+                        } else {
+                            System.out.println("--------------------------------------");
+                            System.out.println("Bookings which were made on " + s);
+                            System.out.println("--------------------------------------");
+                            for (int i = 0; i < passengersNameListDesTwo.size(); i++) {
+                                for (int j = i + 1; j < passengersNameListDesTwo.size(); j++) {
+                                    if (passengersNameListDesTwo.get(i).compareTo(passengersNameListDesTwo.get(j)) > 0) {
+                                        temp = passengersNameListDesTwo.get(i);
+                                        passengersNameListDesTwo.set(i, passengersNameListDesTwo.get(j));
+                                        passengersNameListDesTwo.set(j, temp);
+                                    }
+                                }
+                            }
+                            for (String t : passengersNameListDesTwo) {
+                                for (Object o : passengerSeatAndNameDesTwo.keySet()) {
+                                    if (passengersNameListDesTwo.get((Integer) o).equals(t)) {
+                                        System.out.println(t + " has booked seat #" + o);
+                                        break;
+                                    }
+                                }
+                            }
                         }
+                    } catch (Exception ignored) {
+                        //ignored
                     }
                 }
             }
-        } catch (Exception ignored) {
-            //ignored
         }
         System.out.println("\n--------------------------------------------------");
     }
