@@ -8,6 +8,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -409,23 +410,23 @@ public class Main extends Application {
             leftSeatsRowTwo.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
-            if (seatNumbers.contains(i)) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            } else {
-                seat.setOnAction((e) -> {
-                    if (seat.isSelected()) {
-                        seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                        selectedSeats.add(Integer.valueOf(seat.getId()));
-                        bookBtn.setDisable(false);
-                    } else {
-                        seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                        selectedSeats.remove(Integer.valueOf(seat.getId()));
-                        bookBtn.setDisable(true);
-                    }
-                });
-            }
-
             if (actionType.equals("seatAction")) {
+                if (seatNumbers.contains(i)) {
+                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                } else {
+                    seat.setOnAction((e) -> {
+                        if (seat.isSelected()) {
+                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                            selectedSeats.add(Integer.valueOf(seat.getId()));
+                            bookBtn.setDisable(false);
+
+                        } else {
+                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+                            selectedSeats.remove(Integer.valueOf(seat.getId()));
+                            bookBtn.setDisable(true);
+                        }
+                    });
+                }
                 seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
             }
             if (actionType.equals("emptySeats")) {
@@ -445,23 +446,23 @@ public class Main extends Application {
             RightSeatsRowOne.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
-            if (seatNumbers.contains(i)) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            } else {
-                seat.setOnAction((e) -> {
-                    if (seat.isSelected()) {
-                        seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                        selectedSeats.add(Integer.valueOf(seat.getId()));
-                        bookBtn.setDisable(false);
-                    } else {
-                        seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                        selectedSeats.remove(Integer.valueOf(seat.getId()));
-                        bookBtn.setDisable(true);
-                    }
-                });
-            }
-
             if (actionType.equals("seatAction")) {
+                if (seatNumbers.contains(i)) {
+                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                } else {
+                    seat.setOnAction((e) -> {
+                        if (seat.isSelected()) {
+                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                            selectedSeats.add(Integer.valueOf(seat.getId()));
+                            bookBtn.setDisable(false);
+
+                        } else {
+                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+                            selectedSeats.remove(Integer.valueOf(seat.getId()));
+                            bookBtn.setDisable(true);
+                        }
+                    });
+                }
                 seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
             }
             if (actionType.equals("emptySeats")) {
@@ -480,24 +481,23 @@ public class Main extends Application {
             RightSeatsRowTwo.setSpacing(5);
             seat.setCursor(Cursor.HAND);
 
-            if (seatNumbers.contains(i)) {
-                seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-            } else {
-                seat.setOnAction((e) -> {
-                    if (seat.isSelected()) {
-                        seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                        selectedSeats.add(Integer.valueOf(seat.getId()));
-                        bookBtn.setDisable(false);
-                    } else {
-                        seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                        selectedSeats.remove(Integer.valueOf(seat.getId()));
-                        bookBtn.setDisable(true);
-                    }
-                    System.out.println(selectedSeats);
-                });
-            }
-
             if (actionType.equals("seatAction")) {
+                if (seatNumbers.contains(i)) {
+                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                } else {
+                    seat.setOnAction((e) -> {
+                        if (seat.isSelected()) {
+                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+                            selectedSeats.add(Integer.valueOf(seat.getId()));
+                            bookBtn.setDisable(false);
+
+                        } else {
+                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+                            selectedSeats.remove(Integer.valueOf(seat.getId()));
+                            bookBtn.setDisable(true);
+                        }
+                    });
+                }
                 seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
             }
             if (actionType.equals("emptySeats")) {
@@ -510,6 +510,20 @@ public class Main extends Application {
     }
 
     private void seatBookingAction(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, Stage window, String date) {
+/*        for (int i = 0; i < SEATING_CAPACITY; i++) {
+            if (passengersArray[station][pickedDate - 1][i][3] != null) {
+                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][i][3]));
+            }
+        }
+
+        seat.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+        });
+
+        seat.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
+        });*/
+
         bookBtn.setOnAction(event -> {
             try {
                 Stage confirmationBox = new Stage();
@@ -531,46 +545,67 @@ public class Main extends Application {
                 headerConfirmationBox.setTextFill(Paint.valueOf("#414141"));
                 headerConfirmationBox.setPadding(new Insets(0, 0, 30, 0));
 
-                Text userNameTxt = new Text("Enter your name");
-                TextField userNameTxtField = new TextField();
-
-                Text userMobileTxt = new Text("Enter your mobile number");
-                TextField userMobileTxtField = new TextField();
-
-                Text userNicTxt = new Text("Enter your NIC");
-                TextField userNicTxtTxtField = new TextField();
-
                 Button confirmUser = new Button("Confirm");
                 confirmUser.setDisable(true);
 
                 Button cancelBtn = new Button("Cancel");
                 cancelBtn.setOnAction(event1 -> confirmationBox.hide());
 
-                hBox2.getChildren().addAll(confirmUser, cancelBtn);
-                hBox2.setPadding(new Insets(50, 0, 0, 0));
-                hBox2.setSpacing(10);
+                Text userNameTxt = new Text("Enter your name");
+                TextField userNameTxtField = new TextField();
 
-                vBox.getChildren().addAll(headerConfirmationBox, userNameTxt, userNameTxtField, userMobileTxt, userMobileTxtField, userNicTxt, userNicTxtTxtField, hBox2);
-                vBox.setSpacing(10);
+                Text userMobileTxt = new Text("Enter your mobile number");
+                TextField userMobileTxtField = new TextField();
+                userMobileTxtField.setOnMouseExited(event1 -> {
+                    while (!userMobileTxtField.getText().equals("")) {
+                        if (userMobileTxtField.getText().matches("[1234567890]+") && userMobileTxtField.getText().length() == 10) {
+                            break;
+                        } else {
+                            alertBoxWindowTypeTwo("Please enter a valid Mobile Number");
+                            userMobileTxtField.setText("");
+                        }
+                    }
+                });
 
-                flowPane2.getChildren().addAll(vBox);
-
+                Text userNicTxt = new Text("Enter your NIC");
+                TextField userNicTxtField = new TextField();
+                userNicTxtField.setOnMouseExited(event1 -> {
+                    while (!userNicTxtField.getText().equals("")) {
+                        if (userNicTxtField.getText().matches("[1234567890]+v") && userNicTxtField.getText().length() == 10) {
+                            break;
+                        } else {
+                            alertBoxWindowTypeTwo("Please enter a valid NIC");
+                            userNicTxtField.setText("");
+                        }
+                    }
+                });
                 //user must enter at least two character as the name to confirm his/her booking
-                userNicTxtTxtField.setOnKeyTyped(event1 -> {
-                    if (userNicTxtTxtField.getText().isEmpty()) {
+                userNicTxtField.setOnKeyTyped(event1 -> {
+                    if (userNicTxtField.getText().isEmpty() && userMobileTxtField.getText().isEmpty() && userNameTxtField.getText().isEmpty()) {
                         confirmUser.setDisable(true);
                     } else {
                         confirmUser.setDisable(false);
                     }
                 });
+
+                hBox2.getChildren().addAll(confirmUser, cancelBtn);
+                hBox2.setPadding(new Insets(50, 0, 0, 0));
+                hBox2.setSpacing(10);
+
+                vBox.getChildren().addAll(headerConfirmationBox, userNameTxt, userNameTxtField, userMobileTxt, userMobileTxtField, userNicTxt, userNicTxtField, hBox2);
+                vBox.setSpacing(10);
+
+                flowPane2.getChildren().addAll(vBox);
+
                 System.out.println("\n------------------");
                 System.out.println("Confirmed Bookings");
                 System.out.println("------------------\n");
+
                 confirmUser.setOnAction(event2 -> {
                     for (int j : selectedSeats) {
                         passengersArray[station][pickedDate - 1][j - 1][0] = userNameTxtField.getText().toLowerCase();
                         passengersArray[station][pickedDate - 1][j - 1][1] = userMobileTxtField.getText();
-                        passengersArray[station][pickedDate - 1][j - 1][2] = userNicTxtTxtField.getText();
+                        passengersArray[station][pickedDate - 1][j - 1][2] = userNicTxtField.getText();
                         passengersArray[station][pickedDate - 1][j - 1][3] = String.valueOf(j);
 
                         if (station == 0) {
@@ -1100,11 +1135,21 @@ public class Main extends Application {
 
     private void loadDataMain(String[][][][] passengersArray, int station, int pickedDate, File file, String date) throws IOException {
         BufferedReader bufferedReader = null;
+        List<String> bookedSeatNumbers = new ArrayList<>();
+
+        boolean alreadyExecuted = false;
 
         try {
             //create BufferedReader object from the File
             bufferedReader = new BufferedReader(new FileReader(file));
             String line;
+
+            for (int i = 0; i < SEATING_CAPACITY; i++) {
+                if (passengersArray[station][pickedDate - 1][i][3] != null) {
+                    bookedSeatNumbers.add(passengersArray[station][pickedDate - 1][i][0]);
+                }
+            }
+
             //read file line by line
             while ((line = bufferedReader.readLine()) != null) {
                 //split the line by | and put it to a string array
@@ -1117,14 +1162,19 @@ public class Main extends Application {
                 String[] seatNumber = parts[5].split("Seat #");
 
                 if (bookedDate[1].substring(8, 10).equals(String.valueOf(pickedDate))) {
-                    passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][0] = passengerName[1];
-                    passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][1] = mobileNumber[1];
-                    passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][2] = nic[1];
-                    passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][3] = seatNumber[1];
-
-                    System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats\n");
+                    if (!bookedSeatNumbers.contains(seatNumber[1])) {
+                        passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][0] = passengerName[1];
+                        passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][1] = mobileNumber[1];
+                        passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][2] = nic[1];
+                        passengersArray[station][(Integer.parseInt(bookedDate[1].substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][3] = seatNumber[1];
+                        if (!alreadyExecuted) {
+                            System.out.println("Stored data has been successfully loaded to the program!\nTip - Prompt \"V\" to check available seats\n");
+                        }
+                        alreadyExecuted = true;
+                    }
                 } else {
                     System.out.println("There is no data saved on " + date + "\n");
+                    break;
                 }
             }
         } catch (
