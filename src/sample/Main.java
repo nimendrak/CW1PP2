@@ -38,7 +38,7 @@ public class Main extends Application {
         String userOption;
 
         System.out.println("\n***************************************************");
-        System.out.println("*** DENUWARA MANIKE TRAIN SEATS BOOKING PROGRAM ***");
+        System.out.println("*** " + "\033[1;93m" + "DENUWARA MANIKE TRAIN SEATS BOOKING PROGRAM" + "\033[0m" + " ***");
         System.out.println("***************************************************\n");
 
         do {
@@ -195,30 +195,30 @@ public class Main extends Application {
 
                 if (welcomeScreenType == 1) {
                     if (comboBox.getValue().equals("Badulla to Colombo")) {
-                        System.out.println("\nYou selected to book seats => Badulla - Colombo on " + checkInDatePicker.getValue());
+                        System.out.println("\nYou selected to book seats =>" + "\033[1;31m" + " Badulla - Colombo" + "\033[0m" + " on " + "\033[1;31m" + checkInDatePicker.getValue() + "\033[0m");
                         station = 0;
                     } else {
-                        System.out.println("\nYou selected to delete seats => Colombo - Badulla on " + checkInDatePicker.getValue());
+                        System.out.println("\nYou selected to delete seats =>" + "\033[1;31m" + " Colombo - Badulla" + "\033[0m" + " on " + "\033[1;31m" + checkInDatePicker.getValue() + "\033[0m");
                         station = 1;
                     }
                     addCustomer(passengersArray, station, pickedDate, date);
 
                 } else if (welcomeScreenType == 2) {
                     if (comboBox.getValue().equals("Badulla to Colombo")) {
-                        System.out.println("\nYou selected to book seats => Badulla - Colombo on " + checkInDatePicker.getValue());
+                        System.out.println("\nYou selected to book seats =>" + "\033[1;31m" + " Badulla - Colombo" + "\033[0m" + " on " + "\033[1;31m" + checkInDatePicker.getValue() + "\033[0m");
                         station = 0;
                     } else {
-                        System.out.println("\nYou selected to delete seats => Colombo - Badulla on " + checkInDatePicker.getValue());
+                        System.out.println("\nYou selected to delete seats =>" + "\033[1;31m" + " Colombo - Badulla" + "\033[0m" + " on " + "\033[1;31m" + checkInDatePicker.getValue() + "\033[0m");
                         station = 1;
                     }
                     allSeatsDisplay(passengersArray, station, pickedDate, date);
 
                 } else if (welcomeScreenType == 3) {
                     if (comboBox.getValue().equals("Badulla to Colombo")) {
-                        System.out.println("\nYou selected to book seats => Badulla - Colombo on " + checkInDatePicker.getValue());
+                        System.out.println("\nYou selected to book seats =>" + "\033[1;31m" + " Badulla - Colombo" + "\033[0m" + " on " + "\033[1;31m" + checkInDatePicker.getValue() + "\033[0m");
                         station = 0;
                     } else {
-                        System.out.println("\nYou selected to delete seats => Colombo - Badulla on " + checkInDatePicker.getValue());
+                        System.out.println("\nYou selected to delete seats =>" + "\033[1;31m" + " Colombo - Badulla" + "\033[0m" + " on " + "\033[1;31m" + checkInDatePicker.getValue() + "\033[0m");
                         station = 1;
                     }
                     emptySeatsDisplay(passengersArray, station, pickedDate, date);
@@ -645,7 +645,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n************************");
-        System.out.println("ADD A CUSTOMER TO A SEAT");
+        System.out.println("\033[1;93m" + "ADD A CUSTOMER TO A SEAT" + "\033[0m");
         System.out.println("************************");
 
         Stage window = new Stage();
@@ -725,7 +725,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*****************");
-        System.out.println("DISPLAY ALL SEATS");
+        System.out.println("\033[1;93m" + "DISPLAY ALL SEATS" + "\033[0m");
         System.out.println("*****************\n");
 
         Stage window = new Stage();
@@ -801,7 +801,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*******************");
-        System.out.println("DISPLAY EMPTY SEATS");
+        System.out.println("\033[1;93m" + "DISPLAY EMPTY SEATS" + "\033[0m");
         System.out.println("*******************\n");
 
         Stage window = new Stage();
@@ -867,7 +867,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************");
-        System.out.println("DELETE A SEAT");
+        System.out.println("\033[1;93m" + "DELETE A SEAT" + "\033[0m");
         System.out.println("*************\n");
 
         int removedSeatNumber;
@@ -907,24 +907,22 @@ public class Main extends Application {
                     System.out.println("\nNo seat has been booked under " + nic);
                 } else {
                     if ((passengerNicDesOne.contains(nic) && passengerSeatAndNameDesOne.containsValue(removedSeatName)) || (passengerNicDesTwo.contains(nic) && passengerSeatAndNameDesTwo.containsValue(removedSeatName))) {
+                        System.out.println("\033[4;37m" + "\nYou have booked following seats\n" + "\033[0m");
                         for (String s : bookedDatesList) {
-                            if (nic.contains(nic)) {
-                                System.out.println("--------------------------------------");
-                                System.out.println("Bookings which were made on " + s);
-                                System.out.println("--------------------------------------");
-                            }
                             for (int i = 1; i <= SEATING_CAPACITY; i++) {
                                 if (passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] != null) {
                                     if (passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(removedSeatName) && passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
-                                        System.out.println("Destination     - Badulla - Colombo");
-                                        System.out.println("Seat            - #" + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3]);
+                                        System.out.println("Destination     - " + "\033[1;96m" + "Badulla - Colombo" + "\033[0m");
+                                        System.out.println("Booked Date     - " + "\033[1;95m" + s + "\033[0m");
+                                        System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                         System.out.println();
                                     }
                                 }
                                 if (passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] != null) {
                                     if (passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(removedSeatName) && passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
-                                        System.out.println("Destination     - Colombo - Badulla");
-                                        System.out.println("Seat            - #" + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3]);
+                                        System.out.println("Destination     - " + "\033[1;96m" + "Colombo - Badulla" + "\033[0m");
+                                        System.out.println("Booked Date     - " + "\033[1;95m" + s + "\033[0m");
+                                        System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                         System.out.println();
                                     }
                                 }
@@ -1005,7 +1003,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**************");
-        System.out.println("FIND USER SEAT");
+        System.out.println("\033[1;93m" + "FIND USER SEAT" + "\033[0m");
         System.out.println("**************\n");
 
         List<String> passengerNic = new ArrayList<>();
@@ -1036,39 +1034,35 @@ public class Main extends Application {
             System.out.println("\nNo seats have been booked yet!");
         } else {
             if (passengerNic.contains(nic) && passengerNames.contains(findUserName)) {
+                System.out.println();
                 for (String s : bookedDatesList) {
-                    if (passengerNic.contains(nic)) {
-                        System.out.println("--------------------------------------");
-                        System.out.println("Bookings which were made on " + s);
-                        System.out.println("--------------------------------------");
-                    }
                     for (int i = 1; i <= SEATING_CAPACITY; i++) {
                         if (passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] != null) {
                             if (passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
-                                System.out.println("Destination     - Badulla - Colombo");
-                                System.out.println("Booked Date     - " + s);
+                                System.out.println("Destination     - " + "\033[1;96m" + "Badulla - Colombo" + "\033[0m");
+                                System.out.println("Booked Date     - " + "\033[1;95m" + s + "\033[0m");
                                 System.out.println("Passenger name  - " + findUserName);
                                 System.out.println("Mobile Number   - " + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][1]);
                                 System.out.println("NIC             - " + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2]);
-                                System.out.println("Seat            - #" + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3]);
+                                System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                 System.out.println();
                             }
                         }
                         if (passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] != null) {
                             if (passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
-                                System.out.println("Destination     - Colombo - Badulla");
-                                System.out.println("Booked Date     - " + s);
+                                System.out.println("Destination     - " + "\033[1;96m" + "Colombo - Badulla" + "\033[0m");
+                                System.out.println("Booked Date     - " + "\033[1;95m" + s + "\033[0m");
                                 System.out.println("Passenger name  - " + findUserName);
                                 System.out.println("Mobile Number   - " + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][1]);
                                 System.out.println("NIC             - " + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2]);
-                                System.out.println("Seat            - #" + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3]);
+                                System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                 System.out.println();
                             }
                         }
                     }
                 }
             } else {
-                System.out.println("No seat has been booked under " + findUserName + " or " + nic);
+                System.out.println("\nNo seat has been booked under " + findUserName + " or " + nic);
             }
         }
         System.out.println("\n--------------------------------------------------");
@@ -1078,8 +1072,8 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************************************************");
-        System.out.println("VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME");
-        System.out.println("*************************************************");
+        System.out.println("\033[1;93m" + "VIEW SEATS IN ORDERED ALPHABETICALLY BY USER NAME" + "\033[0m");
+        System.out.println("*************************************************\n");
 
         //add all names to the passengerNameList
         List<String> passengerNameList = new ArrayList<>();
@@ -1122,10 +1116,10 @@ public class Main extends Application {
                                 if (passengersArray[0][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(t)) {
                                     System.out.println("Destination     - Badulla - Colombo");
                                     System.out.println("Booked Date     - " + u);
-                                    System.out.println("Passenger name  - " + t);
+                                    System.out.println("Passenger name  - " + "\033[1;95m" + t + "\033[0m");
                                     System.out.println("Mobile Number   - " + passengersArray[0][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][1]);
                                     System.out.println("NIC             - " + passengersArray[0][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][2]);
-                                    System.out.println("Seat            - #" + passengersArray[0][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][3]);
+                                    System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[0][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                     System.out.println();
                                 }
                             }
@@ -1133,10 +1127,10 @@ public class Main extends Application {
                                 if (passengersArray[1][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(t)) {
                                     System.out.println("Destination     - Colombo - Badulla");
                                     System.out.println("Booked Date     - " + u);
-                                    System.out.println("Passenger name  - " + t);
+                                    System.out.println("Passenger name  - " + "\033[1;95m" + t + "\033[0m");
                                     System.out.println("Mobile Number   - " + passengersArray[1][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][1]);
                                     System.out.println("NIC             - " + passengersArray[1][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][2]);
-                                    System.out.println("Seat            - #" + passengersArray[1][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][3]);
+                                    System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[1][Integer.parseInt(u.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                     System.out.println();
                                 }
                             }
@@ -1154,7 +1148,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**********");
-        System.out.println("STORE DATA");
+        System.out.println("\033[1;93m" + "STORE DATA" + "\033[0m");
         System.out.println("**********\n");
 
         //badulla - colombo seatNum and passengerName as a hashMap
@@ -1237,7 +1231,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n**********************");
-        System.out.println("LOAD PROGRAM FROM DATA");
+        System.out.println("\033[1;93m" + "LOAD PROGRAM FROM DATA" + "\033[0m");
         System.out.println("**********************\n");
 
         try {
