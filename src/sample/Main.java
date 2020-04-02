@@ -29,7 +29,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage window) throws Exception {
+    public void start(Stage window) {
 
         String[][][][] passengersArray = new String[2][31][SEATING_CAPACITY][4];
         List<String> bookedDatesList = new ArrayList<String>();
@@ -1183,7 +1183,7 @@ public class Main extends Application {
         } else {
             System.out.println("Data on the following dates have been successfully stored!");
             for (String s : bookedDatesList) {
-                System.out.print(s + " | ");
+                System.out.print("\033[1;31m" + s + "\033[0m" + " | ");
                 try {
                     if (!passengerSeatAndNameDesOneStoreData.isEmpty()) {
                         File file = new File("C:\\Users\\Nimendra Kariyawasam\\Desktop\\CW\\PP2 CW1\\Train Seats Booking Program (summertive)\\src\\sample\\storeData\\BadullaToColombo.txt");
