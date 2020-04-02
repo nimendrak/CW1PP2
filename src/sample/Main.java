@@ -871,6 +871,7 @@ public class Main extends Application {
         System.out.println("*************\n");
 
         int removedSeatNumber;
+        int userOption = 0;
         String removedSeatName;
         String nic;
 
@@ -938,19 +939,20 @@ public class Main extends Application {
                     String selectedDate = sc.next();
                     if (bookedDatesList.contains(selectedDate)) {
                         for (String s : bookedDatesList) {
-                            if (!passengerSeatAndNameDesOne.isEmpty()) {
-                                System.out.print("\nSelect a Destination to delete seats\n01 Badulla - Colombo\n02 Colombo - Badulla\n\nPrompt 1 or 2 to proceed : ");
-                                while (!sc.hasNextInt()) {
-                                    System.out.println("Prompt Integers to proceed!!");
-                                    System.out.print("Select a Destination to delete seats\n01 Badulla - Colombo\n02 Colombo - Badulla\n\nPrompt 1 or 2 to proceed : ");
-                                    sc.next();
-                                }
-                                int userOption = sc.nextInt();
+                            System.out.print("\nSelect a Destination to delete seats\n01 Badulla - Colombo\n02 Colombo - Badulla\n\nPrompt 1 or 2 to proceed : ");
+                            while (!sc.hasNextInt()) {
+                                System.out.println("Prompt Integers to proceed!!");
+                                System.out.print("Select a Destination to delete seats\n01 Badulla - Colombo\n02 Colombo - Badulla\n\nPrompt 1 or 2 to proceed : ");
+                                sc.next();
+                            }
+                            userOption = sc.nextInt();
 
-                                if (userOption == 1) {
+                            if (userOption == 1) {
+                                if (!passengerSeatAndNameDesOne.isEmpty()) {
                                     System.out.print("Which seat do you want to delete (Prompt a Seat Number) : ");
+                                    //loop till user enters a integer for seat number
                                     while (!sc.hasNextInt()) {
-                                        System.out.println("Prompt Integers to proceed!!");
+                                        System.out.println("Prompt Integers to proceed!!\n");
                                         System.out.print("Which seat do you want to delete (Prompt a Seat Number) : ");
                                         sc.next();
                                     }
@@ -962,37 +964,43 @@ public class Main extends Application {
                                         passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][2] = null;
                                         passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][3] = String.valueOf(0);
                                         System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
-                                        break;
                                     } else {
                                         System.out.println("\nYou did not book seat #" + removedSeatNumber + " on Badulla - Colombo");
                                     }
                                 } else {
-                                    if (!passengerSeatAndNameDesTwo.isEmpty()) {
-                                        System.out.print("Which seat do you want to delete (Prompt a Seat Number) : ");
-                                        while (!sc.hasNextInt()) {
-                                            System.out.println("Prompt Integers to proceed!!");
-                                            System.out.print("Which seat do you want to delete (Prompt a Seat Number) : ");
-                                            sc.next();
-                                        }
-                                        removedSeatNumber = sc.nextInt();
-
-                                        if (passengerSeatAndNameDesTwo.containsKey(removedSeatNumber)) {
-                                            passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][0] = null;
-                                            passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][1] = null;
-                                            passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][2] = null;
-                                            passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][3] = String.valueOf(0);
-                                            System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
-                                            break;
-                                        } else {
-                                            System.out.println("\nYou did not book seat #" + removedSeatNumber + " on Colombo - Badulla");
-                                        }
-                                        break;
-                                    }
+                                    System.out.println("\nThere are no bookings were made for this Destination");
                                 }
+                                break;
+                            }
+                            if (userOption == 2) {
+                                if (!passengerSeatAndNameDesTwo.isEmpty()) {
+                                    System.out.print("Which seat do you want to delete (Prompt a Seat Number) : ");
+                                    //loop till user enters a integer for seat number
+                                    while (!sc.hasNextInt()) {
+                                        System.out.println("Prompt Integers to proceed!!\n");
+                                        System.out.print("Which seat do you want to delete (Prompt a Seat Number) : ");
+                                        sc.next();
+                                    }
+                                    removedSeatNumber = sc.nextInt();
+
+                                    if (passengerSeatAndNameDesTwo.containsKey(removedSeatNumber)) {
+                                        passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][0] = null;
+                                        passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][1] = null;
+                                        passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][2] = null;
+                                        passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][removedSeatNumber - 1][3] = String.valueOf(0);
+                                        System.out.println("\nSeat #" + removedSeatNumber + " is successfully deleted!");
+                                    } else {
+                                        System.out.println("\nYou did not book seat #" + removedSeatNumber + " on Colombo - Badulla");
+                                    }
+                                } else {
+                                    System.out.println("\nThere are no bookings were made for this Destination");
+                                }
+                                break;
                             }
                         }
+                    } else {
+                        System.out.println("\nYou did not book any seats on " + selectedDate);
                     }
-                    System.out.println("\nYou did not book any seats on " + selectedDate);
                 }
             }
         }
