@@ -31,7 +31,9 @@ public class Main extends Application {
     @Override
     public void start(Stage window) {
 
+        //using a multi dimensional array to store data temporary
         String[][][][] passengersArray = new String[2][31][SEATING_CAPACITY][4];
+        //this list will only hold the data of booked dates
         List<String> bookedDatesList = new ArrayList<>();
 
         Scanner sc = new Scanner(System.in);
@@ -74,7 +76,7 @@ public class Main extends Application {
 
                 case "D":
                 case "d":
-                    deleteCustomer(passengersArray, bookedDatesList);
+                    deletePassenger(passengersArray, bookedDatesList);
                     break;
 
                 case "F":
@@ -112,6 +114,7 @@ public class Main extends Application {
                     System.out.println("\nYou have entered a Invalid Input!");
                     System.out.println("---------------------------------\n");
             }
+
         } while (!userOption.equals("q"));
     }
 
@@ -138,7 +141,7 @@ public class Main extends Application {
         destinationsLabel.setPadding(new Insets(30, 0, 0, 0));
 
         String[] destinations = {"Badulla to Colombo", "Colombo to Badulla"};
-        ComboBox comboBox = new ComboBox(FXCollections.observableArrayList(destinations));
+        ComboBox<String> comboBox = new ComboBox<>(FXCollections.observableArrayList(destinations));
         comboBox.getSelectionModel().select(0);
 
         DatePicker checkInDatePicker = new DatePicker();
@@ -178,6 +181,13 @@ public class Main extends Application {
         emptySpace.setMinSize(0, 15);
 
         Button continueBtn = new Button("Continue");
+        new ButtonFX().addBtn(continueBtn);
+        continueBtn.setPrefWidth(100);
+
+        welcomeWindow.setOnCloseRequest(event -> {
+            event.consume();
+            alertBoxWindowTypeOne(welcomeWindow);
+        });
 
         continueBtn.setOnAction(event -> {
             int station;
@@ -201,7 +211,7 @@ public class Main extends Application {
                         System.out.println("\nYou selected to book seats =>" + "\033[1;31m" + " Colombo - Badulla" + "\033[0m" + " on " + "\033[1;31m" + checkInDatePicker.getValue() + "\033[0m");
                         station = 1;
                     }
-                    addCustomer(passengersArray, station, pickedDate, date);
+                    addPassenger(passengersArray, station, pickedDate, date);
 
                 } else if (welcomeScreenType == 2) {
                     if (comboBox.getValue().equals("Badulla to Colombo")) {
@@ -226,7 +236,7 @@ public class Main extends Application {
                 welcomeWindow.close();
 
             } catch (Exception notPickedDate) {
-                System.out.println("\nPlease select a Date to proceed!");
+                alertBoxWindowTypeTwo("Alert!", "Please select a date to proceed!", "1");
             }
         });
 
@@ -284,9 +294,14 @@ public class Main extends Application {
         alertBoxWindow.setScene(scene);
 
         Button okBtn = new Button("OK");
+        new ButtonFX().addBtn(okBtn);
+        okBtn.setPrefWidth(50);
+
         Button cancelBtn = new Button("Cancel");
+        new ButtonFX().closeBtn(cancelBtn);
 
         Label label = new Label("Do you want to exit?");
+        label.setFont(new Font("Arial Bold", 16));
 
         okBtn.setOnAction(event -> {
             alertBoxWindow.close();
@@ -301,8 +316,8 @@ public class Main extends Application {
         gridPane.add(okBtn, 0, 0);
         gridPane.add(cancelBtn, 1, 0);
 
-        gridPane.setPadding(new Insets(0, 0, 0, 83));
-        gridPane.setHgap(10);
+        gridPane.setPadding(new Insets(0, 0, 0, 75));
+        gridPane.setHgap(5);
 
         alertBoxWindow.showAndWait();
     }
@@ -323,15 +338,19 @@ public class Main extends Application {
             alertBoxWindow.getIcons().add(windowIcon);
         }
 
-        alertBoxWindow.setMinWidth(300);
+        alertBoxWindow.setMinWidth(350);
         alertBoxWindow.setMinHeight(150);
 
         Label label = new Label();
+        label.setFont(new Font("Arial Bold", 16));
+        label.setPadding(new Insets(0, 0, 5, 0));
         label.setText(message);
+
         Button closeButton = new Button("Close");
+        new ButtonFX().closeBtn(closeButton);
         closeButton.setOnAction(e -> alertBoxWindow.close());
 
-        VBox layout = new VBox(10);
+        VBox layout = new VBox(5);
         layout.getChildren().addAll(label, closeButton);
         layout.setAlignment(Pos.CENTER);
 
@@ -343,289 +362,359 @@ public class Main extends Application {
 
     /* i've used 4 different for loops to print seats as vertical rows, so each row should contain a action
     that each seat can perform in a specific condition whether it could be book or display */
-    private void seatDisplay(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, List<Integer> seatNumbers, Stage window, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType, String date) {
-        for (int i = 1; i <= 11; i++) {
-            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            leftSeatsRowOne.getChildren().add(seat);
-            leftSeatsRowOne.setSpacing(5);
-            seat.setCursor(Cursor.HAND);
+    private void seatDisplay(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, Stage window, VBox leftSeatsRowOne, VBox leftSeatsRowTwo, VBox RightSeatsRowOne, VBox RightSeatsRowTwo, String actionType, String date) {
 
-            if (actionType.equals("seatAction")) {
-                if (seatNumbers.contains(i)) {
-                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                } else {
-                    seat.setOnAction((e) -> {
-                        if (seat.isSelected()) {
-                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                            selectedSeats.add(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(false);
+        List<Integer> seatNumbers = new ArrayList<>();
 
-                        } else {
-                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                            selectedSeats.remove(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(true);
-                        }
-                    });
-                }
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
-            }
-            if (actionType.equals("emptySeats")) {
-                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
-            }
-            if (actionType.equals("allSeats")) {
-                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
+        for (int j = 0; j < SEATING_CAPACITY; j++) {
+            if (passengersArray[station][pickedDate - 1][j][3] != null) {
+                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][j][3]));
             }
         }
 
-        for (int i = 12; i <= 21; i++) {
-            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            leftSeatsRowTwo.getChildren().add(seat);
-            leftSeatsRowTwo.setSpacing(5);
-            seat.setCursor(Cursor.HAND);
+        class displayMain {
+            private void rowDisplay(int j, int k, VBox row) {
+                for (int i = j; i <= k; i++) {
+                    ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
+                    seat.setId(Integer.toString(i));
+                    seat.setStyle("-fx-background-color: #00A69C; -fx-background-radius: 8;-fx-border-color: #00A69C; -fx-border-width: 3; -fx-border-radius: 8");
+                    row.getChildren().add(seat);
+                    row.setSpacing(5);
+                    seat.setCursor(Cursor.HAND);
 
-            if (actionType.equals("seatAction")) {
-                if (seatNumbers.contains(i)) {
-                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                } else {
-                    seat.setOnAction((e) -> {
-                        if (seat.isSelected()) {
-                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                            selectedSeats.add(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(false);
-
+                    if (actionType.equals("seatAction")) {
+                        if (seatNumbers.contains(i)) {
+                            seat.setStyle("-fx-background-color: #E3236D; -fx-background-radius: 8;-fx-border-color: #E3236D; -fx-border-width: 3; -fx-border-radius: 8");
                         } else {
-                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                            selectedSeats.remove(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(true);
+                            seat.setOnAction((e) -> {
+                                if (seat.isSelected()) {
+                                    seat.setStyle("-fx-background-color: #E3236D; -fx-background-radius: 8;-fx-border-color: #E3236D; -fx-border-width: 3; -fx-border-radius: 8");
+                                    if (!selectedSeats.contains(Integer.valueOf(seat.getId()))) {
+                                        selectedSeats.add(Integer.valueOf(seat.getId()));
+                                    }
+                                    bookBtn.setDisable(false);
+
+                                } else {
+                                    seat.setStyle("-fx-background-color: #00A69C; -fx-background-radius: 8;-fx-border-color: #00A69C; -fx-border-width: 3; -fx-border-radius: 8");
+                                    selectedSeats.remove(Integer.valueOf(seat.getId()));
+                                    bookBtn.setDisable(true);
+                                }
+                            });
                         }
-                    });
+                        seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
+                    }
+                    if (actionType.equals("emptySeats")) {
+                        if (seatNumbers.contains(i)) {
+                            seat.setStyle("-fx-background-color: rgba(0,0,0,0.1); -fx-background-radius: 8;-fx-border-color: rgba(0,0,0,0.1); -fx-border-width: 3; -fx-border-radius: 8");
+                            seat.setDisable(true);
+                        } else {
+                            seat.setStyle("-fx-background-color: #00A69C; -fx-background-radius: 8;-fx-border-color: #00A69C; -fx-border-width: 3; -fx-border-radius: 8");
+                        }
+                    }
+                    if (actionType.equals("allSeats")) {
+                        if (seatNumbers.contains(i)) {
+                            seat.setStyle("-fx-background-color: #E3236D; -fx-background-radius: 8;-fx-border-color: #E3236D; -fx-border-width: 3; -fx-border-radius: 8");
+                        } else {
+                            seat.setStyle("-fx-background-color: #00A69C; -fx-background-radius: 8;-fx-border-color: #00A69C; -fx-border-width: 3; -fx-border-radius: 8");
+                        }
+                    }
                 }
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
-            }
-            if (actionType.equals("emptySeats")) {
-                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
-            }
-            if (actionType.equals("allSeats")) {
-                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
             }
         }
 
-        for (int i = 22; i <= 31; i++) {
-            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            RightSeatsRowOne.getChildren().add(seat);
-            RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
-            RightSeatsRowOne.setSpacing(5);
-            seat.setCursor(Cursor.HAND);
+        //row one
+        new displayMain().rowDisplay(1, 11, leftSeatsRowOne);
+        //row two
+        new displayMain().rowDisplay(12, 21, leftSeatsRowTwo);
+        //row three
+        new displayMain().rowDisplay(22, 31, RightSeatsRowOne);
+        RightSeatsRowOne.setPadding(new Insets(0, 0, 0, 75));
+        //row four
+        new displayMain().rowDisplay(32, SEATING_CAPACITY, RightSeatsRowTwo);
 
-            if (actionType.equals("seatAction")) {
-                if (seatNumbers.contains(i)) {
-                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                } else {
-                    seat.setOnAction((e) -> {
-                        if (seat.isSelected()) {
-                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                            selectedSeats.add(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(false);
+    }
 
-                        } else {
-                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                            selectedSeats.remove(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(true);
-                        }
-                    });
+    private void singlePassengerBooking(String[][][][] passengersArray, int station, int pickedDate, List<Integer> selectedSeats, Stage window, String date) {
+        try {
+            Stage confirmationBox = new Stage();
+            confirmationBox.initModality(Modality.APPLICATION_MODAL);
+
+            FlowPane flowPane2 = new FlowPane();
+            flowPane2.setPadding(new Insets(30));
+
+            Image windowIcon2 = new Image(getClass().getResourceAsStream("pendingIcon.png"));
+            confirmationBox.getIcons().add(windowIcon2);
+
+            confirmationBox.setTitle("Confirmation");
+
+            VBox vBox = new VBox();
+            HBox hBox2 = new HBox();
+
+            Label headerConfirmationBox = new Label("Prompt Passenger's Details");
+            headerConfirmationBox.setFont(new Font("Arial Bold", 22));
+            headerConfirmationBox.setTextFill(Paint.valueOf("#414141"));
+            headerConfirmationBox.setPadding(new Insets(0, 0, 30, 0));
+
+            Button confirmUser = new Button("Confirm");
+            new ButtonFX().addBtn(confirmUser);
+            confirmUser.setPrefWidth(100);
+            confirmUser.setDisable(true);
+
+            Button cancelBtn = new Button("Cancel");
+            new ButtonFX().closeBtn(cancelBtn);
+            cancelBtn.setOnAction(event1 -> confirmationBox.hide());
+
+            Text userNameTxt = new Text("Enter your Given Name");
+            TextField userNameTxtField = new TextField();
+
+            Text userSurnameTxt = new Text("Enter your Surname");
+            TextField userSurnameTxtField = new TextField();
+
+            Text userNicTxt = new Text("Enter your NIC");
+            TextField userNicTxtField = new TextField();
+            userNicTxtField.setOnMouseExited(event1 -> {
+                while (!userNicTxtField.getText().equals("")) {
+                    if (((userNicTxtField.getText().matches("[1234567890]+v")) && (userNicTxtField.getText().length() == 10))
+                            || ((userNicTxtField.getText().matches("[1234567890]+")) && userNicTxtField.getText().length() == 11)) {
+                        userNicTxtField.setStyle("-fx-border-color: rgba(0,166,156,0.8) ; -fx-border-width: 3px ;");
+                        break;
+                    } else {
+                        alertBoxWindowTypeTwo("Invalid!", "Please enter a valid NIC", "1");
+                        userNicTxtField.setStyle("-fx-border-color: rgba(227,35,109,0.8) ; -fx-border-width: 3px ;");
+                        userNicTxtField.setText("");
+                    }
                 }
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
-            }
-            if (actionType.equals("emptySeats")) {
-                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
-            }
-            if (actionType.equals("allSeats")) {
-                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
-            }
-        }
-
-        for (int i = 32; i <= SEATING_CAPACITY; i++) {
-            ToggleButton seat = new ToggleButton("Seat " + String.format("%02d", i));
-            seat.setId(Integer.toString(i));
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-            RightSeatsRowTwo.getChildren().add(seat);
-            RightSeatsRowTwo.setSpacing(5);
-            seat.setCursor(Cursor.HAND);
-
-            if (actionType.equals("seatAction")) {
-                if (seatNumbers.contains(i)) {
-                    seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
+            });
+            //user must enter at least two character as the name to confirm his/her booking
+            userNicTxtField.setOnKeyTyped(event1 -> {
+                if (userNicTxtField.getText().isEmpty() && userSurnameTxtField.getText().isEmpty() && userNameTxtField.getText().isEmpty()) {
+                    confirmUser.setDisable(true);
                 } else {
-                    seat.setOnAction((e) -> {
-                        if (seat.isSelected()) {
-                            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-                            selectedSeats.add(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(false);
-
-                        } else {
-                            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-                            selectedSeats.remove(Integer.valueOf(seat.getId()));
-                            bookBtn.setDisable(true);
-                        }
-                    });
+                    confirmUser.setDisable(false);
                 }
-                seatBookingAction(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, date);
-            }
-            if (actionType.equals("emptySeats")) {
-                emptySeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
-            }
-            if (actionType.equals("allSeats")) {
-                allSeatsDisplayAction(passengersArray, station, pickedDate, seat, i);
-            }
+            });
+
+            hBox2.getChildren().addAll(confirmUser, cancelBtn);
+            hBox2.setPadding(new Insets(40, 0, 0, 0));
+            hBox2.setSpacing(10);
+
+            vBox.getChildren().addAll(headerConfirmationBox, userNameTxt, userNameTxtField, userSurnameTxt, userSurnameTxtField, userNicTxt, userNicTxtField, hBox2);
+            vBox.setSpacing(10);
+
+            flowPane2.getChildren().addAll(vBox);
+
+            System.out.println("------------------");
+            System.out.println("Confirmed Bookings");
+            System.out.println("------------------\n");
+
+            confirmUser.setOnAction(event2 -> {
+                for (int j : selectedSeats) {
+                    passengersArray[station][pickedDate - 1][j - 1][0] = userNameTxtField.getText().toLowerCase();
+                    passengersArray[station][pickedDate - 1][j - 1][1] = userSurnameTxtField.getText();
+                    passengersArray[station][pickedDate - 1][j - 1][2] = userNicTxtField.getText();
+                    passengersArray[station][pickedDate - 1][j - 1][3] = String.valueOf(j);
+
+                    if (station == 0) {
+                        System.out.println("Destination     - Badulla to Colombo");
+                    } else {
+                        System.out.println("Destination     - Colombo to Badulla");
+                    }
+
+                    System.out.println("Booked Date     - " + date);
+                    System.out.println("Passenger name  - " + passengersArray[station][pickedDate - 1][j - 1][0] + " " + passengersArray[station][pickedDate - 1][j - 1][1]);
+                    System.out.println("NIC             - " + passengersArray[station][pickedDate - 1][j - 1][2]);
+                    System.out.println("Seat            - #" + passengersArray[station][pickedDate - 1][j - 1][3]);
+                    System.out.println();
+
+                    //popup alertBox
+                    alertBoxWindowTypeTwo("Booked!", "You have successfully booked Seat #" + passengersArray[station][pickedDate - 1][j - 1][3], "2");
+                }
+                confirmationBox.close();
+                window.close();
+            });
+            Scene confirmationBoxScene = new Scene(flowPane2, 350, 420);
+            confirmationBox.setScene(confirmationBoxScene);
+            confirmationBox.showAndWait();
+
+        } catch (Exception ignored) {
+            //ignoring the runtime error which occurs by JavaFX
         }
     }
 
     private void seatBookingAction(String[][][][] passengersArray, int station, int pickedDate, Button bookBtn, List<Integer> selectedSeats, Stage window, String date) {
         bookBtn.setOnAction(event -> {
-            try {
-                Stage confirmationBox = new Stage();
-                confirmationBox.initModality(Modality.APPLICATION_MODAL);
+            if (selectedSeats.size() == 1) {
+                singlePassengerBooking(passengersArray, station, pickedDate, selectedSeats, window, date);
+            } else {
+                try {
+                    Integer[] bookedSeats = new Integer[selectedSeats.size()];
 
-                FlowPane flowPane2 = new FlowPane();
-                flowPane2.setPadding(new Insets(30));
+                    Stage confirmationBoxMultiple = new Stage();
+                    confirmationBoxMultiple.initModality(Modality.APPLICATION_MODAL);
 
-                Image windowIcon2 = new Image(getClass().getResourceAsStream("pendingIcon.png"));
-                confirmationBox.getIcons().add(windowIcon2);
-
-                confirmationBox.setTitle("Confirmation");
-
-                VBox vBox = new VBox();
-                HBox hBox2 = new HBox();
-
-                Label headerConfirmationBox = new Label("Prompt Passenger's Details");
-                headerConfirmationBox.setFont(new Font("Arial Bold", 22));
-                headerConfirmationBox.setTextFill(Paint.valueOf("#414141"));
-                headerConfirmationBox.setPadding(new Insets(0, 0, 30, 0));
-
-                Button confirmUser = new Button("Confirm");
-                confirmUser.setDisable(true);
-
-                Button cancelBtn = new Button("Cancel");
-                cancelBtn.setOnAction(event1 -> confirmationBox.hide());
-
-                Text userNameTxt = new Text("Enter your Given Name");
-                TextField userNameTxtField = new TextField();
-
-                Text userSurnameTxt = new Text("Enter your Surname");
-                TextField userSurnameTxtField = new TextField();
-
-                Text userNicTxt = new Text("Enter your NIC");
-                TextField userNicTxtField = new TextField();
-                userNicTxtField.setOnMouseExited(event1 -> {
-                    while (!userNicTxtField.getText().equals("")) {
-                        if (((userNicTxtField.getText().matches("[1234567890]+v")) && (userNicTxtField.getText().length() == 10))
-                                || ((userNicTxtField.getText().matches("[1234567890]+")) && userNicTxtField.getText().length() == 11)) {
-                            userNicTxtField.setStyle("-fx-border-color: rgba(0,166,156,0.8) ; -fx-border-width: 3px ;");
-                            break;
-                        } else {
-                            alertBoxWindowTypeTwo("Invalid!", "Please enter a valid NIC", "1");
-                            userNicTxtField.setStyle("-fx-border-color: rgba(227,35,109,0.8) ; -fx-border-width: 3px ;");
-                            userNicTxtField.setText("");
-                        }
-                    }
-                });
-                //user must enter at least two character as the name to confirm his/her booking
-                userNicTxtField.setOnKeyTyped(event1 -> {
-                    if (userNicTxtField.getText().isEmpty() && userSurnameTxtField.getText().isEmpty() && userNameTxtField.getText().isEmpty()) {
-                        confirmUser.setDisable(true);
+                    FlowPane flowPane2 = new FlowPane();
+                    flowPane2.setPadding(new Insets(30));
+                    Scene confirmationBoxScene;
+                    if (selectedSeats.size() > 2) {
+                        confirmationBoxScene = new Scene(flowPane2, 900, 300 + (selectedSeats.size() * 25));
                     } else {
-                        confirmUser.setDisable(false);
+                        confirmationBoxScene = new Scene(flowPane2, 900, 300);
                     }
-                });
 
-                hBox2.getChildren().addAll(confirmUser, cancelBtn);
-                hBox2.setPadding(new Insets(50, 0, 0, 0));
-                hBox2.setSpacing(10);
+                    Image windowIcon2 = new Image(getClass().getResourceAsStream("pendingIcon.png"));
+                    confirmationBoxMultiple.getIcons().add(windowIcon2);
 
-                vBox.getChildren().addAll(headerConfirmationBox, userNameTxt, userNameTxtField, userSurnameTxt, userSurnameTxtField, userNicTxt, userNicTxtField, hBox2);
-                vBox.setSpacing(10);
+                    confirmationBoxMultiple.setTitle("Confirmation");
 
-                flowPane2.getChildren().addAll(vBox);
+                    Label headerConfirmationBox = new Label("Prompt Other Passengers' Details");
+                    headerConfirmationBox.setFont(new Font("Arial Bold", 22));
+                    headerConfirmationBox.setTextFill(Paint.valueOf("#414141"));
+                    headerConfirmationBox.setPadding(new Insets(0, 999, 30, 0));
+                    flowPane2.getChildren().addAll(headerConfirmationBox);
 
-                System.out.println("\n------------------");
-                System.out.println("Confirmed Bookings");
-                System.out.println("------------------\n");
+                    TextField passengerFirstName = new TextField();
+                    TextField passengerSurName = new TextField();
+                    TextField passengerNic = new TextField();
 
-                confirmUser.setOnAction(event2 -> {
-                    for (int j : selectedSeats) {
-                        passengersArray[station][pickedDate - 1][j - 1][0] = userNameTxtField.getText().toLowerCase();
-                        passengersArray[station][pickedDate - 1][j - 1][1] = userSurnameTxtField.getText();
-                        passengersArray[station][pickedDate - 1][j - 1][2] = userNicTxtField.getText();
-                        passengersArray[station][pickedDate - 1][j - 1][3] = String.valueOf(j);
+                    List<String> firstNameArray = new ArrayList<>();
+                    List<String> surNameArray = new ArrayList<>();
+                    List<String> nicArray = new ArrayList<>();
 
-                        if (station == 0) {
-                            System.out.println("Destination     - Badulla to Colombo");
-                        } else {
-                            System.out.println("Destination     - Colombo to Badulla");
+                    VBox seatBox = new VBox();
+                    seatBox.setSpacing(10);
+                    Label headerOne = new Label("Seat");
+                    headerOne.setFont(new Font("Arial Bold", 16));
+                    seatBox.getChildren().addAll(headerOne);
+
+                    for (int i = 0; i < selectedSeats.size(); i++) {
+                        bookedSeats[i] = selectedSeats.get(i);
+                    }
+
+                    for (int i = 0; i < selectedSeats.size(); i++) {
+                        ComboBox<Integer> comboBox = new ComboBox<>(FXCollections.observableArrayList(bookedSeats));
+                        seatBox.getChildren().addAll(comboBox);
+                    }
+
+                    VBox firstNameBox = new VBox();
+                    firstNameBox.setPadding(new Insets(0, 0, 0, 30));
+                    firstNameBox.setSpacing(10);
+                    Label headerTwo = new Label("First Name");
+                    firstNameBox.getChildren().addAll(headerTwo);
+                    for (int i = 0; i < selectedSeats.size(); i++) {
+                        passengerFirstName = new TextField();
+                        firstNameBox.getChildren().addAll(passengerFirstName);
+                        firstNameArray.add(passengerFirstName.getText());
+                    }
+
+                    VBox lastNameBox = new VBox();
+                    lastNameBox.setPadding(new Insets(0, 0, 0, 50));
+                    lastNameBox.setSpacing(10);
+                    Label headerThree = new Label("Surname");
+                    lastNameBox.getChildren().addAll(headerThree);
+                    for (int i = 0; i < selectedSeats.size(); i++) {
+                        passengerSurName = new TextField();
+                        lastNameBox.getChildren().addAll(passengerSurName);
+                        //passengerSurName.setOnMouseExited(event1 -> surNameArray.add(finalPassengerSurName.getText()));
+                    }
+
+                    VBox nicBox = new VBox();
+                    nicBox.setPadding(new Insets(0, 0, 0, 50));
+                    nicBox.setSpacing(10);
+                    Label headerFour = new Label("Nic");
+                    nicBox.getChildren().addAll(headerFour);
+                    for (int i = 0; i < selectedSeats.size(); i++) {
+                        passengerNic = new TextField();
+                        nicBox.getChildren().addAll(passengerNic);
+                        //passengerNic.setOnMouseExited(event1 -> nicArray.add(finalPassengerNic.getText()));
+                    }
+
+                    flowPane2.getChildren().addAll(seatBox, firstNameBox, lastNameBox, nicBox);
+
+                    HBox hBox2 = new HBox();
+
+                    Button confirmUser = new Button("Confirm");
+                    new ButtonFX().addBtn(confirmUser);
+                    confirmUser.setPrefWidth(100);
+                    //confirmUser.setDisable(true);
+
+                    confirmUser.setOnAction(event1 -> {
+                        System.out.println(firstNameArray);
+                        System.out.println(surNameArray);
+                        System.out.println(nicArray);
+                    });
+
+                    Button cancelBtn = new Button("Cancel");
+                    new ButtonFX().closeBtn(cancelBtn);
+                    cancelBtn.setOnAction(event1 -> confirmationBoxMultiple.hide());
+
+/*                    passengerNic.setOnMouseExited(event1 -> {
+                        while (!passengerNic.getText().equals("")) {
+                            if (((passengerNic.getText().matches("[1234567890]+v")) && (passengerNic.getText().length() == 10))
+                                    || ((passengerNic.getText().matches("[1234567890]+")) && passengerNic.getText().length() == 11)) {
+                                passengerNic.setStyle("-fx-border-color: rgba(0,166,156,0.8) ; -fx-border-width: 3px ;");
+                                break;
+                            } else {
+                                alertBoxWindowTypeTwo("Invalid!", "Please enter a valid NIC", "1");
+                                passengerNic.setStyle("-fx-border-color: rgba(227,35,109,0.8) ; -fx-border-width: 3px ;");
+                                passengerNic.setText("");
+                            }
                         }
+                    });
+                    //user must enter at least two character as the name to confirm his/her booking
+                    passengerNic.setOnKeyTyped(event1 -> {
+                        if (passengerNic.getText().isEmpty() && passengerFirstName.getText().isEmpty() && passengerSurName.getText().isEmpty()) {
+                            confirmUser.setDisable(true);
+                        } else {
+                            confirmUser.setDisable(false);
+                        }
+                    });*/
 
-                        System.out.println("Booked Date     - " + date);
-                        System.out.println("Passenger name  - " + passengersArray[station][pickedDate - 1][j - 1][0] + " " + passengersArray[station][pickedDate - 1][j - 1][1]);
-                        System.out.println("NIC             - " + passengersArray[station][pickedDate - 1][j - 1][2]);
-                        System.out.println("Seat            - #" + passengersArray[station][pickedDate - 1][j - 1][3]);
-                        System.out.println();
+                    hBox2.getChildren().addAll(confirmUser, cancelBtn);
+                    hBox2.setPadding(new Insets(50, 0, 0, 0));
+                    hBox2.setSpacing(10);
 
-                        //popup alertBox
-                        alertBoxWindowTypeTwo("Booked!", "You have successfully booked Seat #" + passengersArray[station][pickedDate - 1][j - 1][3], "2");
-                    }
-                    confirmationBox.close();
-                    window.close();
-                });
+                    flowPane2.getChildren().addAll(hBox2);
 
-                Scene confirmationBoxScene = new Scene(flowPane2, 350, 420);
-                confirmationBox.setScene(confirmationBoxScene);
-                confirmationBox.showAndWait();
-            } catch (Exception ignored) {
-                //ignoring the runtime error which occurs by JavaFX which I dont know exactly
+                    System.out.println("------------------");
+                    System.out.println("Confirmed Bookings");
+                    System.out.println("------------------\n");
+
+                    /*confirmUser.setOnAction(event2 -> {
+                        for (int j : selectedSeats) {
+                            passengersArray[station][pickedDate - 1][j - 1][0] = passengerFirstName.getText().toLowerCase();
+                            passengersArray[station][pickedDate - 1][j - 1][1] = passengerSurName.getText();
+                            passengersArray[station][pickedDate - 1][j - 1][2] = passengerNic.getText();
+                            passengersArray[station][pickedDate - 1][j - 1][3] = String.valueOf(j);
+
+                            if (station == 0) {
+                                System.out.println("Destination     - Badulla to Colombo");
+                            } else {
+                                System.out.println("Destination     - Colombo to Badulla");
+                            }
+
+                            System.out.println("Booked Date     - " + date);
+                            System.out.println("Passenger name  - " + passengersArray[station][pickedDate - 1][j - 1][0] + " " + passengersArray[station][pickedDate - 1][j - 1][1]);
+                            System.out.println("NIC             - " + passengersArray[station][pickedDate - 1][j - 1][2]);
+                            System.out.println("Seat            - #" + passengersArray[station][pickedDate - 1][j - 1][3]);
+                            System.out.println();
+
+                            //popup alertBox
+                            alertBoxWindowTypeTwo("Booked!", "You have successfully booked Seat #" + passengersArray[station][pickedDate - 1][j - 1][3], "2");
+                        }
+                        confirmationBoxMultiple.close();
+                        window.close();
+                    });*/
+                    confirmationBoxMultiple.setScene(confirmationBoxScene);
+                    confirmationBoxMultiple.showAndWait();
+
+                } catch (Exception ignored) {
+                    //ignoring the runtime error which occurs by JavaFX
+                }
             }
         });
     }
 
-    private void allSeatsDisplayAction(String[][][][] passengersArray, int station, int pickedDate, ToggleButton seat, int i) {
-        List<Integer> seatNumbers = new ArrayList<>();
-
-        for (int j = 0; j < SEATING_CAPACITY; j++) {
-            if (passengersArray[station][pickedDate - 1][j][3] != null) {
-                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][j][3]));
-            }
-        }
-
-        if (seatNumbers.contains(i)) {
-            seat.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
-        } else {
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        }
-    }
-
-    private void emptySeatsDisplayAction(String[][][][] passengersArray, int station, int pickedDate, ToggleButton seat, int i) {
-        List<Integer> seatNumbers = new ArrayList<>();
-
-        for (int j = 0; j < SEATING_CAPACITY; j++) {
-            if (passengersArray[station][pickedDate - 1][j][3] != null) {
-                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][j][3]));
-            }
-        }
-
-        if (seatNumbers.contains(i)) {
-            seat.setStyle(null);
-            seat.setDisable(true);
-        } else {
-            seat.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
-        }
-    }
-
-    private void addCustomer(String[][][][] passengersArray, int station, int pickedDate, String date) {
+    private void addPassenger(String[][][][] passengersArray, int station, int pickedDate, String date) {
         List<Integer> selectedSeats = new ArrayList<>();
         List<Integer> seatNumbers = new ArrayList<>();
 
@@ -633,7 +722,7 @@ public class Main extends Application {
 
         System.out.println("\n************************");
         System.out.println("\033[1;93m" + "ADD A CUSTOMER TO A SEAT" + "\033[0m");
-        System.out.println("************************");
+        System.out.println("************************\n");
 
         Stage window = new Stage();
 
@@ -658,18 +747,19 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 442, 600);
+        Scene scene = new Scene(flowPane, 465, 675);
 
         Label header = new Label("Select a Seat");
+        header.setStyle("-fx-underline: true");
         header.setFont(new Font("Arial Bold", 22));
         header.setTextFill(Paint.valueOf("#414141"));
-        header.setPadding(new Insets(0, 200, 25, 120));
+        header.setPadding(new Insets(0, 200, 30, 130));
 
         flowPane.getChildren().add(header);
 
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER);
-        hBox.setPadding(new Insets(41, 0, 0, 135));
+        hBox.setPadding(new Insets(40, 0, 0, 130));
         hBox.setSpacing(10);
 
         VBox leftSeatsRowOne = new VBox();
@@ -678,20 +768,16 @@ public class Main extends Application {
         VBox RightSeatsRowTwo = new VBox();
 
         Button bookBtn = new Button("Book");
+        new ButtonFX().addBtn(bookBtn);
         bookBtn.setDisable(true);
 
-        for (int i = 0; i < 42; i++) {
-            if (passengersArray[station][pickedDate - 1][i][3] != null) {
-                seatNumbers.add(Integer.valueOf(passengersArray[station][pickedDate - 1][i][3]));
-            }
-        }
-
-        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction", date);
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "seatAction", date);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
         //close button
         Button closeBtn = new Button("Close");
+        new ButtonFX().closeBtn(closeBtn);
         closeBtn.setOnAction(e -> {
             alertBoxWindowTypeOne(window);
         });
@@ -730,12 +816,13 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 442, 600);
+        Scene scene = new Scene(flowPane, 465, 675);
 
         Label header = new Label("All Seats");
+        header.setStyle("-fx-underline: true");
         header.setFont(new Font("Arial Bold", 22));
         header.setTextFill(Paint.valueOf("#414141"));
-        header.setPadding(new Insets(0, 165, 25, 145));
+        header.setPadding(new Insets(0, 165, 30, 145));
 
         flowPane.getChildren().addAll(header);
 
@@ -746,7 +833,7 @@ public class Main extends Application {
 
         Button bookBtn = new Button();
 
-        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats", date);
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "allSeats", date);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -768,9 +855,10 @@ public class Main extends Application {
         colorTwoButton.setStyle("-fx-background-color: rgba(227,35,109,0.8)");
         colorTwoButton.setMinSize(33, 10);
 
-        Label colorTwoLabel = new Label("Booked Seats");
+        Label colorTwoLabel = new Label("Booked Seats ");
 
         Button closeBtn = new Button("Close");
+        new ButtonFX().closeBtn(closeBtn);
         closeBtn.setOnAction(event -> window.close());
 
         flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, colorTwoButton, colorTwoLabel, emptySpace2, closeBtn);
@@ -806,12 +894,13 @@ public class Main extends Application {
         flowPane.setVgap(10);
         flowPane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(flowPane, 442, 600);
+        Scene scene = new Scene(flowPane, 465, 675);
 
         Label header = new Label("Check Available Seats");
+        header.setStyle("-fx-underline: true");
         header.setFont(new Font("Arial Bold", 22));
         header.setTextFill(Paint.valueOf("#414141"));
-        header.setPadding(new Insets(0, 150, 25, 80));
+        header.setPadding(new Insets(0, 150, 30, 80));
 
         flowPane.getChildren().addAll(header);
 
@@ -822,7 +911,7 @@ public class Main extends Application {
 
         Button bookBtn = new Button();
 
-        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, seatNumbers, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats", date);
+        seatDisplay(passengersArray, station, pickedDate, bookBtn, selectedSeats, window, leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo, "emptySeats", date);
 
         flowPane.getChildren().addAll(leftSeatsRowOne, leftSeatsRowTwo, RightSeatsRowOne, RightSeatsRowTwo);
 
@@ -834,13 +923,14 @@ public class Main extends Application {
         colorOneButton.setStyle("-fx-background-color: rgba(0,166,156,0.8)");
         colorOneButton.setMinSize(33, 10);
 
-        Label colorOneLabel = new Label("Available Seats");
+        Label colorOneLabel = new Label("Available Seats ");
 
         Button emptySpace2 = new Button();
         emptySpace2.setStyle("-fx-background-color: rgba(0,0,0,0)");
         emptySpace2.setMinSize(163, 10);
 
         Button closeBtn = new Button("Close");
+        new ButtonFX().closeBtn(closeBtn);
         closeBtn.setOnAction(event -> window.close());
 
         flowPane.getChildren().addAll(emptySpace, colorOneButton, colorOneLabel, emptySpace2, closeBtn);
@@ -850,7 +940,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
     }
 
-    private void deleteCustomer(String[][][][] passengersArray, List<String> bookedDatesList) {
+    private void deletePassenger(String[][][][] passengersArray, List<String> bookedDatesList) {
         System.out.println("--------------------------------------------------");
 
         System.out.println("\n*************");
@@ -884,7 +974,7 @@ public class Main extends Application {
         if (bookedDatesList.isEmpty()) {
             System.out.println("No seats have been booked yet!");
         } else {
-            System.out.print("What is the name that you prompted to book your seat/ seats (Prompt Full Name) : ");
+            System.out.print("What is the name that you prompted to book your seat/ seats (Prompt Your First Name) : ");
             removedSeatName = sc.nextLine();
             if ((!passengerSeatAndNameDesOne.containsValue(removedSeatName)) && (!passengerSeatAndNameDesTwo.containsValue(removedSeatName))) {
                 System.out.println("\nNo seat has been booked under " + removedSeatName);
@@ -1018,7 +1108,7 @@ public class Main extends Application {
             }
         }
 
-        System.out.print("What is the name that you prompted to book your seat/ seats (Prompt Your Full Name) : ");
+        System.out.print("What is the name that you prompted to book your seat/ seats (Prompt Your First Name) : ");
         String findUserName = sc.nextLine();
 
         System.out.print("What is the NIC that you prompted to book your seat/ seats : ");
@@ -1035,7 +1125,7 @@ public class Main extends Application {
                             if (passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
                                 System.out.println("Destination     - " + "\033[1;96m" + "Badulla - Colombo" + "\033[0m");
                                 System.out.println("Booked Date     - " + "\033[1;95m" + s + "\033[0m");
-                                System.out.println("Passenger name  - " + findUserName);
+                                System.out.println("Passenger name  - " + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] + " " + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][1]);
                                 System.out.println("NIC             - " + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2]);
                                 System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[0][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                 System.out.println();
@@ -1045,7 +1135,7 @@ public class Main extends Application {
                             if (passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0].equalsIgnoreCase(findUserName) && passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2].equalsIgnoreCase(nic)) {
                                 System.out.println("Destination     - " + "\033[1;96m" + "Colombo - Badulla" + "\033[0m");
                                 System.out.println("Booked Date     - " + "\033[1;95m" + s + "\033[0m");
-                                System.out.println("Passenger name  - " + findUserName);
+                                System.out.println("Passenger name  - " + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][0] + " " + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][1]);
                                 System.out.println("NIC             - " + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][2]);
                                 System.out.println("Seat            - " + "\033[1;31m" + "#" + passengersArray[1][Integer.parseInt(s.substring(8, 10)) - 1][i - 1][3] + "\033[0m");
                                 System.out.println();
@@ -1136,6 +1226,7 @@ public class Main extends Application {
         System.out.println("--------------------------------------------------");
     }
 
+    //redirecting to the storeDataMain according to the station that user selected
     private void storeData(String[][][][] passengersArray, List<String> bookedDatesList) {
         System.out.println("--------------------------------------------------");
 
@@ -1184,6 +1275,7 @@ public class Main extends Application {
         System.out.println("\n--------------------------------------------------");
     }
 
+    //redirecting to the loadBookingData according to the station that user selected
     private void loadData(String[][][][] passengersArray, List<String> bookedDatesList) {
         System.out.println("--------------------------------------------------");
 
@@ -1279,13 +1371,15 @@ public class Main extends Application {
                 String[] seatNumber = parts[22].split("#");
 
                 //add booking data to the multi-dimensional array
-                passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][0] = passengerName;
-                passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][1] = passengerSurname;
-                passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][2] = nic;
-                passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][3] = seatNumber[1];
-                //add data to the bookedDatesList because if your load program right away, it must has the booked dates as well
-                if (!bookedDatesList.contains(bookedDate)) {
-                    bookedDatesList.add(bookedDate);
+                if (!passengerName.equals("null")) {
+                    passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][0] = passengerName;
+                    passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][1] = passengerSurname;
+                    passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][2] = nic;
+                    passengersArray[des][(Integer.parseInt(bookedDate.substring(8, 10))) - 1][Integer.parseInt(seatNumber[1]) - 1][3] = seatNumber[1];
+                    //add data to the bookedDatesList because if your load program right away, it must has the booked dates as well
+                    if (!bookedDatesList.contains(bookedDate)) {
+                        bookedDatesList.add(bookedDate);
+                    }
                 }
             }
             try {
@@ -1298,6 +1392,38 @@ public class Main extends Application {
         }
     }
 
+    //button styling
+    static class ButtonFX {
+        void closeBtn(Button closeBtn) {
+            closeBtn.setPrefWidth(75);
+            closeBtn.setPadding(new Insets(8));
+            closeBtn.setFont(new Font("Arial Bold", 16));
+            closeBtn.setTextFill(Paint.valueOf("f4f4f4"));
+            closeBtn.setStyle("-fx-background-color: rgba(227,35,109,1); -fx-background-radius: 20;");
+            closeBtn.setOnMouseEntered(event -> {
+                closeBtn.setStyle("-fx-background-color: rgba(175,33,90,1); -fx-background-radius: 20;");
+            });
+            closeBtn.setOnMouseExited(event -> {
+                closeBtn.setStyle("-fx-background-color: rgba(227,35,109,1); -fx-background-radius: 20;");
+            });
+            closeBtn.setCursor(Cursor.HAND);
+        }
+
+        void addBtn(Button addBtn) {
+            addBtn.setPrefWidth(75);
+            addBtn.setPadding(new Insets(8));
+            addBtn.setFont(new Font("Arial Bold", 16));
+            addBtn.setTextFill(Paint.valueOf("f4f4f4"));
+            addBtn.setStyle("-fx-background-color: rgb(0,185,175); -fx-background-radius: 20;");
+            addBtn.setOnMouseEntered(event -> {
+                addBtn.setStyle("-fx-background-color: rgb(0,155,146); -fx-background-radius: 20;");
+            });
+            addBtn.setOnMouseExited(event -> {
+                addBtn.setStyle("-fx-background-color: rgb(0,185,175); -fx-background-radius: 20;");
+            });
+            addBtn.setCursor(Cursor.HAND);
+        }
+    }
 }
 
 
